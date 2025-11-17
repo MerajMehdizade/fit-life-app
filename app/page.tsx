@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black text-2xl font-extrabold">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black text-4xl font-extrabold">
     چخلارین حکایتدی
     </div>
   );
