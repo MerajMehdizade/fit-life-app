@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { useAuthGuard } from "@/lib/useAuthGuard";
 export default function RegisterPage() {
+  useAuthGuard();
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

@@ -21,10 +21,16 @@ export default function DashboardPage() {
       return () => clearTimeout(timer);
     }
   }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/login");
+  };
 
   if (!user) return <div className="flex items-center justify-center h-screen"><p className=" text-white text-3xl">...Loading</p></div>;
 
   return (
+
     <div className="relative min-h-screen flex flex-col items-center justify-start pt-10 bg-gray-900 w-full">
       {showToast && (
         <div dir="rtl"
@@ -77,6 +83,12 @@ export default function DashboardPage() {
         </div>
       )}
 
+      <button
+        onClick={handleLogout}
+        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-400"
+      >
+        خروج
+      </button>
 
     </div>
   );
