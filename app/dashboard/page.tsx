@@ -17,5 +17,5 @@ export default function DashboardPage() {
 
   if (!user) return <p className="text-center mt-10">Loading...</p>;
 
-  return <h1 className="text-2xl text-center mt-10">Welcome, {user.name}!</h1>;
+  return <h1 className="text-2xl text-center mt-10 text-white">Welcome, {user.name} to Dashbord</h1>;
 }
