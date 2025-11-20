@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="rtl">
       <body
-        className="font-yekanBakhRegular antialiased  bg-zinc-900"
+        className="font-yekanBakhRegular antialiased"
       >
         {children}
       </body>
