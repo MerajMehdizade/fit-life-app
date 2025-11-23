@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Toast from "../Components/toast/Toast";
 import { useAuthGuard } from "@/lib/useAuthGuard";
+
 export default function RegisterPage() {
   useAuthGuard();
   const router = useRouter();
@@ -10,21 +12,33 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "success" as "success" | "error",
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      router.push("/dashboard");
-    } else alert(data.message);
-  };
 
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        router.replace("/dashboard");
+      } else {
+        setToast({ show: true, message: data.message, type: "error" });
+      }
+    } catch (err) {
+      setToast({ show: true, message: "خطا در ارتباط با سرور", type: "error" });
+    }
+  };
   return (
 
     <section className="bg-white dark:bg-gray-900">
@@ -43,14 +57,12 @@ export default function RegisterPage() {
               عضویت
             </a>
           </div>
-
           <div className="relative flex items-center mt-8">
             <span className="absolute">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0z M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </span>
-
             <input
               id="name"
               type="text"
@@ -71,7 +83,7 @@ export default function RegisterPage() {
 
             <input
               id="email"
-              type="text"
+              type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="ایمیل"
@@ -131,6 +143,12 @@ export default function RegisterPage() {
           </div>
         </form>
       </div>
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ ...toast, show: false })}
+      />
     </section>
 
   );

@@ -8,12 +8,17 @@ export async function POST(req: Request) {
   const { email, password } = await req.json();
 
   const user = await User.findOne({ email });
-  if (!user) return NextResponse.json({ message: "Invalid credentials" }, { status: 400 });
+  if (!user) return NextResponse.json({ message: "ایمیل یا رمز عبور نادرست است." }, { status: 400 });
 
   const isMatch = await comparePassword(password, user.password);
-  if (!isMatch) return NextResponse.json({ message: "Invalid credentials" }, { status: 400 });
+  if (!isMatch) return NextResponse.json({ message: "ایمیل یا رمز عبور نادرست است." }, { status: 400 });
 
   const token = signToken(user._id);
+  const res = NextResponse.json({
+    user: { id: user._id, name: user.name, email: user.email },
+    message: "ورود موفقیت‌آمیز بود",
+  });
 
-  return NextResponse.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+  res.cookies.set("token", token, { httpOnly: true, path: "/", maxAge: 60 * 60 * 24 * 7 });
+  return res;
 }

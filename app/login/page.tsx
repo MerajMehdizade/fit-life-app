@@ -1,14 +1,21 @@
 "use client";
-import { useAuthGuard } from "@/lib/useAuthGuard"; 
+import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Toast from "../Components/toast/Toast";
+
 
 export default function LoginPage() {
-   useAuthGuard();
+  useAuthGuard();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "success" as "success" | "error",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,11 +25,8 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
-    if (res.ok) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      router.push("/dashboard");
-    } else alert(data.message);
+    if (res.ok) router.push("/dashboard");
+    else setToast({ show: true, message: data.message, type: "error" });
   };
   return (
 
@@ -112,6 +116,12 @@ export default function LoginPage() {
           </div>
         </form>
       </div>
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ ...toast, show: false })}
+      />
     </section>
   );
 }
