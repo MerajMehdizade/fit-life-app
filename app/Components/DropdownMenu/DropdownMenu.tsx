@@ -9,7 +9,7 @@ interface DropdownMenuProps {
 
 export default function DropdownMenu({ user, onLogout }: DropdownMenuProps) {
   return (
-    <div  className="fixed top-0 left-0 z-50 bg-gray-900">
+    <div  className="sticky top-0 left-0 z-50 bg-gray-900">
       <div  className="relative group inline-block px-5 mt-5">
         <button
           type="button"
