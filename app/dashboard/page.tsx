@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Toast from "../Components/toast/Toast";
+import DropdownMenu from "../Components/DropdownMenu/DropdownMenu";
 
 interface ProfileType {
   age?: number;
@@ -33,21 +34,20 @@ interface ProfileField {
   name: keyof ProfileType;
   placeholder: string;
   type: "text" | "number";
-  halfWidth?: boolean;
 }
 
 const stepsFields: Record<number, ProfileField[]> = {
   1: [
-    { name: "age", placeholder: "سن", type: "number", halfWidth: true },
-    { name: "gender", placeholder: "جنسیت", type: "text", halfWidth: true },
-    { name: "height", placeholder: "قد", type: "number", halfWidth: true },
-    { name: "weight", placeholder: "وزن", type: "number", halfWidth: true },
+    { name: "age", placeholder: "سن", type: "number" },
+    { name: "gender", placeholder: "جنسیت", type: "text" },
+    { name: "height", placeholder: "قد", type: "number" },
+    { name: "weight", placeholder: "وزن", type: "number" },
   ],
   2: [
-    { name: "primaryGoal", placeholder: "هدف اصلی", type: "text", halfWidth: true },
-    { name: "currentWeight", placeholder: "وزن فعلی", type: "number", halfWidth: true },
-    { name: "bodyFatPercentage", placeholder: "درصد چربی بدن", type: "number", halfWidth: true },
-    { name: "waistCircumference", placeholder: "دور کمر", type: "number", halfWidth: true },
+    { name: "primaryGoal", placeholder: "هدف اصلی", type: "text" },
+    { name: "currentWeight", placeholder: "وزن فعلی", type: "number" },
+    { name: "bodyFatPercentage", placeholder: "درصد چربی بدن", type: "number" },
+    { name: "waistCircumference", placeholder: "دور کمر", type: "number" },
     { name: "chestCircumference", placeholder: "دور سینه", type: "number" },
     { name: "armCircumference", placeholder: "دور بازو", type: "number" },
   ],
@@ -92,6 +92,23 @@ export default function DashboardPage() {
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const allFields = Object.values(stepsFields).flat();
+    const emptyField = allFields.find((field) => {
+      const value = profile[field.name];
+      return value === undefined || value === "";
+    });
+    if (emptyField) {
+      const fieldStep = Object.entries(stepsFields).find(([_, fields]) =>
+        fields.some((f) => f.name === emptyField.name)
+      );
+      if (fieldStep) setStep(Number(fieldStep[0]));
+      setToast({
+        show: true,
+        message: `لطفا فیلد "${emptyField.placeholder}" را پر کنید`,
+        type: "error",
+      });
+      return; 
+    }
     try {
       const res = await fetch("/api/user/update", {
         method: "PATCH",
@@ -105,7 +122,6 @@ export default function DashboardPage() {
       setToast({ show: true, message: "خطا در ذخیره اطلاعات", type: "error" });
     }
   };
-
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
@@ -114,92 +130,116 @@ export default function DashboardPage() {
       setToast({ show: true, message: "خطا در خروج", type: "error" });
     }
   };
-
-  if (!user) return <div className="flex items-center justify-center h-screen text-white text-xl">Loading...</div>;
+  if (!user)
+    return <div className="flex items-center justify-center h-screen text-white text-xl">Loading...</div>;
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 4));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
-
   return (
-    <div className="bg-gray-900 min-h-screen flex flex-col items-center pt-10 text-white w-full px-4 md:px-0">
-      <h1 className="text-2xl mb-5">{user.name} عزیز، داشبورد شما</h1>
-
-      {/* Wizard */}
-      <div className="bg-base-100 w-full rounded-lg p-4 shadow-base-300/20 shadow-sm max-w-4xl">
-        {/* Stepper Nav */}
-        <ul className="relative flex flex-col gap-2 md:flex-row mb-5">
-          {["اطلاعات فردی", "آمار بدنی", "ترجیحات تمرینی", "تنظیمات تغذیه"].map((title, idx) => {
-            const index = idx + 1;
-            const active = step > index;
-            return (
-              <li key={idx} className="group flex flex-1 flex-col items-center gap-2 md:flex-row">
-                <span className="min-h-7.5 min-w-7.5 inline-flex flex-col items-center gap-2 align-middle text-sm md:flex-row">
-                  <span className={`flex size-7.5 shrink-0 items-center justify-center rounded-full font-medium ${active ? "bg-blue-800 text-white shadow-sm" : "bg-gray-500/30 text-gray-200"
-                    }`}>
-                    {index}
+    <>
+      <div className="bg-gray-900 min-h-screen">
+        <DropdownMenu user={user} onLogout={handleLogout} />
+        <div className="flex flex-col items-center md:pt-10 text-white w-full px-4 md:px-0">
+          <ul className="relative flex gap-6 md:gap-2 mb-5 font-yekanBakhBold mt-10">
+            {["اطلاعات فردی", "آمار بدنی", "ترجیحات تمرینی", "تنظیمات تغذیه"].map((title, idx) => {
+              const index = idx + 1;
+              const active = step > index;
+              return (
+                <li key={idx} className="group flex flex-1 flex-col items-center gap-2 md:flex-row">
+                  <span className="min-h-7.5 min-w-7.5 inline-flex flex-col items-center gap-2 align-middle text-sm">
+                    <div className="flex items-center justify-center gap-5 ">
+                      <span
+                        className={`flex size-7.5 shrink-0 items-center justify-center rounded-full font-medium ${
+                          active ? "bg-blue-800 text-white shadow-sm" : "bg-gray-500/30 text-gray-200"
+                        }`}
+                      >
+                        {active ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            className="size-5"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                          </svg>
+                        ) : (
+                          index
+                        )}
+                      </span>
+                      {index <= 3 && (
+                        <div
+                          className={`md:h-1 md:w-30 rounded-2xl ${
+                            active ? "bg-blue-800 shadow-sm" : "bg-gray-500/30 hidden md:block"
+                          }`}
+                        ></div>
+                      )}
+                    </div>
+                    <span className="text-base-content text-nowrap font-medium mt-2">{title}</span>
                   </span>
-                  <span className="text-base-content text-nowrap font-medium ml-2">{title}</span>
-                </span>
-                {index <= 3 &&
-                  <div className={`h-1 w-full  mt-2 md:mt-0 md:flex-1 ${active ? "bg-blue-800 shadow-sm" : "bg-gray-500/30"}`}></div>
-                }
-              </li>
-            );
-          })}
-        </ul>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="w-full rounded-lg p-4 shadow-sm max-w-4xl">
+            <form onSubmit={handleProfileSubmit} className="flex flex-col justify-between gap-6 h-full p-5">
+              <div className="flex flex-wrap gap-3">
+                {stepsFields[step].map((field) => (
+                  <input
+                    key={field.name}
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    className={`p-2 bg-gray-700 text-white rounded-lg tex-sm w-full h-10 md:w-[calc(50%-0.75rem)] `}
+                    value={profile[field.name] ?? ""}
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        [field.name]:
+                          field.type === "number"
+                            ? e.target.value === ""
+                              ? undefined
+                              : +e.target.value
+                            : e.target.value,
+                      })
+                    }
+                  />
+                ))}
+              </div>
 
-        <form onSubmit={handleProfileSubmit} className="flex flex-col gap-6">
-          {/* Render Step Inputs Dynamically */}
-          <div className="flex flex-wrap gap-3">
-            {stepsFields[step].map((field) => (
-              <input
-                key={field.name}
-                type={field.type}
-                placeholder={field.placeholder}
-                className={`input p-3 bg-gray-700 text-white rounded ${field.halfWidth ? "w-[calc(50%-0.75rem)]" : "w-full"
-                  }`}
-                value={profile[field.name] ?? ""}
-                onChange={(e) =>
-                  setProfile({
-                    ...profile,
-                    [field.name]:
-                      field.type === "number"
-                        ? e.target.value === ""
-                          ? undefined
-                          : +e.target.value
-                        : e.target.value,
-                  })
-                }
-              />
-            ))}
+              <div className="mt-5 flex items-center justify-between gap-y-2 ">
+                {step > 1 && (
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="hover:bg-red-500 w-24 h-12  p-3 rounded-md cursor-pointer transition-all text-center"
+                  >
+                    بازگشت
+                  </button>
+                )}
+                {step < 4 && (
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="bg-cyan-900 w-24 h-12 p-3 rounded-md cursor-pointer transition-all text-center ms-auto"
+                  >
+                    بعدی
+                  </button>
+                )}
+                {step === 4 && (
+                  <button
+                    type="submit"
+                    className="bg-cyan-950 w-30 h-12 p-3 rounded-md cursor-pointer transition-all text-center"
+                  >
+                    ذخیره اطلاعات
+                  </button>
+                )}
+              </div>
+            </form>
           </div>
-
-          {/* Buttons */}
-          <div className="mt-5 flex items-center justify-between gap-y-2">
-            {step > 1 && (
-              <button type="button" onClick={prevStep} className="bg-red-700 p-3 rounded-2xl">
-                Back </button>
-            )
-            }
-            {step < 4 && (
-              <button type="button" onClick={nextStep} className="bg-blue-700 p-3 rounded-2xl">
-                Next
-              </button>
-            )}
-            {step === 4 && (
-              <button type="submit" className="bg-blue-700 p-4 rounded-2xl">
-                ذخیره اطلاعات
-              </button>
-            )}
-          </div>
-        </form>
+        </div>
+        <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
       </div>
-
-      <button onClick={handleLogout} className="mt-6 bg-red-500 hover:bg-red-400 px-4 py-2 rounded">
-        خروج
-      </button>
-
-      <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
-    </div>
+    </>
   );
 }
