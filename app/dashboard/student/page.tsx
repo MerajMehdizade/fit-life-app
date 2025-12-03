@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Toast from "../Components/toast/Toast";
-import DropdownMenu from "../Components/DropdownMenu/DropdownMenu";
+import Toast from "../../Components/toast/Toast";
+import DropdownMenu from "../../Components/DropdownMenu/DropdownMenu";
 
 interface ProfileType {
   age?: number;
@@ -107,7 +107,7 @@ export default function DashboardPage() {
         message: `لطفا فیلد "${emptyField.placeholder}" را پر کنید`,
         type: "error",
       });
-      return; 
+      return;
     }
     try {
       const res = await fetch("/api/user/update", {
@@ -122,14 +122,6 @@ export default function DashboardPage() {
       setToast({ show: true, message: "خطا در ذخیره اطلاعات", type: "error" });
     }
   };
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.replace("/login");
-    } catch {
-      setToast({ show: true, message: "خطا در خروج", type: "error" });
-    }
-  };
   if (!user)
     return <div className="flex items-center justify-center h-screen text-white text-xl">Loading...</div>;
 
@@ -138,7 +130,7 @@ export default function DashboardPage() {
   return (
     <>
       <div className="bg-gray-900 min-h-screen">
-        <DropdownMenu user={user} onLogout={handleLogout} />
+        <DropdownMenu role="Student"/>
         <div className="flex flex-col items-center md:pt-10 text-white w-full px-4 md:px-0">
           <ul className="relative flex gap-6 md:gap-2 mb-5 font-yekanBakhBold mt-10">
             {["اطلاعات فردی", "آمار بدنی", "ترجیحات تمرینی", "تنظیمات تغذیه"].map((title, idx) => {
@@ -149,9 +141,8 @@ export default function DashboardPage() {
                   <span className="min-h-7.5 min-w-7.5 inline-flex flex-col items-center gap-2 align-middle text-sm">
                     <div className="flex items-center justify-center gap-5 ">
                       <span
-                        className={`flex size-7.5 shrink-0 items-center justify-center rounded-full font-medium ${
-                          active ? "bg-blue-800 text-white shadow-sm" : "bg-gray-500/30 text-gray-200"
-                        }`}
+                        className={`flex size-7.5 shrink-0 items-center justify-center rounded-full font-medium ${active ? "bg-blue-800 text-white shadow-sm" : "bg-gray-500/30 text-gray-200"
+                          }`}
                       >
                         {active ? (
                           <svg
@@ -170,9 +161,8 @@ export default function DashboardPage() {
                       </span>
                       {index <= 3 && (
                         <div
-                          className={`md:h-1 md:w-30 rounded-2xl ${
-                            active ? "bg-blue-800 shadow-sm" : "bg-gray-500/30 hidden md:block"
-                          }`}
+                          className={`md:h-1 md:w-30 rounded-2xl ${active ? "bg-blue-800 shadow-sm" : "bg-gray-500/30 hidden md:block"
+                            }`}
                         ></div>
                       )}
                     </div>

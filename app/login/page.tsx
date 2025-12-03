@@ -3,11 +3,12 @@ import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Toast from "../Components/toast/Toast";
-
+import { useUser } from "../context/UserContext";
 
 export default function LoginPage() {
   useAuthGuard();
   const router = useRouter();
+  const { setUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +26,16 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
-    if (res.ok) router.push("/dashboard");
+    if (res.ok) {
+      setUser(data.user);
+      router.refresh();
+      if (data.user.role === "student")
+        router.push("/dashboard/student");
+      else if (data.user.role === "coach")
+        router.push("/dashboard/coach");
+      else if (data.user.role === "admin")
+        router.push("/dashboard/admin");
+    }
     else setToast({ show: true, message: data.message, type: "error" });
   };
   return (
@@ -46,8 +56,6 @@ export default function LoginPage() {
               عضویت
             </a>
           </div>
-
-
 
           <div className="relative flex items-center mt-6">
             <span className="absolute">

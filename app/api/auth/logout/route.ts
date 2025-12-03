@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
+import { removeTokenCookie, removeTokenCookieHeader } from "@/lib/cookies";
 
 export async function POST() {
-  const res = NextResponse.json({ message: "خروج با موفقیت انجام شد" });
-  res.cookies.set({
-    name: "token",
-    value: "",
-    httpOnly: true,
-    path: "/",
-    expires: new Date(0),
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
+
+  const res = NextResponse.json({ message: "Logged out" });
+  removeTokenCookie(res);
+  const headerCookie = removeTokenCookieHeader();
+  if (headerCookie) {
+    res.headers.set("Set-Cookie", headerCookie);
+  }
   return res;
 }

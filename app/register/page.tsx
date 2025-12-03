@@ -31,8 +31,14 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        router.replace("/dashboard");
-      } else {
+        if (data.user.role === 'admin')
+          router.push("/dashboard/admin");
+        else if (data.user.role === 'coach')
+          router.push("/dashboard/coach");
+        else if (data.user.role === 'student')
+          router.push("/dashboard/student");
+      }
+      else {
         setToast({ show: true, message: data.message, type: "error" });
       }
     } catch (err) {

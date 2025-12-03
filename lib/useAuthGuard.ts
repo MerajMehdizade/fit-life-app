@@ -8,18 +8,46 @@ export function useAuthGuard(redirectIfAuthenticated = true) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkAuth = async () => {
-      const res = await fetch("/api/user/me");
-      if (res.ok) {
-        if (!redirectIfAuthenticated) setLoading(false);
-        else router.replace("/dashboard");
-      } else {
-        if (redirectIfAuthenticated) setLoading(false);
-        else router.replace("/login");
+      try {
+        const res = await fetch("/api/user/me", { cache: "no-store" });
+        if (!mounted) return;
+
+        if (res.ok) {
+          const data = await res.json();
+          const user = data?.user ?? null;
+
+          if (user) {
+            const role = (user.role || "student").toLowerCase();
+
+            if (redirectIfAuthenticated) {
+              router.replace(`/dashboard/${role}`);
+              return;
+            }
+
+            setLoading(false);
+          } else {
+            if (!redirectIfAuthenticated) router.replace("/login");
+            else setLoading(false);
+          }
+        } else {
+          if (!redirectIfAuthenticated) router.replace("/login");
+          else setLoading(false);
+        }
+      } catch (err) {
+        if (!redirectIfAuthenticated) router.replace("/login");
+        else setLoading(false);
       }
     };
+
     checkAuth();
-  }, []);
+
+    // ❌ return () => (mounted = false);
+    // ✅ اصلاح شده:
+    return () => { mounted = false; };
+  }, [redirectIfAuthenticated, router]);
 
   return { loading };
 }

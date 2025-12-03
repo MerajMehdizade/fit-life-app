@@ -13,12 +13,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "این ایمیل قبلاً ثبت شده است" }, { status: 400 });
 
   const hashedPassword = await hashPassword(password);
-  const user = await User.create({ name, email, password: hashedPassword });
+  const user = await User.create({ name, email, password: hashedPassword, role: "student", });
 
-  const token = signToken(user._id);
+  const token = signToken(user);
 
   const res = NextResponse.json({
-    user: { id: user._id, name: user.name, email: user.email },
+    user: { id: user._id, name: user.name, email: user.email, role: user.role },
     message: "ثبت نام با موفقیت انجام شد",
   });
 

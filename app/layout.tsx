@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { UserProvider } from "./context/UserContext";
 
 export const metadata: Metadata = {
   title: "FitApp",
@@ -16,7 +17,9 @@ export default function RootLayout({
       <body
         className="font-yekanBakhRegular antialiased"
       >
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
       </body>
     </html>
   );
