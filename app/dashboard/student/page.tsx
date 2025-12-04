@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Toast from "../../Components/toast/Toast";
 import DropdownMenu from "../../Components/DropdownMenu/DropdownMenu";
+import Link from "next/link";
 
 interface ProfileType {
   age?: number;
@@ -130,7 +131,7 @@ export default function DashboardPage() {
   return (
     <>
       <div className="bg-gray-900 min-h-screen">
-        <DropdownMenu role="Student"/>
+        <DropdownMenu role="Student" />
         <div className="flex flex-col items-center md:pt-10 text-white w-full px-4 md:px-0">
           <ul className="relative flex gap-6 md:gap-2 mb-5 font-yekanBakhBold mt-10">
             {["اطلاعات فردی", "آمار بدنی", "ترجیحات تمرینی", "تنظیمات تغذیه"].map((title, idx) => {
@@ -228,6 +229,12 @@ export default function DashboardPage() {
             </form>
           </div>
         </div>
+        <Link
+          href="/dashboard/student/program"
+          className="p-2 bg-green-500 rounded-xl inline-block"
+        >
+         برنامه
+        </Link>
         <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
       </div>
     </>

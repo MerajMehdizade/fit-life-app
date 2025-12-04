@@ -1,38 +1,46 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
-import { verifyToken } from "@/lib/auth";
+import { adminGuard } from "@/lib/authGuard";
 
 export async function GET(req: Request) {
   await dbConnect();
+  await adminGuard();
 
-  const cookie = req.headers.get("cookie") || "";
-  const token = cookie.split("token=")?.[1]?.split(";")?.[0];
+  const { searchParams } = new URL(req.url);
 
-  if (!token) return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
+  const page = Number(searchParams.get("page") || 1);
+  const limit = Number(searchParams.get("limit") || 10);
+  const search = searchParams.get("search") || "";
+  const role = searchParams.get("role") || "";
 
-  const payload = verifyToken(token);
-  if (!payload || payload.role !== "admin")
-    return NextResponse.json({ msg: "Forbidden" }, { status: 403 });
+  const query: any = {};
 
-  const users = await User.find().lean();
-  return NextResponse.json(users);
-}
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } }
+    ];
+  }
 
-export async function POST(req: Request) {
-  await dbConnect();
+  if (role && role !== "all") {
+    query.role = role;
+  }
 
-  const cookie = req.headers.get("cookie") || "";
-  const token = cookie.split("token=")?.[1]?.split(";")?.[0];
+  const skip = (page - 1) * limit;
 
-  if (!token) return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
+  const [data, total] = await Promise.all([
+    User.find(query).skip(skip).limit(limit).lean(),
+    User.countDocuments(query)
+  ]);
 
-  const payload = verifyToken(token);
-  if (!payload || payload.role !== "admin")
-    return NextResponse.json({ msg: "Forbidden" }, { status: 403 });
-
-  const body = await req.json();
-  const user = await User.create(body);
-
-  return NextResponse.json(user);
+  return NextResponse.json({
+    data,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit)
+    }
+  });
 }

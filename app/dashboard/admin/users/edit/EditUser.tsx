@@ -16,8 +16,14 @@ export default function EditUser({ id }: { id: string }) {
       const res = await fetch(`/api/admin/users`, { credentials: "include" });
       const list = await res.json();
 
-      const user = list.find((u: any) => u._id === id);
-      if (user) setForm(user);
+      // ⬅⬅ تنها اصلاح مهم
+      const user = list.data?.find((u: any) => u._id === id);
+
+      if (user) setForm({
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      });
 
     } catch (err) {
       console.error("Failed to load user:", err);
