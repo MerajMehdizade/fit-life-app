@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import DietProgram from "../DietProgram/page";
-import TrainingProgram from "../TrainingProgram/page";
-import ProgressHistory from "../ProgressHistory/page";
+import TrainingProgram from "../TrainingProgram/TrainingProgram";
+import DietProgram from "../DietProgram/DietProgram";
+import ProgressHistory from "../ProgressHistory/ProgressHistory";
 
 export default function StudentProfilePage() {
   const params = useParams();
