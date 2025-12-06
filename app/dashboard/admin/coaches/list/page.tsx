@@ -2,29 +2,27 @@
 
 import { useEffect, useState } from "react";
 
-export default function AdminUsersPage() {
+export default function AdminCoachesPage() {
   const [data, setData] = useState<any[]>([]);
   const [pagination, setPagination] = useState<any>(null);
 
   const [search, setSearch] = useState("");
-  const [role, setRole] = useState("all");
   const [page, setPage] = useState(1);
 
   const load = async () => {
     const res = await fetch(
-      `/api/admin/users?page=${page}&limit=10&search=${search}&role=${role}`,
+      `/api/admin/users?page=${page}&limit=10&search=${search}&role=coach`,
       { credentials: "include" }
     );
 
     const json = await res.json();
-
     setData(json.data);
     setPagination(json.pagination);
   };
 
   useEffect(() => {
     load();
-  }, [page, role]);
+  }, [page]);
 
   const handleSearch = () => {
     setPage(1);
@@ -33,28 +31,17 @@ export default function AdminUsersPage() {
 
   return (
     <div className="p-10">
-      <h1 className="text-2xl mb-5">لیست کاربران</h1>
+      <h1 className="text-2xl mb-5">لیست مربیان</h1>
 
-      {/* --- Search + Filter --- */}
+      {/* Search */}
       <div className="flex gap-4 mb-5">
 
         <input
-          placeholder="جستجو..."
+          placeholder="جستجو مربی..."
           className="border p-2 text-black"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-
-        <select
-          className="border p-2 text-black"
-          value={role}
-          onChange={(e) => { setRole(e.target.value); setPage(1); }}
-        >
-          <option value="all">همه نقش‌ها</option>
-          <option value="student">student</option>
-          <option value="coach">coach</option>
-          <option value="admin">admin</option>
-        </select>
 
         <button
           onClick={handleSearch}
@@ -65,13 +52,12 @@ export default function AdminUsersPage() {
 
       </div>
 
-      {/* --- Table --- */}
+      {/* Table */}
       <table className="w-full border">
         <thead>
           <tr className="border-b">
             <th className="p-2">نام</th>
             <th className="p-2">ایمیل</th>
-            <th className="p-2">نقش</th>
             <th className="p-2">اکشن</th>
           </tr>
         </thead>
@@ -81,14 +67,14 @@ export default function AdminUsersPage() {
             <tr key={u._id} className="border-b">
               <td className="p-2">{u.name}</td>
               <td className="p-2">{u.email}</td>
-              <td className="p-2">{u.role}</td>
               <td className="p-2 flex gap-3">
                 <a
-                  href={`/dashboard/admin/users/edit/${u._id}`}
+                  href={`/dashboard/admin/edit/${u._id}`}
                   className="bg-blue-500 text-white p-2 rounded"
                 >
                   ویرایش
                 </a>
+
                 <button
                   onClick={async () => {
                     await fetch(`/api/admin/users/${u._id}`, {
@@ -107,7 +93,7 @@ export default function AdminUsersPage() {
         </tbody>
       </table>
 
-      {/* --- Pagination --- */}
+      {/* Pagination */}
       {pagination && (
         <div className="flex gap-3 mt-5">
           <button

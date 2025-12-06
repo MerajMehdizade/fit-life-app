@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="rtl">
       <body
-        className="font-yekanBakhRegular antialiased"
+        className="font-yekanBakhRegular antialiased bg-stone-400"
       >
         <UserProvider>
           {children}

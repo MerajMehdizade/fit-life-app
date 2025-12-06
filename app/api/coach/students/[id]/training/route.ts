@@ -7,11 +7,10 @@ export async function POST(req: Request, context: any) {
   await dbConnect();
   const coach = await coachGuard();
 
-  // FIX: params is a Promise
   const { id } = await context.params;
 
   const body = await req.json();
-  const { plan } = body;
+  const { program } = body;
 
   const student = await User.findOne({
     _id: id,
@@ -22,7 +21,7 @@ export async function POST(req: Request, context: any) {
     return NextResponse.json({ error: "Student not found" }, { status: 403 });
   }
 
-  student.profile.trainingPlan = plan;
+  student.trainingPlan = program;
   await student.save();
 
   return NextResponse.json({ message: "Training plan updated" });

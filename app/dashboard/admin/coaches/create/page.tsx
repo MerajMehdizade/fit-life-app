@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function CreateUserPage() {
+export default function CreateCoachPage() {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -25,62 +25,49 @@ export default function CreateUserPage() {
     });
 
     const data = await res.json();
-
-    if (!res.ok) {
-      setMsg(data.message);
-    } else {
-      setMsg("کاربر با موفقیت ساخته شد");
-    }
-
+    setMsg(res.ok ? "مربی با موفقیت ساخته شد" : data.message);
     setLoading(false);
   };
 
   return (
-    <div className="p-6">
-      <h1 className="font-bold text-xl mb-4 text-center">ایجاد کاربر جدید</h1>
+    <div className="p-6 max-w-md mx-auto">
 
-      <form onSubmit={submit} className="space-y-4 max-w-md mx-auto">
+      <h1 className="text-xl font-bold mb-4 text-center">ایجاد مربی جدید</h1>
+
+      <form onSubmit={submit} className="space-y-4">
+
         <input
-          className="border p-2 w-full rounded"
-          placeholder="نام"
+          className="border p-2 rounded w-full"
+          placeholder="نام مربی"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
 
         <input
-          className="border p-2 w-full rounded"
+          className="border p-2 rounded w-full"
           placeholder="ایمیل"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         <input
-          className="border p-2 w-full rounded"
-          placeholder="پسورد"
+          className="border p-2 rounded w-full"
+          placeholder="رمز عبور"
           type="password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
-        <select
-          className="border p-2 w-full rounded"
-          value={form.role}
-          onChange={(e) => setForm({ ...form, role: e.target.value })}
-        >
-          <option value="student">دانش‌آموز</option>
-          <option value="coach">مربی</option>
-          <option value="admin">ادمین</option>
-        </select>
-
         <button
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+          className="bg-blue-600 text-white py-2 px-4 rounded w-full"
         >
-          {loading ? "در حال ساخت..." : "ثبت کاربر"}
+          {loading ? "در حال ساخت..." : "ثبت مربی"}
         </button>
 
-        {msg && <p className="text-red-500">{msg}</p>}
+        {msg && <p className="text-center ">{msg}</p>}
       </form>
+
     </div>
   );
 }

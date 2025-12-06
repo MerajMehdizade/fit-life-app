@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import DietProgram from "../DietProgram/page";
+import TrainingProgram from "../TrainingProgram/page";
+import ProgressHistory from "../ProgressHistory/page";
 
 export default function StudentProfilePage() {
   const params = useParams();
@@ -54,127 +57,3 @@ export default function StudentProfilePage() {
     </div>
   );
 }
-function TrainingProgram({ student }: any) {
-  const [program, setProgram] = useState(student.profile?.trainingProgram || "");
-  const [saving, setSaving] = useState(false);
-
-  const save = async () => {
-    setSaving(true);
-    await fetch(`/api/coach/students/${student._id}/training`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ program }),
-    });
-    setSaving(false);
-    alert("برنامه تمرینی ذخیره شد");
-  };
-
-  return (
-    <div className="bg-gray-800 p-5 rounded space-y-3">
-      <h2 className="text-2xl">🏋️ برنامه تمرینی</h2>
-
-      <textarea
-        value={program}
-        onChange={(e) => setProgram(e.target.value)}
-        className="w-full p-3 bg-gray-700 rounded"
-        rows={6}
-      ></textarea>
-
-      <button
-        onClick={save}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        {saving ? "در حال ذخیره..." : "ذخیره"}
-      </button>
-    </div>
-  );
-}
-function DietProgram({ student }: any) {
-  const [diet, setDiet] = useState(student.profile?.dietPlan || "");
-  const [saving, setSaving] = useState(false);
-
-  const save = async () => {
-    setSaving(true);
-    await fetch(`/api/coach/students/${student._id}/diet`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ diet }),
-    });
-    setSaving(false);
-    alert("برنامه غذایی ذخیره شد");
-  };
-
-  return (
-    <div className="bg-gray-800 p-5 rounded space-y-3">
-      <h2 className="text-2xl">🍽 برنامه غذایی</h2>
-
-      <textarea
-        value={diet}
-        onChange={(e) => setDiet(e.target.value)}
-        className="w-full p-3 bg-gray-700 rounded"
-        rows={6}
-      ></textarea>
-
-      <button
-        onClick={save}
-        className="bg-green-600 text-white px-4 py-2 rounded"
-      >
-        {saving ? "در حال ذخیره..." : "ذخیره"}
-      </button>
-    </div>
-  );
-}
-type ProgressRecord = {
-  date: string | Date;
-  weight: number;
-  bodyFat?: number;
-};
-
-function ProgressHistory({ student }: any) {
-  const [weight, setWeight] = useState("");
-  const [bodyFat, setBodyFat] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [history, setHistory] = useState<ProgressRecord[]>(student.profile?.progressHistory || []);
-
-  const add = async () => {
-    if (!weight) return alert("وزن را وارد کنید");
-
-    setSaving(true);
-
-    await fetch(`/api/coach/students/${student._id}/progress`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ weight, bodyFat }),
-    });
-
-    setSaving(false);
-
-    setHistory([
-      ...history,
-      {
-        date: new Date(),
-        weight: Number(weight),
-        bodyFat: Number(bodyFat),
-      },
-    ]);
-
-    setWeight("");
-    setBodyFat("");
-  };
-
-  return (
-    <div>
-      {history.map((p: ProgressRecord, i: number) => (
-        <div key={i}>
-          <span>{new Date(p.date).toLocaleDateString("fa-IR")}</span>
-          <span>{p.weight}</span>
-          <span>{p.bodyFat}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-

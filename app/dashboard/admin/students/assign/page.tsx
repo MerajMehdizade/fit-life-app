@@ -57,16 +57,16 @@ export default function AssignPage() {
   if (loading) return <p className="p-10 text-white">در حال بارگذاری...</p>;
 
   return (
-    <div className="p-10 text-white">
+    <div className="p-10">
 
-      <h1 className="text-3xl mb-8">
+      <h1 className="text-3xl mb-8 text-center">
         اختصاص دانشجو به مربی
       </h1>
 
-      <div className="max-w-lg flex flex-col gap-5">
+      <div className="max-w-lg flex flex-col gap-5 mx-auto">
 
         {/* انتخاب دانشجو */}
-        <div className="flex flex-col">
+        <div className="flex flex-col ">
           <label className="mb-2">دانشجو:</label>
           <select
             value={selectedStudent}
@@ -107,7 +107,7 @@ export default function AssignPage() {
         </button>
 
         {status && (
-          <p className="mt-3 text-yellow-300">{status}</p>
+          <p className="mt-3 text-black">{status}</p>
         )}
       </div>
     </div>

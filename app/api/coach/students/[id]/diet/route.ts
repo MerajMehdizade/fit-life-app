@@ -21,8 +21,9 @@ export async function POST(req: Request, context: any) {
     return NextResponse.json({ error: "Student not found" }, { status: 403 });
   }
 
-  student.profile.dietPlan = diet;
+  student.dietPlan = diet;
   await student.save();
+
 
   return NextResponse.json({ message: "Diet plan updated" });
 }

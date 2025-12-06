@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Accordion from "@/app/Components/Accordion/Accordion";
 
 export default function StudentDashboard() {
   const [training, setTraining] = useState(null);
@@ -30,34 +31,34 @@ export default function StudentDashboard() {
   if (loading) return <p className="p-5">در حال بارگذاری...</p>;
 
   return (
-    <div className="p-10">
+    <div className="p-10 space-y-6">
       <h1 className="text-3xl font-bold mb-6">داشبورد دانشجو</h1>
 
       {/* برنامه تمرینی */}
-      <div className="mb-10">
-        <h2 className="text-2xl mb-3">برنامه تمرینی</h2>
-
+      <Accordion title="🏋️ برنامه تمرینی">
         {!training && <p className="text-gray-400">برنامه تمرینی هنوز ثبت نشده.</p>}
 
         {training && (
-          <pre className="bg-gray-800 p-4 rounded text-sm whitespace-pre-wrap">
-            {JSON.stringify(training, null, 2)}
+          <pre className="bg-gray-900 p-4 rounded text-sm whitespace-pre-wrap">
+            {typeof training === "string"
+              ? training
+              : JSON.stringify(training, null, 2)}
           </pre>
         )}
-      </div>
+      </Accordion>
 
       {/* برنامه غذایی */}
-      <div>
-        <h2 className="text-2xl mb-3">برنامه غذایی</h2>
-
+      <Accordion title="🍽 برنامه غذایی">
         {!diet && <p className="text-gray-400">برنامه غذایی هنوز ثبت نشده.</p>}
 
         {diet && (
-          <pre className="bg-gray-800 p-4 rounded text-sm whitespace-pre-wrap">
-            {JSON.stringify(diet, null, 2)}
+          <pre className="bg-gray-900 p-4 rounded text-sm whitespace-pre-wrap">
+            {typeof diet === "string"
+              ? diet
+              : JSON.stringify(diet, null, 2)}
           </pre>
         )}
-      </div>
+      </Accordion>
     </div>
   );
 }

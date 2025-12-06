@@ -39,7 +39,7 @@ export default function EditUser({ id }: { id: string }) {
       credentials: "include",
     });
 
-    window.location.href = "/dashboard/admin/users";
+    window.location.href = "/dashboard/admin";
   };
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function EditUser({ id }: { id: string }) {
   if (loading) return <p className="p-10">در حال بارگذاری...</p>;
 
   return (
-    <div className="p-10 text-white">
+    <div className="p-10 mx-auto text-center">
       <h1 className="text-2xl mb-5">ویرایش کاربر</h1>
 
       <div className="flex flex-col gap-4 max-w-md">
@@ -79,7 +79,7 @@ export default function EditUser({ id }: { id: string }) {
 
         <button
           onClick={submit}
-          className="bg-blue-600 text-white p-3 rounded"
+          className="bg-blue-600 text-black p-3 rounded"
         >
           ذخیره تغییرات
         </button>
