@@ -1,28 +1,32 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import { verifyAdmin } from "@/lib/auth";
 
-export async function POST(req: NextRequest, context: { params: { id: string } }) {
+export async function PATCH(req: Request, context: any) {
   try {
     await dbConnect();
+
+    // حتماً await برای params  
+    const { id } = await context.params;
 
     const admin = await verifyAdmin();
     if (!admin)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { id } = context.params; // ✔ روش صحیح گرفتن پارامتر
-    const { status } = await req.json();
+    const coach = await User.findById(id);
 
-    if (!["active", "suspended", "pending"].includes(status)) {
-      return NextResponse.json({ error: "Invalid status" }, { status: 400 });
-    }
+    if (!coach)
+      return NextResponse.json({ error: "Coach not found" }, { status: 404 });
 
-    await User.findByIdAndUpdate(id, { status });
+    const newStatus = coach.status === "active" ? "suspended" : "active";
 
-    return NextResponse.json({ success: true });
+    coach.status = newStatus;
+    await coach.save();
+
+    return NextResponse.json({ success: true, status: newStatus });
   } catch (err) {
-    console.error("Error updating coach status:", err);
+    console.error("PATCH ERROR:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

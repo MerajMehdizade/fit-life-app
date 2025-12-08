@@ -5,10 +5,6 @@ import { cookies } from "next/headers";
 import dbConnect from "./db";
 import User from "@/models/User";
 
-// ===============================
-//  PASSWORD HELPERS
-// ===============================
-
 export const hashPassword = async (password: string) => {
   const salt = await bcrypt.genSalt(10);
   return bcrypt.hash(password, salt);
@@ -18,9 +14,6 @@ export const comparePassword = async (password: string, hashed: string) => {
   return bcrypt.compare(password, hashed);
 };
 
-// ===============================
-//  SIGN TOKEN
-// ===============================
 
 export const signToken = (user: any) => {
   const userId =
@@ -39,10 +32,6 @@ export const signToken = (user: any) => {
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// ===============================
-//  VERIFY TOKEN
-// ===============================
-
 export const verifyToken = (token: string) => {
   if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is missing!");
 
@@ -53,16 +42,11 @@ export const verifyToken = (token: string) => {
   };
 };
 
-// ===============================
-//  VERIFY ADMIN — FULL FIXED VERSION
-// ===============================
 
 export const verifyAdmin = async () => {
   await dbConnect();
 
-  // cookies() NOW RETURNS A PROMISE → MUST AWAIT
-  const cookieStore = await cookies();  
-
+  const cookieStore = await cookies(); 
   const token = cookieStore.get("token")?.value;
   if (!token) return null;
 
@@ -87,4 +71,3 @@ export const verifyAdmin = async () => {
     return null;
   }
 };
-
