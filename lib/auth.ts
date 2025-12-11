@@ -36,6 +36,8 @@ export const verifyToken = (token: string) => {
   if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is missing!");
 
   return jwt.verify(token, process.env.JWT_SECRET) as {
+    id: any;
+    _id: any;
     userId: string;
     role: string;
     email: string;
@@ -46,7 +48,7 @@ export const verifyToken = (token: string) => {
 export const verifyAdmin = async () => {
   await dbConnect();
 
-  const cookieStore = await cookies(); 
+  const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return null;
 
