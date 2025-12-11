@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "socket": "node socket-server.js",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -17,8 +18,13 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.20.0",
     "next": "^16.0.7",
+    "pusher": "^5.2.0",
+    "pusher-js": "^8.4.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "resend": "^6.5.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "turbo": "^2.6.3"
   },
   "devDependencies": {
@@ -29,6 +35,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/socket.io": "^3.0.1",
+    "@types/socket.io-client": "^1.4.36",
     "baseline-browser-mapping": "^2.8.32",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",

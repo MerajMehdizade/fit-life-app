@@ -7,17 +7,15 @@ import { usePathname } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
 import { useState } from "react";
 import type { ReactNode } from "react";
+import NotificationBadge from "@/app/Components/NotificationBadge/NotificationBadge";
 
-export default function AdminShell({ children }: { children: ReactNode }) {
+export default function AdminShell({ children,userId }: { children: ReactNode,userId: string }) {
   const pathname = usePathname();
   const { logout } = useUser();
-
   const [menuOpen, setMenuOpen] = useState(false);
-
   const [menuStudents, setMenuStudents] = useState(false);
   const [menuCoaches, setMenuCoaches] = useState(false);
   const [menuAdmins, setMenuAdmins] = useState(false);
-  const [menuPrograms, setMenuPrograms] = useState(false);
   const [menuLogs, setMenuLogs] = useState(false);
 
   // کلاس‌های آماده برای راحتی
@@ -93,7 +91,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                     ساخت ادمین
                   </Link>
                   <Link href="/dashboard/admin/admins/list" className={`block p-2 rounded-md ${hoverClass}`}>
-                   لیست ادمین ها
+                    لیست ادمین ها
                   </Link>
                 </div>
               )}
@@ -158,40 +156,14 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                   <Link href="/dashboard/admin/students/status" className={`block p-2 rounded-md ${hoverClass}`}>
                     وضعیت دانشجوها
                   </Link>
-                </div>
-              )}
-            </div>
-
-            {/* مدیریت برنامه‌ها */}
-            <div>
-              <button
-                onClick={() => setMenuPrograms(!menuPrograms)}
-                className={`w-full flex justify-between items-center p-3 rounded-md ${hoverClass}`}
-              >
-                <span>مدیریت برنامه‌ها</span>
-                <svg className={`w-4 h-4 transition-transform ${menuPrograms ? "rotate-180" : ""}`} fill="none"
-                  stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {menuPrograms && (
-                <div className="pr-4 mt-2 space-y-1">
-                  <Link href="/dashboard/admin/plans/training" className={`block p-2 rounded-md ${hoverClass}`}>
-                    برنامه‌های تمرینی
-                  </Link>
-                  <Link href="/dashboard/admin/plans/diet" className={`block p-2 rounded-md ${hoverClass}`}>
-                    برنامه‌های غذایی
-                  </Link>
-                  <Link href="/dashboard/admin/plans/no-plan" className={`block p-2 rounded-md ${hoverClass}`}>
+                  <Link href="/dashboard/admin/students/no-plan" className={`block p-2 rounded-md ${hoverClass}`}>
                     دانشجویان بدون برنامه
                   </Link>
-                  <Link href="/dashboard/admin/plans/stats" className={`block p-2 rounded-md ${hoverClass}`}>
-                    آمار مربیان
-                  </Link>
                 </div>
               )}
             </div>
+
+
 
             {/* گزارش‌ها */}
             <div>
@@ -224,9 +196,10 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             {/* اعلان‌ها */}
             <Link
               href="/dashboard/admin/notifications"
-              className={`block p-3 rounded-md text-right ${hoverClass}`}
+              className={` p-3 rounded-md text-right flex ${hoverClass}`}
             >
               اعلان‌ها
+              <NotificationBadge userId={userId} />
             </Link>
 
             {/* تنظیمات */}
@@ -236,6 +209,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             >
               تنظیمات سیستم
             </Link>
+
 
             {/* خروج */}
             <button

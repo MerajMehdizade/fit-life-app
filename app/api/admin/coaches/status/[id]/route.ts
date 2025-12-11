@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import { verifyAdmin } from "@/lib/auth";
+import { logAdminAction } from "@/lib/log";
 
 export async function PATCH(req: Request, context: any) {
   try {
     await dbConnect();
 
-    // حتماً await برای params  
     const { id } = await context.params;
 
     const admin = await verifyAdmin();
@@ -23,6 +23,14 @@ export async function PATCH(req: Request, context: any) {
 
     coach.status = newStatus;
     await coach.save();
+
+    // 🟢 ثبت لاگ ادمین — نسخه کاملاً درست
+    await logAdminAction({
+      adminId: admin._id,
+      targetUserId: id,
+      action: "UPDATE_STATUS",
+      description: `Status changed to ${newStatus}`,
+    });
 
     return NextResponse.json({ success: true, status: newStatus });
   } catch (err) {

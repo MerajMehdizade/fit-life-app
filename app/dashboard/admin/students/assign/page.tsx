@@ -33,7 +33,7 @@ export default function AssignPage() {
       return;
     }
 
-    const res = await fetch("/api/admin/assign", {
+    const res = await fetch("/api/admin/students/assign", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

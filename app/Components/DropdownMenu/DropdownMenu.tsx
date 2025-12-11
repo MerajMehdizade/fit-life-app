@@ -16,7 +16,7 @@ type Props = {
   items?: DropdownItem[];
   avatarUrl?: string;
   ariaLabel?: string;
-  role?: string; // نقش داینامیک
+  role?: string; 
 };
 
 export default function DropdownMenu({ items, avatarUrl, ariaLabel = "user menu", role }: Props) {

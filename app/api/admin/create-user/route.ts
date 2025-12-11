@@ -3,74 +3,72 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import { hashPassword, verifyToken } from "@/lib/auth";
+import { logAdminAction } from "@/lib/log";
 
 export async function POST(req: Request) {
-  await dbConnect();
-
-
   try {
-    // دریافت کوکی امن از helper next/headers
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    await dbConnect();
 
+    let token = "";
+    try {
+      const cookieStore = await cookies();
+      token = cookieStore.get("token")?.value || "";
+    } catch {}
 
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized: token missing" }, { status: 401 });
+      const cookie = req.headers.get("cookie") || "";
+      token = cookie.split("token=")?.[1]?.split(";")?.[0] || "";
     }
 
+    if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    // اعتبارسنجی توکن
-    let decoded: any;
-    try {
-      decoded = verifyToken(token);
-    } catch (err) {
-      return NextResponse.json({ message: "Unauthorized: invalid token" }, { status: 401 });
-    }
+    const decoded = verifyToken(token);
+    const userId = decoded?.id || decoded?._id || decoded?.userId;
 
+    if (!userId) return NextResponse.json({ message: "Invalid token" }, { status: 401 });
 
-    // گرفتن آی‌دی از payload (پشتیبانی از _id یا id)
-    const userId = decoded?.id ?? decoded?._id ?? decoded?.userId ?? null;
-    if (!userId) return NextResponse.json({ message: "Unauthorized: invalid payload" }, { status: 401 });
+    const adminUser = await User.findById(userId);
+    if (!adminUser || adminUser.role !== "admin")
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
 
+    const { name, email, password, role = "coach" } = await req.json();
 
-    // بررسی نقش کاربر فعلی
-    const currentUser = await User.findById(userId);
-    if (!currentUser) return NextResponse.json({ message: "Unauthorized: user not found" }, { status: 401 });
-    if (currentUser.role !== "admin")
-      return NextResponse.json({ message: "Forbidden: admin only" }, { status: 403 });
-    const body = await req.json();
-    const { name, email, password, role = "coach" } = body;
+    if (!name || !email || !password)
+      return NextResponse.json({ message: "Missing fields" }, { status: 400 });
 
-
-    if (!name || !email || !password) {
-      return NextResponse.json({ message: "name, email and password are required" }, { status: 400 });
-    }
-
-
-    // جلوگیری از ساخت کاربر تکراری
-    const existing = await User.findOne({ email });
-    if (existing) return NextResponse.json({ message: "Email already exists" }, { status: 400 });
-
-
-    // معتبرسازی نقش (فقط نقش‌های مشخص)
-    const allowedRoles = new Set(["student", "coach", "admin"]);
-    const normalizedRole = allowedRoles.has(role) ? role : "coach";
-
+    const exists = await User.findOne({ email });
+    if (exists)
+      return NextResponse.json({ message: "Email exists" }, { status: 400 });
 
     const hashed = await hashPassword(password);
 
-
-    const user = await User.create({
+    const newUser = await User.create({
       name,
       email,
       password: hashed,
-      role: normalizedRole,
-    }); return NextResponse.json({
-      message: "User created successfully",
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      role,
     });
-  } catch (err: any) {
-    console.error("/api/admin/create-us er error:", err);
+
+    await logAdminAction({
+      adminId: adminUser._id,
+      targetUserId: newUser._id,
+      action: "CREATE_USER",
+      description: `ساخت کاربر جدید با نقش ${role}`,
+    });
+
+
+    return NextResponse.json({
+      message: "User created",
+      user: {
+        id: newUser._id,
+        name,
+        email,
+        role,
+      },
+    });
+
+  } catch (err) {
+    console.error("create-user error", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
