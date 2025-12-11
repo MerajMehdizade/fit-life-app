@@ -15,12 +15,14 @@ export default function ResetPasswordPage() {
     message: "",
     type: "success" as "success" | "error",
   });
+
   useEffect(() => {
     if (!token) setStatus("error");
   }, [token]);
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!token) {
       setToast({
         show: true,
@@ -48,7 +50,6 @@ export default function ResetPasswordPage() {
         type: "success",
       });
     } else {
-      console.error(data.error);
       setStatus("error");
       setToast({
         show: true,
@@ -58,15 +59,16 @@ export default function ResetPasswordPage() {
     }
   };
 
-
   return (
     <section className="bg-white dark:bg-gray-900">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
         <form onSubmit={handleReset} className="w-full max-w-md">
+
           <div className="flex justify-center mx-auto flex-col items-center gap-3">
-            <span className=" text-red-400 md:text-xl">این لینک فقط 15 دقیقه فعال است</span>
+            <span className="text-red-400 md:text-xl">این لینک فقط 15 دقیقه فعال است</span>
             <img className="w-auto sm:h-32 h-16" src="/change-password.svg" alt="" />
           </div>
+
           <div className="relative flex items-center mt-6">
             <span className="absolute">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -84,6 +86,7 @@ export default function ResetPasswordPage() {
               className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
           </div>
+
           <div className="mt-6">
             <button
               type="submit"
@@ -95,6 +98,7 @@ export default function ResetPasswordPage() {
 
         </form>
       </div>
+
       <Toast
         show={toast.show}
         message={toast.message}
@@ -102,32 +106,5 @@ export default function ResetPasswordPage() {
         onClose={() => setToast({ ...toast, show: false })}
       />
     </section>
-    // <div className="flex justify-center items-center min-h-screen bg-gray-900">
-    //   <form
-    //     onSubmit={handleReset}
-    //     className="bg-gray-700 p-8 rounded-xl w-full max-w-md text-white"
-    //   >
-    //     <h1 className="text-2xl font-bold mb-6">تغییر رمز عبور</h1>
-
-    //     <label className="block mb-3">
-    //       <span className="mb-2 block">رمز عبور جدید</span>
-    //       <input
-    //         type="password"
-    //         className="w-full p-3 rounded bg-gray-800 border border-gray-600"
-    //         value={password}
-    //         onChange={(e) => setPassword(e.target.value)}
-    //         required
-    //       />
-    //     </label>
-
-    //     <button
-    //       type="submit"
-    //       disabled={status === "loading"}
-    //       className="w-full mt-5 bg-pink-500 hover:bg-pink-600 p-3 rounded font-bold"
-    //     >
-    //       {status === "loading" ? "در حال تغییر..." : "تغییر رمز"}
-    //     </button>
-    //   </form>
-    // </div>
   );
 }
