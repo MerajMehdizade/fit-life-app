@@ -1,5 +1,3 @@
-/* فقط استایل‌ها اصلاح شده‌اند — ساختار کاملاً مثل نسخه خودت است */
-
 "use client";
 
 import Link from "next/link";
@@ -9,7 +7,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import NotificationBadge from "@/app/Components/NotificationBadge/NotificationBadge";
 
-export default function AdminShell({ children,userId }: { children: ReactNode,userId: string }) {
+export default function AdminShell({ children }: { children: ReactNode}) {
   const pathname = usePathname();
   const { logout } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -199,7 +197,7 @@ export default function AdminShell({ children,userId }: { children: ReactNode,us
               className={` p-3 rounded-md text-right flex ${hoverClass}`}
             >
               اعلان‌ها
-              <NotificationBadge userId={userId} />
+              <NotificationBadge/>
             </Link>
 
             {/* تنظیمات */}

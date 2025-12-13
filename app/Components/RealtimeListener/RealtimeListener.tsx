@@ -15,19 +15,27 @@ export default function RealtimeListener({
   useEffect(() => {
     if (!userId) return;
 
-    const channel = pusherClient.subscribe(`user-${userId}`);
+    const channelName = `user-${userId}`;
 
-    channel.bind("new-notification", (data: any) => {
+    const channel =
+      pusherClient.channel(channelName) ??
+      pusherClient.subscribe(channelName);
+
+    const handleNew = (data: any) => {
       onNewNotification?.(data);
-    });
+    };
 
-    channel.bind("notification-read", (data: any) => {
+    const handleRead = (data: any) => {
       onReadNotification?.(data.id);
-    });
+    };
+
+    channel.bind("new-notification", handleNew);
+    channel.bind("notification-read", handleRead);
 
     return () => {
-      channel.unbind_all();
-      pusherClient.unsubscribe(`user-${userId}`);
+      channel.unbind("new-notification", handleNew);
+      channel.unbind("notification-read", handleRead);
+      // ❌ unsubscribe نکن
     };
   }, [userId]);
 

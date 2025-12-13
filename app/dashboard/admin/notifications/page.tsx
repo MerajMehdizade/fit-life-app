@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import RealtimeListener from "@/app/Components/SocketClient/RealtimeListener";
+import RealtimeListener from "@/app/Components/RealtimeListener/RealtimeListener";
+import { useUser } from "@/app/context/UserContext";
 
 type Notify = {
   _id: string;
@@ -11,46 +12,40 @@ type Notify = {
   createdAt: string;
 };
 
-export default function NotificationsPage({ userId }: { userId: string }) {
+export default function NotificationsPage() {
+  const { user, loading: userLoading } = useUser();
+
   const [notifications, setNotifications] = useState<Notify[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const res = await fetch("/api/notifications", { credentials: "include" });
+    const res = await fetch("/api/notifications", {
+      credentials: "include",
+      cache: "no-store",
+    });
     const data = await res.json();
     setNotifications(data ?? []);
     setLoading(false);
   }
 
   useEffect(() => {
-    load();
-  }, []);
+    if (!userLoading && user) {
+      load();
+    }
+  }, [userLoading, user]);
 
-  async function deleteNotif(id: string) {
-    await fetch(`/api/notifications/delete/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    setNotifications((prev) => prev.filter((n) => n._id !== id));
+  if (userLoading || loading) {
+    return <p>در حال بارگذاری...</p>;
   }
 
-  async function markAsRead(id: string) {
-    await fetch(`/api/notifications/read/${id}`, {
-      method: "PATCH",
-      credentials: "include",
-    });
-
-    setNotifications((prev) =>
-      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
-    );
+  if (!user) {
+    return <p>لطفاً دوباره وارد شوید</p>;
   }
-
-  if (loading) return <p>در حال بارگذاری...</p>;
 
   return (
     <>
       <RealtimeListener
-        userId={userId}
+        userId={user.id!}
         onNewNotification={(notif) => {
           setNotifications((prev) => [notif, ...prev]);
         }}
@@ -80,7 +75,6 @@ export default function NotificationsPage({ userId }: { userId: string }) {
 
             {item.isRead ? (
               <button
-                type="button"
                 onClick={() => deleteNotif(item._id)}
                 className="text-red-600 hover:text-red-800 text-sm ml-3"
               >
@@ -88,7 +82,6 @@ export default function NotificationsPage({ userId }: { userId: string }) {
               </button>
             ) : (
               <button
-                type="button"
                 onClick={() => markAsRead(item._id)}
                 className="text-blue-600 hover:text-blue-800 text-sm"
               >
@@ -100,4 +93,23 @@ export default function NotificationsPage({ userId }: { userId: string }) {
       </div>
     </>
   );
+
+  async function deleteNotif(id: string) {
+    await fetch(`/api/notifications/delete/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    setNotifications((prev) => prev.filter((n) => n._id !== id));
+  }
+
+  async function markAsRead(id: string) {
+    await fetch(`/api/notifications/read/${id}`, {
+      method: "PATCH",
+      credentials: "include",
+    });
+
+    setNotifications((prev) =>
+      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+    );
+  }
 }

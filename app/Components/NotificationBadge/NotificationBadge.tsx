@@ -1,47 +1,70 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { pusherClient } from "@/app/pusherClient";
+import { useUser } from "@/app/context/UserContext";
 
-export default function NotificationBadge({ userId }: { userId: string }) {
+export default function NotificationBadge() {
+  const { user, loading } = useUser();
   const [count, setCount] = useState(0);
+  const fetchingRef = useRef(false);
+
 
   const fetchUnread = async () => {
-    const res = await fetch("/api/notifications/unread-count");
-    const data = await res.json();
-    setCount(data.count || 0);
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+
+    try {
+      const res = await fetch("/api/notifications/unread-count", {
+        credentials: "include",
+        cache: "no-store",
+      });
+      const data = await res.json();
+      setCount(data.count || 0);
+    } finally {
+      fetchingRef.current = false;
+    }
   };
 
   useEffect(() => {
-    if (!userId) return;
-
+    if (loading || !user?.id) return;
+    // initial sync
     fetchUnread();
 
-    const channel = pusherClient.subscribe(`user-${userId}`);
+    const channelName = `user-${user.id}`;
+    const channel = pusherClient.subscribe(channelName);
 
-    // پیام جدید
-    channel.bind("new-notification", () => {
-      setCount((prev) => prev + 1);
-    });
+    const sync = () => fetchUnread();
 
-    // پیام خوانده شد
-    channel.bind("notification-read", () => {
-      setCount((prev) => Math.max(prev - 1, 0));
-    });
+    channel.bind("new-notification", sync);
+    channel.bind("notification-read", sync);
+
+    // 👇 مهم: reconnect / resubscribe
+    pusherClient.connection.bind("connected", sync);
 
     return () => {
-      pusherClient.unsubscribe(`user-${userId}`);
+      channel.unbind("new-notification", sync);
+      channel.unbind("notification-read", sync);
+      pusherClient.connection.unbind("connected", sync);
+      pusherClient.unsubscribe(channelName);
     };
-  }, [userId]);
+  }, [loading, user?.id]);
+
+  if (!user || count === 0) {
+    return (
+      <div className="relative flex">
+        <span className="cursor-pointer">🔔</span>
+      </div>
+    );
+  }
+
 
   return (
     <div className="relative flex">
       <span className="cursor-pointer">🔔</span>
-      {count > 0 && (
-        <span className=" bg-red-600 text-white w-5 h-5 text-xs flex items-center justify-center rounded-full">
-          {count}
-        </span>
-      )}
+      <span className="bg-red-600 text-white w-5 h-5 text-xs flex items-center justify-center rounded-full">
+        {count}
+      </span>
     </div>
   );
 }
