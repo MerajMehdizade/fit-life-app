@@ -11,6 +11,13 @@ const NotificationSchema = new Schema({
   type: { type: String, enum: ["info", "warning", "success", "error"], default: "info" },
   data: { type: Object, default: {} },
   isRead: { type: Boolean, default: false },
+
+  meta: {
+    actorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    actorName: String,
+    action: String,
+    targetId: { type: mongoose.Schema.Types.ObjectId },
+  },
   createdAt: { type: Date, default: Date.now },
 });
 

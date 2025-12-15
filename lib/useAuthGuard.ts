@@ -44,8 +44,6 @@ export function useAuthGuard(redirectIfAuthenticated = true) {
 
     checkAuth();
 
-    // ❌ return () => (mounted = false);
-    // ✅ اصلاح شده:
     return () => { mounted = false; };
   }, [redirectIfAuthenticated, router]);
 

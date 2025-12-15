@@ -53,7 +53,7 @@ export default function NotificationBadge() {
   if (!user || count === 0) {
     return (
       <div className="relative flex">
-        <span className="cursor-pointer">🔔</span>
+
       </div>
     );
   }
@@ -61,8 +61,7 @@ export default function NotificationBadge() {
 
   return (
     <div className="relative flex">
-      <span className="cursor-pointer">🔔</span>
-      <span className="bg-red-600 text-white w-5 h-5 text-xs flex items-center justify-center rounded-full">
+      <span className="bg-red-600 text-white w-4 h-4 text-[10px] font-medium flex items-center justify-center rounded-full">
         {count}
       </span>
     </div>
