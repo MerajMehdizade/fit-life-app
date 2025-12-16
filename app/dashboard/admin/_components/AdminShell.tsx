@@ -65,7 +65,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
       { title: "تنظیمات سیستم", url: "/dashboard/admin/settings" },
       { title: "لاگ ورود", url: "/dashboard/admin/logs/login" },
       { title: "لاگ تغییرات", url: "/dashboard/admin/logs/actions" },
-      { title: "فعالیت مربیان", url: "/dashboard/admin/coach-activity" },
+      { title: "فعالیت مربیان", url: "/dashboard/admin/logs/coach-activity" },
       {
         title: "خروج از حساب",
         action: "logout",
@@ -74,7 +74,6 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     ],
   };
 
-  // ✅ فقط همین منطق اضافه شده
   const isNavActive = (item: MobileNavItem) => {
     if (item.key === "dashboard") {
       return pathname === "/dashboard/admin";
@@ -100,7 +99,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
       return (
         pathname.startsWith("/dashboard/admin/settings") ||
         pathname.startsWith("/dashboard/admin/logs") ||
-        pathname.startsWith("/dashboard/admin/coach-activity")
+        pathname.startsWith("/dashboard/admin/logs/coach-activity")
       );
     }
 
@@ -162,8 +161,6 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="container mx-auto px-5 md:p-5 font-vazir relative min-h-screen">
 
-
-      {/* === MOBILE SHEET === */}
       <div
         className={`fixed inset-0 z-40 transition-all duration-300
     ${openSheet ? "pointer-events-auto" : "pointer-events-none"}`}
@@ -177,32 +174,27 @@ export default function AdminShell({ children }: { children: ReactNode }) {
 
         {/* Sheet */}
         <div
-          className={`absolute bottom-0 inset-x-0 bg-white rounded-t-2xl p-4
-      transform transition-transform duration-300 ease-out
+          className={`absolute bottom-0 inset-x-0 bg-gray-800 rounded-t-2xl p-4
+      transform transition-transform duration-300 ease-out text-white
       ${openSheet ? "translate-y-0" : "translate-y-full"}`}
         >
-          <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+          <div className="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-4" />
 
-          {/* ===== USERS (سفارشی) ===== */}
           {openSheet === "users" ? (
             <ul className="space-y-3">
-
-              {/* مدیریت ادمین‌ها */}
               <li>
                 <Link
                   href="/dashboard/admin/admins/list"
                   onClick={() => setOpenSheet(null)}
-                  className="block p-3 rounded-xl bg-gray-50 text-sm font-medium"
+                  className="block p-3 rounded-xl bg-gray-700 text-white text-sm font-medium"
                 >
                   مدیریت ادمین‌ها
                 </Link>
               </li>
-
-              {/* دانشجوها */}
               <li>
                 <button
                   onClick={() => setOpenUserStudents(!openUserStudents)}
-                  className="w-full flex justify-between items-center p-3 rounded-xl bg-gray-50 text-sm font-medium"
+                  className="w-full flex justify-between items-center p-3 rounded-xl bg-gray-700 text-sm font-medium"
                 >
                   <span>دانشجوها</span>
                   <svg
@@ -220,11 +212,24 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                   className={`overflow-hidden transition-all duration-500 ease-in-out
     ${openUserStudents ? "max-h-40 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-1"}`}
                 >
-                  <div className="mt-2 pr-4 space-y-2 transform transition-transform duration-500">
+                  <div className="mt-2 pr-5 space-y-3 transform transition-transform duration-500">
+                    <Link
+                      href="/dashboard/admin/students/list"
+                      onClick={() => setOpenSheet(null)}
+                      className={`block text-sm text-white
+  ${isActive("/dashboard/admin/students/list")
+                          ? "text-black font-medium"
+                          : "text-gray-700"
+                        }
+`}
+
+                    >
+                      لیست دانشجوها
+                    </Link>
                     <Link
                       href="/dashboard/admin/students/assign"
                       onClick={() => setOpenSheet(null)}
-                      className={`block text-sm
+                      className={`block text-sm text-white
   ${isActive("/dashboard/admin/students/assign")
                           ? "text-black font-medium"
                           : "text-gray-700"
@@ -237,7 +242,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                     <Link
                       href="/dashboard/admin/students/status"
                       onClick={() => setOpenSheet(null)}
-                      className={`block text-sm
+                      className={`block text-sm text-white
   ${isActive("/dashboard/admin/students/status")
                           ? "text-black font-medium"
                           : "text-gray-700"
@@ -250,7 +255,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                     <Link
                       href="/dashboard/admin/students/no-plan"
                       onClick={() => setOpenSheet(null)}
-                      className={`block text-sm
+                      className={`block text-sm text-white
   ${isActive("/dashboard/admin/students/no-plan")
                           ? "text-black font-medium"
                           : "text-gray-700"
@@ -268,7 +273,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
               <li>
                 <button
                   onClick={() => setOpenUserCoaches(!openUserCoaches)}
-                  className="w-full flex justify-between items-center p-3 rounded-xl bg-gray-50 text-sm font-medium"
+                  className="w-full flex justify-between items-center p-3 rounded-xl bg-gray-700 text-sm font-medium"
                 >
                   <span>مربی‌ها</span>
                   <svg
@@ -286,11 +291,24 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                   className={`overflow-hidden transition-all duration-500 ease-in-out
     ${openUserCoaches ? "max-h-32 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-1"}`}
                 >
-                  <div className="mt-2 pr-4 space-y-2">
+                  <div className="mt-2 pr-5 space-y-3">
+                    <Link
+                      href="/dashboard/admin/coaches/list"
+                      onClick={() => setOpenSheet(null)}
+                      className={`block text-sm text-white
+  ${isActive("/dashboard/admin/coaches/list")
+                          ? "text-black font-medium"
+                          : "text-gray-700"
+                        }
+`}
+
+                    >
+                      لیست مربیان
+                    </Link>
                     <Link
                       href="/dashboard/admin/coaches/permissions"
                       onClick={() => setOpenSheet(null)}
-                      className={`block text-sm
+                      className={`block text-sm text-white
   ${isActive("/dashboard/admin/coaches/permissions")
                           ? "text-black font-medium"
                           : "text-gray-700"
@@ -303,7 +321,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                     <Link
                       href="/dashboard/admin/coaches/status"
                       onClick={() => setOpenSheet(null)}
-                      className={`block text-sm
+                      className={`block text-sm text-white
   ${isActive("/dashboard/admin/coaches/status")
                           ? "text-black font-medium"
                           : "text-gray-700"
@@ -319,7 +337,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
               </li>
             </ul>
           ) : (
-            /* ===== بقیه Sheet ها بدون تغییر ===== */
+
             <ul className="space-y-3">
               {openSheet &&
                 sheets[openSheet].map((item, i) => {
@@ -331,7 +349,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                             logout();
                             setOpenSheet(null);
                           }}
-                          className="w-full p-3 rounded-xl text-right text-red-600 bg-red-50 active:bg-red-100 font-medium"
+                          className="w-full text-center p-3 rounded-xl text-white bg-red-500 active:bg-red-100 font-medium"
                         >
                           {item.title}
                         </button>
@@ -346,8 +364,8 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                         onClick={() => setOpenSheet(null)}
                         className={`block p-3 rounded-xl text-sm font-medium
   ${isActive(item.url)
-                            ? "bg-gray-200 text-black"
-                            : "bg-gray-50 text-gray-700"
+                            ? "bg-gray-500 text-white"
+                            : "bg-gray-700 text-white"
                           }
 `}
                       >
@@ -361,14 +379,14 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         </div>
       </div>
 
-      <nav className="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-lg rounded-t-xl z-30">
-        <ul className="flex justify-around items-center h-16">
+      <nav className="fixed bottom-0 inset-x-0 bg-gray-800 border-t border-gray-950  shadow-lg rounded-t-xl z-30">
+        <ul className="flex justify-around items-center h-16 ">
           {mobileNavItem.map((item) => (
             <li
               key={item.key}
               onClick={() => handleNavClick(item)}
               className={`flex flex-col items-center gap-1 text-xs font-medium transition
-                ${isNavActive(item) ? "text-black" : "text-gray-500"}
+                ${isNavActive(item) ? "text-gray-100" : "text-gray-400"}
               `}
             >
               <div className="relative">
@@ -385,13 +403,10 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         </ul>
       </nav>
 
-      <div className="flex place-items-start gap-5 flex-row">
+      <main>
+        {children}
+      </main>
 
-        <main className="flex-1 border border-gray-500 rounded-2xl shadow-lg
-           bg-stone-100 text-black p-5 mt-2 h-full">
-          {children}
-        </main>
-      </div>
     </div>
   );
 }

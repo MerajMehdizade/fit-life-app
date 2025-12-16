@@ -19,7 +19,6 @@ function formatDateFa(iso?: string) {
   }
 }
 
-/** دقیق‌تر: مرورگر / نسخه / OS / Device */
 function parseUserAgent(ua?: string) {
   if (!ua) return { browser: "Unknown", version: "", os: "Unknown", device: "Desktop" };
   const s = ua.toLowerCase();
