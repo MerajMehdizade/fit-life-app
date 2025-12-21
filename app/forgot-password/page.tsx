@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <section className="bg-white dark:bg-gray-900">
-      <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
+      <div className="container flex items-center justify-center  px-6 mx-auto">
         <form onSubmit={submitHandler} className="w-full max-w-md">
           <div className="flex justify-center mx-auto">
             <img className="w-auto h-24 sm:h-32" src="/forgot-password.svg" alt="" />

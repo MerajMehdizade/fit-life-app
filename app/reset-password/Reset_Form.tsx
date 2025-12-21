@@ -64,7 +64,7 @@ export default function Reset_Form() {
 
   return (
     <section className="bg-white dark:bg-gray-900">
-      <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
+      <div className="container flex items-center justify-center  px-6 mx-auto">
         <form onSubmit={handleReset} className="w-full max-w-md">
 
           <div className="flex justify-center mx-auto flex-col items-center gap-3">

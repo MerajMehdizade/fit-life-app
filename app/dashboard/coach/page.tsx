@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function CoachDashboard() {
   const { user, logout, loading } = useUser();
   return (
-    <div className="bg-gray-900 min-h-screen">
+    <div className="bg-gray-900 ">
       <DropdownMenu role="Coach" items={[
         { label: "شاگردا", href: "/program" },
         { label: "ترجیحات", href: "/preferences" },

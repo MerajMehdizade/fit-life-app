@@ -1,19 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
-import { useState } from "react";
-import type { JSX, ReactNode } from "react";
+import { useState, type ReactNode, type JSX } from "react";
 import NotificationBadge from "@/app/Components/NotificationBadge/NotificationBadge";
-import { useRouter } from "next/navigation";
 
-type SheetKey = "users" | "actions" | "settings";
-type NavKey = SheetKey | "dashboard" | "notifications";
-
-function isSheetKey(key: NavKey): key is SheetKey {
-  return key === "users" || key === "actions" || key === "settings";
-}
+type SheetKey = "settings";
+type NavKey = SheetKey | "coaches" | "students" | "admins" | "notifications";
 
 type MobileNavItem = {
   key: NavKey;
@@ -32,81 +26,79 @@ type SheetItem = {
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { logout } = useUser();
-  const [openUserStudents, setOpenUserStudents] = useState(false);
-  const [openUserCoaches, setOpenUserCoaches] = useState(false);
-  const [openSheet, setOpenSheet] = useState<SheetKey | null>(null);
   const router = useRouter();
+  const { logout } = useUser();
 
-  const handleNavClick = (item: MobileNavItem) => {
-    if (isSheetKey(item.key)) {
-      setOpenSheet(item.key);
-    } else if (item.url) {
-      router.push(item.url);
-    }
-  };
+  const [openSheet, setOpenSheet] = useState<SheetKey | null>(null);
 
   const isActive = (url?: string) => {
     if (!url) return false;
     return pathname === url || pathname.startsWith(url + "/");
   };
+
+  const handleNavClick = (item: MobileNavItem) => {
+    if (item.key === "settings") {
+      setOpenSheet(openSheet === "settings" ? null : "settings");
+    } else if (item.url) {
+      router.push(item.url);
+    }
+  };
+
   const sheets: Record<SheetKey, SheetItem[]> = {
-    users: [
-      { title: "مدیریت ادمین‌ها", url: "/dashboard/admin/admins/list" },
-      { title: "مدیریت دانشجوها", url: "/dashboard/admin/students/list" },
-      { title: "مدیریت مربی‌ها", url: "/dashboard/admin/coaches/list" },
-    ],
-    actions: [
-      { title: "افزودن دانشجو", url: "/dashboard/admin/students/create" },
-      { title: "افزودن مربی", url: "/dashboard/admin/coaches/create" },
-      { title: "افزودن ادمین", url: "/dashboard/admin/admins/create" },
-    ],
     settings: [
       { title: "تنظیمات سیستم", url: "/dashboard/admin/settings" },
       { title: "لاگ ورود", url: "/dashboard/admin/logs/login" },
       { title: "لاگ تغییرات", url: "/dashboard/admin/logs/actions" },
       { title: "فعالیت مربیان", url: "/dashboard/admin/logs/coach-activity" },
-      {
-        title: "خروج از حساب",
-        action: "logout",
-        danger: true,
-      },
+      { title: "خروج از حساب", action: "logout", danger: true },
     ],
   };
 
-  const isNavActive = (item: MobileNavItem) => {
-    if (item.key === "dashboard") {
-      return pathname === "/dashboard/admin";
-    }
-
-    if (item.key === "notifications") {
-      return pathname.startsWith("/dashboard/admin/notifications");
-    }
-
-    if (item.key === "users") {
-      return (
-        pathname.startsWith("/dashboard/admin/students") ||
-        pathname.startsWith("/dashboard/admin/coaches") ||
-        pathname.startsWith("/dashboard/admin/admins")
-      );
-    }
-
-    if (item.key === "actions") {
-      return pathname.includes("/create");
-    }
-
-    if (item.key === "settings") {
-      return (
-        pathname.startsWith("/dashboard/admin/settings") ||
-        pathname.startsWith("/dashboard/admin/logs") ||
-        pathname.startsWith("/dashboard/admin/logs/coach-activity")
-      );
-    }
-
-    return false;
-  };
-
   const mobileNavItem: MobileNavItem[] = [
+    {
+      key: "notifications",
+      title: "اعلان‌ها",
+      url: "/dashboard/admin/notifications",
+      badge: <NotificationBadge />,
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">   <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />    </svg>
+      ),
+    },
+    {
+      key: "coaches",
+      title: "مربیان",
+      url: "/dashboard/admin/coaches/list",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+        </svg>
+
+      ),
+    },
+    {
+      key: "admins",
+      title: "ادمین",
+      url: "/dashboard/admin/admins/list",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+        </svg>
+
+      ),
+    },
+    {
+      key: "students",
+      title: "دانشجویان",
+      url: "/dashboard/admin/students/list",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+        </svg>
+
+      ),
+    },
+
+
     {
       key: "settings",
       title: "تنظیمات",
@@ -117,285 +109,67 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         </svg>
       ),
     },
-    {
-      key: "notifications",
-      title: "اعلان‌ها",
-      url: "/dashboard/admin/notifications",
-      badge: <NotificationBadge />,
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-        </svg>
-      ),
-    },
-    {
-      key: "dashboard",
-      title: "داشبورد",
-      url: "/dashboard/admin",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-        </svg>
-      ),
-    },
-    {
-      key: "users",
-      title: "کاربران",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-        </svg>
-      ),
-    },
-    {
-      key: "actions",
-      title: "عملیات",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
-      ),
-    },
   ];
 
   return (
-    <div className="container mx-auto px-5 md:p-5 font-vazir relative min-h-screen">
-
-      <div
-        className={`fixed inset-0 z-40 transition-all duration-300
-    ${openSheet ? "pointer-events-auto" : "pointer-events-none"}`}
-      >
-        {/* Backdrop */}
+    <div className="container mx-auto px-5 md:p-5 font-vazir relative">
+      {/* Sheet */}
+      <div className={`fixed inset-0 z-40 transition-all duration-300 ${openSheet ? "pointer-events-auto" : "pointer-events-none"}`}>
         <div
           onClick={() => setOpenSheet(null)}
-          className={`absolute inset-0 bg-black/40 transition-opacity duration-300
-      ${openSheet ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${openSheet ? "opacity-100" : "opacity-0"}`}
         />
-
-        {/* Sheet */}
         <div
-          className={`absolute bottom-0 inset-x-0 bg-gray-800 rounded-t-2xl p-4
-      transform transition-transform duration-300 ease-out text-white
-      ${openSheet ? "translate-y-0" : "translate-y-full"}`}
+          className={`absolute bottom-0 inset-x-0 bg-gray-800 rounded-t-2xl p-4 transform transition-transform duration-300 ease-out text-white max-h-[90vh] overflow-y-auto ${openSheet ? "translate-y-0" : "translate-y-full"}`}
         >
           <div className="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-4" />
-
-          {openSheet === "users" ? (
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/dashboard/admin/admins/list"
-                  onClick={() => setOpenSheet(null)}
-                  className="block p-3 rounded-xl bg-gray-700 text-white text-sm font-medium"
-                >
-                  مدیریت ادمین‌ها
-                </Link>
-              </li>
-              <li>
-                <button
-                  onClick={() => setOpenUserStudents(!openUserStudents)}
-                  className="w-full flex justify-between items-center p-3 rounded-xl bg-gray-700 text-sm font-medium"
-                >
-                  <span>دانشجوها</span>
-                  <svg
-                    className={`w-4 h-4 transition-transform ${openUserStudents ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-
-                <div
-                  className={`overflow-hidden transition-all duration-500 ease-in-out
-    ${openUserStudents ? "max-h-40 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-1"}`}
-                >
-                  <div className="mt-2 pr-5 space-y-3 transform transition-transform duration-500">
-                    <Link
-                      href="/dashboard/admin/students/list"
-                      onClick={() => setOpenSheet(null)}
-                      className={`block text-sm text-white
-  ${isActive("/dashboard/admin/students/list")
-                          ? "text-black font-medium"
-                          : "text-gray-700"
-                        }
-`}
-
-                    >
-                      لیست دانشجوها
-                    </Link>
-                    <Link
-                      href="/dashboard/admin/students/assign"
-                      onClick={() => setOpenSheet(null)}
-                      className={`block text-sm text-white
-  ${isActive("/dashboard/admin/students/assign")
-                          ? "text-black font-medium"
-                          : "text-gray-700"
-                        }
-`}
-
-                    >
-                      انتساب به مربی
-                    </Link>
-                    <Link
-                      href="/dashboard/admin/students/status"
-                      onClick={() => setOpenSheet(null)}
-                      className={`block text-sm text-white
-  ${isActive("/dashboard/admin/students/status")
-                          ? "text-black font-medium"
-                          : "text-gray-700"
-                        }
-`}
-
-                    >
-                      وضعیت دانشجو
-                    </Link>
-                    <Link
-                      href="/dashboard/admin/students/no-plan"
-                      onClick={() => setOpenSheet(null)}
-                      className={`block text-sm text-white
-  ${isActive("/dashboard/admin/students/no-plan")
-                          ? "text-black font-medium"
-                          : "text-gray-700"
-                        }
-`}
-
-                    >
-                      دانشجویان بدون برنامه
-                    </Link>
-                  </div>
-                </div>
-
-              </li>
-
-              <li>
-                <button
-                  onClick={() => setOpenUserCoaches(!openUserCoaches)}
-                  className="w-full flex justify-between items-center p-3 rounded-xl bg-gray-700 text-sm font-medium"
-                >
-                  <span>مربی‌ها</span>
-                  <svg
-                    className={`w-4 h-4 transition-transform ${openUserCoaches ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-
-                <div
-                  className={`overflow-hidden transition-all duration-500 ease-in-out
-    ${openUserCoaches ? "max-h-32 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-1"}`}
-                >
-                  <div className="mt-2 pr-5 space-y-3">
-                    <Link
-                      href="/dashboard/admin/coaches/list"
-                      onClick={() => setOpenSheet(null)}
-                      className={`block text-sm text-white
-  ${isActive("/dashboard/admin/coaches/list")
-                          ? "text-black font-medium"
-                          : "text-gray-700"
-                        }
-`}
-
-                    >
-                      لیست مربیان
-                    </Link>
-                    <Link
-                      href="/dashboard/admin/coaches/permissions"
-                      onClick={() => setOpenSheet(null)}
-                      className={`block text-sm text-white
-  ${isActive("/dashboard/admin/coaches/permissions")
-                          ? "text-black font-medium"
-                          : "text-gray-700"
-                        }
-`}
-
-                    >
-                      دسترسی مربیان
-                    </Link>
-                    <Link
-                      href="/dashboard/admin/coaches/status"
-                      onClick={() => setOpenSheet(null)}
-                      className={`block text-sm text-white
-  ${isActive("/dashboard/admin/coaches/status")
-                          ? "text-black font-medium"
-                          : "text-gray-700"
-                        }
-`}
-
-                    >
-                      وضعیت مربیان
-                    </Link>
-                  </div>
-                </div>
-
-              </li>
-            </ul>
-          ) : (
-
-            <ul className="space-y-3">
-              {openSheet &&
-                sheets[openSheet].map((item, i) => {
-                  if (item.action === "logout") {
-                    return (
-                      <li key={i}>
-                        <button
-                          onClick={() => {
-                            logout();
-                            setOpenSheet(null);
-                          }}
-                          className="w-full text-center p-3 rounded-xl text-white bg-red-500 active:bg-red-100 font-medium"
-                        >
-                          {item.title}
-                        </button>
-                      </li>
-                    );
-                  }
-
+          {openSheet && (
+            <ul className="space-y-3 ">
+              {sheets[openSheet].map((item, i) => {
+                if (item.action === "logout") {
                   return (
-                    <li key={i}>
-                      <Link
-                        href={item.url!}
-                        onClick={() => setOpenSheet(null)}
-                        className={`block p-3 rounded-xl text-sm font-medium
-  ${isActive(item.url)
-                            ? "bg-gray-500 text-white"
-                            : "bg-gray-700 text-white"
-                          }
-`}
+                    <li key={i} className="text-xs">
+                      <button
+                        onClick={() => {
+                          logout();
+                          setOpenSheet(null);
+                        }}
+                        className="w-full text-center p-3 rounded-xl text-white bg-red-500 active:bg-red-100 font-medium"
                       >
                         {item.title}
-                      </Link>
+                      </button>
                     </li>
                   );
-                })}
+                }
+                return (
+                  <li key={i}>
+                    <Link
+                      href={item.url!}
+                      onClick={() => setOpenSheet(null)}
+                      className={`block p-3 rounded-xl text-sm font-medium ${isActive(item.url) ? "bg-gray-500 text-white" : "bg-gray-700 text-white"}`}
+                    >
+                      {item.title}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
       </div>
 
-      <nav className="fixed bottom-0 inset-x-0 bg-gray-800 border-t border-gray-950  shadow-lg rounded-t-xl z-30">
-        <ul className="flex justify-around items-center h-16 ">
+      {/* Bottom nav */}
+      <nav className="fixed bottom-0 inset-x-0 bg-gray-800 border-t border-gray-950 shadow-lg rounded-t-xl z-30">
+        <ul className="flex justify-around items-center h-16">
           {mobileNavItem.map((item) => (
             <li
               key={item.key}
               onClick={() => handleNavClick(item)}
-              className={`flex flex-col items-center gap-1 text-xs font-medium transition
-                ${isNavActive(item) ? "text-gray-100" : "text-gray-400"}
-              `}
+              className={`flex flex-col items-center gap-1 text-xs font-medium transition ${isActive(item.url) ? "text-gray-100" : "text-gray-400"}`}
             >
               <div className="relative">
                 {item.icon}
-                {item.badge && (
-                  <span className="absolute -top-1 -right-1">
-                    {item.badge}
-                  </span>
-                )}
+                {item.badge && <span className="absolute -top-1 -right-1">{item.badge}</span>}
               </div>
               <span>{item.title}</span>
             </li>
@@ -403,10 +177,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         </ul>
       </nav>
 
-      <main>
-        {children}
-      </main>
-
+      <main className="p-4 pb-20 sm:p-10 bg-gray-900 text-gray-100">{children}</main>
     </div>
   );
 }

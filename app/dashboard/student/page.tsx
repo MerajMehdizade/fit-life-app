@@ -130,7 +130,7 @@ export default function DashboardPage() {
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
   return (
     <>
-      <div className="bg-gray-900 min-h-screen">
+      <div className="bg-gray-900 ">
         <DropdownMenu role="Student" />
         <div className="flex flex-col items-center md:pt-10 text-white w-full px-4 md:px-0">
           <ul className="relative flex gap-6 md:gap-2 mb-5 font-yekanBakhBold mt-10">

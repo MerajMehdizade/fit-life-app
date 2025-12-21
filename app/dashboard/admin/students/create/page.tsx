@@ -53,7 +53,7 @@ export default function CreateStudentPage() {
   return (
     <>
       <section className="bg-white dark:bg-gray-900">
-        <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
+        <div className="container flex items-center justify-center px-6 mx-auto">
           <form onSubmit={submit} className="w-full max-w-md">
             <h1 className="text-white text-2xl text-center mb-10">افزودن دانشجو</h1>
             <div className="relative flex items-center">
