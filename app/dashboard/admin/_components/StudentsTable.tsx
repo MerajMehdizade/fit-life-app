@@ -103,7 +103,7 @@ export default function StudentsTable({
                     className={`text-xs px-3 py-1 rounded-full
                       ${u.status === "active" ? "bg-green-600 text-white" : "bg-red-600 text-white"}`}
                   >
-                    {u.status === "active" ? "فعال" : "تعلیق"}
+                    {u.status === "active" ? "فعال" : "تعلیق شده"}
                   </span>
                 </div>
 

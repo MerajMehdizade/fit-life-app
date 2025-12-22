@@ -154,7 +154,7 @@ export default function AdminCoachesPage() {
                           onClick={() => toggleStatus(c._id)}
                           disabled={loadingIds.has(c._id)}
                           className={`px-3 py-1 rounded text-xs font-medium flex items-center justify-center transition
-    ${c.status !== "active" ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-500 hover:bg-red-700 text-white"}`}
+    ${c.status !== "active" ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}`}
                         >
                           {loadingIds.has(c._id) ? (
                             <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -226,7 +226,7 @@ export default function AdminCoachesPage() {
                             : "bg-red-600 text-white"
                             }`}
                         >
-                          {c.status === "active" ? "فعال" : "تعلیق"}
+                          {c.status === "active" ? "فعال" : "تعلیق شده"}
                         </span>
                       </div>
 
@@ -263,7 +263,7 @@ export default function AdminCoachesPage() {
                             onClick={() => toggleStatus(c._id)}
                             disabled={loadingIds.has(c._id)}
                             className={`px-3 py-1 rounded text-xs font-medium flex items-center justify-center transition
-    ${c.status !== "active" ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-500 hover:bg-red-700 text-white"}`}
+    ${c.status !== "active" ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}`}
                           >
                             {loadingIds.has(c._id) ? (
                               <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />

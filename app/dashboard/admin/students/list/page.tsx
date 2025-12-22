@@ -17,6 +17,8 @@ export default function AdminStudentsPage() {
   const [loading, setLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [sort, setSort] = useState<SortType>(null);
+  const [open, setOpen] = useState(false)
+
 
   const [filter, setFilter] = useState({
     noPlans: false,
@@ -93,13 +95,62 @@ export default function AdminStudentsPage() {
     <div className="space-y-6 p-3 bg-gray-900  text-gray-100" dir="rtl">
       <h1 className="text-xl md:text-2xl font-bold mb-4">لیست دانشجوها</h1>
 
-      <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-5">
-        <SearchBox value={search} onChange={setSearch} placehold="جستجوی دانشجو...." />
-        <div className="flex flex-wrap w-100 justify-start md:justify-end items-center gap-3">
-          <a href="/dashboard/admin/students/create" className=" px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-400 focus:ring-opacity-50">دانشجو جدید</a>
-          <a href="/dashboard/admin/students/assign" className=" px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-400 focus:ring-opacity-50">انتساب دانشجو به مربی</a>
+      <div className="flex justify-between items-center gap-5">
+        <SearchBox
+          value={search}
+          onChange={setSearch}
+          placehold="جستجوی دانشجو...."
+        />
+
+        {/* Desktop buttons */}
+        <div className="hidden md:flex flex-wrap w-100 justify-end items-center gap-3">
+          <a
+            href="/dashboard/admin/students/create"
+            className="px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-400 focus:ring-opacity-50"
+          >
+            دانشجو جدید
+          </a>
+
+          <a
+            href="/dashboard/admin/students/assign"
+            className="px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-400 focus:ring-opacity-50"
+          >
+            انتساب دانشجو به مربی
+          </a>
         </div>
-        {/* جستجو */}
+
+        {/* Mobile dropdown */}
+        <div className="md:hidden relative w-full flex justify-end">
+          <button
+            onClick={() => setOpen(!open)}
+            className="p-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-400 focus:ring-opacity-50 flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+
+          </button>
+
+          {open && (
+            <div className="absolute left-0 top-full mt-2 w-56 bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-20 text-white">
+              <a
+                href="/dashboard/admin/students/create"
+                className="block px-4 py-3 text-sm hover:bg-gray-900 transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                 دانشجو جدید
+              </a>
+
+              <a
+                href="/dashboard/admin/students/assign"
+                className="block px-4 py-3 text-sm hover:bg-gray-900 transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                 انتساب دانشجو به مربی
+              </a>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* فیلترها */}

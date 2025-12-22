@@ -47,9 +47,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   const sheets: Record<SheetKey, SheetItem[]> = {
     settings: [
       { title: "تنظیمات سیستم", url: "/dashboard/admin/settings" },
-      { title: "لاگ ورود", url: "/dashboard/admin/logs/login" },
-      { title: "لاگ تغییرات", url: "/dashboard/admin/logs/actions" },
-      { title: "فعالیت مربیان", url: "/dashboard/admin/logs/coach-activity" },
+      { title: "لاگ", url: "/dashboard/admin/logs" },
       { title: "خروج از حساب", action: "logout", danger: true },
     ],
   };
@@ -165,7 +163,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             <li
               key={item.key}
               onClick={() => handleNavClick(item)}
-              className={`flex flex-col items-center gap-1 text-xs font-medium transition ${isActive(item.url) ? "text-gray-100" : "text-gray-400"}`}
+              className={`flex flex-col items-center gap-1 text-xs font-medium transition w-32 ${isActive(item.url) ? "text-gray-100" : "text-gray-400"}`}
             >
               <div className="relative">
                 {item.icon}
