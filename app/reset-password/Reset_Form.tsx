@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import Toast from "@/app/Components/toast/Toast";
+import Toast from "../Components/toast/Toast";
 import { Button } from "../Components/Form/Button";
 import { PasswordInput } from "../Components/Form/PasswordInput";
 import { Form } from "../Components/Form/Form";

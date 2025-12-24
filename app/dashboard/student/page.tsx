@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Toast from "@/app/Components/toast/Toast";
+import Toast from "../Components/toast/Toast";
 import DropdownMenu from "../../Components/DropdownMenu/DropdownMenu";
 import Link from "next/link";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Toast from "@/app/Components/toast/Toast";
+import Toast from "../Components/toast/Toast";
 import { Form } from "@/app/Components/Form/Form";
 import { Select } from "@/app/Components/Form/Select";
 import { Input } from "@/app/Components/Form/Input";

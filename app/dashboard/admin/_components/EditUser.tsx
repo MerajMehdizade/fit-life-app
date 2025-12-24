@@ -5,7 +5,7 @@ import { Form } from "@/app/Components/Form/Form";
 import { Input } from "@/app/Components/Form/Input";
 import { Select } from "@/app/Components/Form/Select";
 import Loading from "@/app/Components/LoadingSpin/Loading";
-import Toast from "@/app/Components/toast/Toast";
+import Toast from "../Components/toast/Toast";
 import { useEffect, useState, useCallback } from "react";
 
 export default function EditUser({ id }: { id: string }) {
