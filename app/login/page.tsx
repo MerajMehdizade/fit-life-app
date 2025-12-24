@@ -2,7 +2,7 @@
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Toast from "../Components/Toast/Toast";
+import Toast from "@/app/Components/Toast/Toast";
 import { useUser } from "../context/UserContext";
 import { Button } from "../Components/Form/Button";
 import { PasswordInput } from "../Components/Form/PasswordInput";
