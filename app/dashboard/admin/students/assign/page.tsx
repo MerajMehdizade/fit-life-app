@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/app/Components/Form/Button";
 import { Form } from "@/app/Components/Form/Form";
 import { Select } from "@/app/Components/Form/Select";
-import Toast from "@/app/Components/Toast/Toast";
+import Toast from "@/app/Components/toast/Toast";
 import Loading from "@/app/Components/LoadingSpin/Loading";
 
 export default function AssignPage() {
