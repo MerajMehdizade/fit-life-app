@@ -35,8 +35,8 @@ export async function GET(req: Request) {
       sort === "asc"
         ? { name: 1 }
         : sort === "desc"
-        ? { name: -1 }
-        : undefined;
+          ? { name: -1 }
+          : undefined;
 
     const total = await User.countDocuments(query);
 
@@ -44,8 +44,8 @@ export async function GET(req: Request) {
       .sort(sortOption)
       .skip((page - 1) * limit)
       .limit(limit)
-      .select("_id name email status assignedCoach trainingPlan dietPlan")
-      .populate("assignedCoach", "name");
+      .select("_id name email status assignedCoach trainingPlan dietPlan avatar")
+      .populate("assignedCoach", "name avatar");
 
     const formatted = students.map((s: any) => ({
       _id: s._id.toString(),
@@ -53,7 +53,8 @@ export async function GET(req: Request) {
       email: s.email,
       status: s.status,
       coachName: s.assignedCoach?.name || "بدون مربی",
-       hasCoach: !!s.assignedCoach,
+      hasCoach: !!s.assignedCoach,
+      avatar: s.avatar || "/avatars/default.webp",
       plansCount:
         (s.trainingPlan ? 1 : 0) +
         (s.dietPlan ? 1 : 0),

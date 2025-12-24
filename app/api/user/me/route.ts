@@ -32,6 +32,7 @@ export async function GET() {
       name: user.name,
       email: user.email,
       role: user.role,
+      avatar: user.avatar,
       profile: user.profile ?? {},
     },
   });

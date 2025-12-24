@@ -43,7 +43,7 @@ export async function GET(req: Request) {
       .sort(sortOption)
       .skip((page - 1) * limit)
       .limit(limit)
-      .select("_id name email status students");
+      .select("_id name email status students avatar");
 
     const formatted = coaches.map((c: any) => ({
       _id: c._id.toString(),
@@ -51,6 +51,7 @@ export async function GET(req: Request) {
       email: c.email,
       status: c.status,
       studentsCount: c.students?.length || 0,
+      avatar: c.avatar || "/avatars/default.webp",
     }));
 
     return NextResponse.json({

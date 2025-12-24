@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Toast from "../../Components/toast/Toast";
+import Toast from "../../Components/Toast/Toast";
 import DropdownMenu from "../../Components/DropdownMenu/DropdownMenu";
 import Link from "next/link";
 
@@ -26,6 +26,7 @@ interface ProfileType {
 }
 
 interface UserType {
+  avatar: string | null;
   name: string;
   email: string;
   profile?: ProfileType;
@@ -71,6 +72,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<ProfileType>({});
   const [toast, setToast] = useState({ show: false, message: "", type: "success" as "success" | "error" });
   const [step, setStep] = useState(1);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -90,7 +92,17 @@ export default function DashboardPage() {
     };
     fetchUser();
   }, [router]);
+  const avatarSubmit = async (e : any) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
+    setAvatarPreview(URL.createObjectURL(file));
+
+    const fd = new FormData();
+    fd.append("avatar", file);
+
+    await fetch("/api/user/avatar", { method: "POST", body: fd });
+  }
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const allFields = Object.values(stepsFields).flat();
@@ -174,6 +186,23 @@ export default function DashboardPage() {
             })}
           </ul>
           <div className="w-full rounded-lg p-4 shadow-sm max-w-4xl">
+            <div className="flex flex-col items-center mb-6 gap-3">
+              <img
+                src={avatarPreview || user.avatar || "/avatars/default.png"}
+                className="w-28 h-28 rounded-full object-cover border-4 border-cyan-800"
+              />
+
+              <label className="cursor-pointer bg-cyan-900 px-4 py-2 rounded-lg">
+                تغییر آواتار
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={avatarSubmit}
+                />
+              </label>
+            </div>
+
             <form onSubmit={handleProfileSubmit} className="flex flex-col justify-between gap-6 h-full p-5">
               <div className="flex flex-wrap gap-3">
                 {stepsFields[step].map((field) => (
@@ -233,7 +262,7 @@ export default function DashboardPage() {
           href="/dashboard/student/program"
           className="p-2 bg-green-500 rounded-xl inline-block"
         >
-         برنامه
+          برنامه
         </Link>
         <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
       </div>

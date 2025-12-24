@@ -1,28 +1,16 @@
+
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
-import { useState, type ReactNode, type JSX } from "react";
+import { useState, type ReactNode } from "react";
 import NotificationBadge from "@/app/Components/NotificationBadge/NotificationBadge";
 
+import SettingsSheet from "@/app/Components/SettingsSheet/SettingsSheet";
+import BottomNav from "@/app/Components/BottomNav/BottomNav";
+import type { MobileNavItemType } from "@/app/Components/MobileNavItem/MobileNavItem";
+
 type SheetKey = "settings";
-type NavKey = SheetKey | "coaches" | "students" | "admins" | "notifications";
-
-type MobileNavItem = {
-  key: NavKey;
-  title: string;
-  icon: JSX.Element;
-  url?: string;
-  badge?: ReactNode;
-};
-
-type SheetItem = {
-  title: string;
-  url?: string;
-  action?: "logout";
-  danger?: boolean;
-};
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -36,23 +24,14 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     return pathname === url || pathname.startsWith(url + "/");
   };
 
-  const handleNavClick = (item: MobileNavItem) => {
-    if (item.key === "settings") {
-      setOpenSheet(openSheet === "settings" ? null : "settings");
-    } else if (item.url) {
-      router.push(item.url);
-    }
-  };
-
-  const sheets: Record<SheetKey, SheetItem[]> = {
+  const sheets = {
     settings: [
       { title: "تنظیمات سیستم", url: "/dashboard/admin/settings" },
       { title: "لاگ", url: "/dashboard/admin/logs" },
-      { title: "خروج از حساب", action: "logout", danger: true },
+      { title: "خروج از حساب", action: "logout" as const, danger: true },
     ],
   };
-
-  const mobileNavItem: MobileNavItem[] = [
+  const mobileNavItems: MobileNavItemType[] = [
     {
       key: "notifications",
       title: "اعلان‌ها",
@@ -109,72 +88,19 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     },
   ];
 
+
+  const handleNavClick = (item: MobileNavItemType) => {
+    if (item.key === "settings") {
+      setOpenSheet(openSheet === "settings" ? null : "settings");
+    } else if (item.url) {
+      router.push(item.url);
+    }
+  };
+
   return (
     <div className="container mx-auto px-5 md:p-5 font-vazir relative">
-      {/* Sheet */}
-      <div className={`fixed inset-0 z-40 transition-all duration-300 ${openSheet ? "pointer-events-auto" : "pointer-events-none"}`}>
-        <div
-          onClick={() => setOpenSheet(null)}
-          className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${openSheet ? "opacity-100" : "opacity-0"}`}
-        />
-        <div
-          className={`absolute bottom-0 inset-x-0 bg-gray-800 rounded-t-2xl p-4 transform transition-transform duration-300 ease-out text-white max-h-[90vh] overflow-y-auto ${openSheet ? "translate-y-0" : "translate-y-full"}`}
-        >
-          <div className="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-4" />
-          {openSheet && (
-            <ul className="space-y-3 ">
-              {sheets[openSheet].map((item, i) => {
-                if (item.action === "logout") {
-                  return (
-                    <li key={i} className="text-xs">
-                      <button
-                        onClick={() => {
-                          logout();
-                          setOpenSheet(null);
-                        }}
-                        className="w-full text-center p-3 rounded-xl text-white bg-red-500 active:bg-red-100 font-medium"
-                      >
-                        {item.title}
-                      </button>
-                    </li>
-                  );
-                }
-                return (
-                  <li key={i}>
-                    <Link
-                      href={item.url!}
-                      onClick={() => setOpenSheet(null)}
-                      className={`block p-3 rounded-xl text-sm font-medium ${isActive(item.url) ? "bg-gray-500 text-white" : "bg-gray-700 text-white"}`}
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </div>
-
-      {/* Bottom nav */}
-      <nav className="fixed bottom-0 inset-x-0 bg-gray-800 border-t border-gray-950 shadow-lg rounded-t-xl z-30">
-        <ul className="flex justify-around items-center h-16">
-          {mobileNavItem.map((item) => (
-            <li
-              key={item.key}
-              onClick={() => handleNavClick(item)}
-              className={`flex flex-col items-center gap-1 text-xs font-medium transition w-32 ${isActive(item.url) ? "text-gray-100" : "text-gray-400"}`}
-            >
-              <div className="relative">
-                {item.icon}
-                {item.badge && <span className="absolute -top-1 -right-1">{item.badge}</span>}
-              </div>
-              <span>{item.title}</span>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
+      <SettingsSheet openSheet={openSheet} sheets={sheets} setOpenSheet={setOpenSheet} logout={logout} isActive={isActive} />
+      <BottomNav items={mobileNavItems} isActive={isActive} handleNavClick={handleNavClick} />
       <main className="p-4 pb-20 sm:p-10 bg-gray-900 text-gray-100">{children}</main>
     </div>
   );

@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Toast from "@/app/Components/toast/Toast";
+import Toast from "@/app/Components/Toast/Toast";
+import { Form } from "@/app/Components/Form/Form";
+import { Select } from "@/app/Components/Form/Select";
+import { Input } from "@/app/Components/Form/Input";
+import { Button } from "@/app/Components/Form/Button";
+import Loading from "@/app/Components/LoadingSpin/Loading";
 
 type UserItem = {
   _id: string;
@@ -112,131 +117,94 @@ export default function SendNotificationPage() {
       setLoading(false);
     }
   };
-
+  if (loading) return <Loading />
   return (
-    <section className="bg-white dark:bg-gray-900">
-      <div className="container flex items-center justify-center px-6 mx-auto">
+    <>
+      <section className="bg-white dark:bg-gray-900">
+        <div className="container flex items-center justify-center px-6 mx-auto">
+          <Form onSubmit={sendNotification} className="w-full max-w-md space-y-4">
 
-        <form onSubmit={sendNotification} className="w-full max-w-md space-y-3">
-          <h1 className="text-white text-2xl text-center mb-10">ارسال اعلان به کاربر</h1>
+            <h1 className="text-white text-2xl text-center mb-10">ارسال اعلان به کاربر</h1>
 
-          {/* انتخاب همه */}
-          <div className="flex items-center gap-2 mb-2">
-            <input
-              type="checkbox"
-              checked={selectAll}
-              onChange={toggleSelectAll}
-              className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-            />
-            <label className="text-white">ارسال به همه کاربران</label>
-          </div>
+            <div className="flex items-center gap-2 mb-2">
+              <input type="checkbox" checked={selectAll} onChange={toggleSelectAll} />
+              <label className="text-white">ارسال به همه کاربران</label>
+            </div>
 
-          {/* Dropdown کاربران */}
-          {!selectAll && (
-            <div className="relative" ref={dropdownRef}>
-              <div
-                className="w-full p-3 rounded-lg border border-gray-700 bg-gray-800 text-white cursor-pointer flex justify-between items-center"
-                onClick={() => setDropdownOpen(prev => !prev)}
-              >
-                {selectedUsers.length ? `${selectedUsers.length} کاربر انتخاب شده` : "انتخاب کاربران..."}
-                <span>{dropdownOpen ? "▲" : "▼"}</span>
-              </div>
-
-              {dropdownOpen && (
-                <div className="absolute z-50 w-full mt-1 max-h-64 overflow-y-auto bg-gray-800 rounded-lg border border-gray-700 p-2">
-                  {/* فیلتر رول */}
-                  <select
-                    value={roleFilter}
-                    onChange={(e) => setRoleFilter(e.target.value)}
-                    className="w-full p-2 mb-2 rounded border border-gray-600 bg-gray-700 text-white focus:outline-none"
+            {!selectAll && (
+              <div className="relative" ref={dropdownRef}>
+                <div
+                  onClick={() => setDropdownOpen(prev => !prev)}
+                  className="w-full p-3 rounded-lg border border-gray-700 bg-gray-800 text-white cursor-pointer flex justify-between items-center"
+                >
+                  {selectedUsers.length ? `${selectedUsers.length} کاربر انتخاب شده` : "انتخاب کاربران..."}
+                  <svg
+                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${dropdownOpen ? "rotate-180" : ""
+                      }`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
                   >
-                    <option value="">همه نقش‌ها</option>
-                    <option value="admin">ادمین</option>
-                    <option value="coach">مربی</option>
-                    <option value="student">دانشجو</option>
-                  </select>
-
-                  {/* جستجو */}
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    placeholder="جستجوی کاربر..."
-                    className="w-full p-2 mb-2 rounded border border-gray-600 bg-gray-700 text-white focus:outline-none"
-                  />
-
-                  {/* لیست کاربران */}
-                  {filteredUsers.length === 0 ? (
-                    <p className="p-2 text-gray-400">موردی پیدا نشد</p>
-                  ) : (
-                    filteredUsers.map(u => (
-                      <label
-                        key={u._id}
-                        className={`flex justify-between items-center p-2 cursor-pointer hover:bg-gray-700 ${selectedUsers.find(su => su._id === u._id) ? "bg-gray-700" : ""
-                          }`}
-                      >
-                        <span>{u.name} ({u.role})</span>
-                        <input
-                          type="checkbox"
-                          checked={!!selectedUsers.find(su => su._id === u._id)}
-                          onChange={() => toggleUser(u)}
-                          className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-                        />
-                      </label>
-                    ))
-                  )}
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
-              )}
-            </div>
-          )}
 
-          {/* نمایش انتخاب‌ها */}
-          {selectedUsers.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {selectedUsers.map(u => (
-                <span key={u._id} className="bg-blue-600 px-2 py-1 rounded-full flex items-center gap-1 text-white">
-                  {u.name}
-                  <button type="button" onClick={() => toggleUser(u)} className="ml-1 text-xs hover:text-gray-300">✕</button>
-                </span>
-              ))}
-            </div>
-          )}
+                {dropdownOpen && (
+                  <div className="absolute z-50 w-full mt-1 max-h-64 overflow-y-auto bg-gray-800 rounded-lg border border-gray-700 p-2 space-y-2">
 
-          {/* عنوان */}
-          <input
-            type="text"
-            placeholder="عنوان اعلان"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            className="w-full p-3 rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500 bg-gray-800 text-white"
-            required
-          />
+                    <Select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+                      <option value="">همه نقش‌ها</option>
+                      <option value="admin">ادمین</option>
+                      <option value="coach">مربی</option>
+                      <option value="student">دانشجو</option>
+                    </Select>
 
-          {/* پیام */}
-          <textarea
-            rows={4}
-            placeholder="متن پیام"
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-            className="w-full p-3 rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500 bg-gray-800 text-white"
-            required
-          />
+                    <Input
+                      placeholder="جستجوی کاربر..."
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                      className="px-11"
+                      rightIcon={
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                          strokeWidth={1.5} stroke="currentColor"
+                          className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500">
+                          <path strokeLinecap="round" strokeLinejoin="round"
+                            d="M21 21l-4.35-4.35m1.6-5.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+                        </svg>
+                      }
+                    />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition"
-          >
-            {loading ? "در حال ارسال..." : "ارسال اعلان"}
-          </button>
-        </form>
-      </div>
-      <Toast
-        show={toast.show}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ ...toast, show: false })}
-      />
-    </section>
+                    {filteredUsers.map(u => (
+                      <label key={u._id} className="flex justify-between items-center p-2 cursor-pointer hover:bg-gray-700">
+                        <span>{u.name} ({u.role})</span>
+                        <input type="checkbox" checked={!!selectedUsers.find(su => su._id === u._id)} onChange={() => toggleUser(u)} />
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <Input placeholder="عنوان اعلان" value={title} onChange={e => setTitle(e.target.value)} className="p-3" />
+
+            <textarea
+              rows={4}
+              placeholder="متن پیام"
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-700 bg-gray-800 text-white"
+            />
+
+            <Button type="submit" disabled={loading}>
+              {loading ? "در حال ارسال..." : "ارسال اعلان"}
+            </Button>
+
+          </Form>
+        </div>
+
+        <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
+      </section>
+    </>
   );
 }

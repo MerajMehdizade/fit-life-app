@@ -13,6 +13,33 @@ export const hashPassword = async (password: string) => {
 export const comparePassword = async (password: string, hashed: string) => {
   return bcrypt.compare(password, hashed);
 };
+export const getCurrentUser = async () => {
+  await dbConnect();
+
+  const cookieStore = cookies();
+  const token = (await cookieStore).get("token")?.value;
+  if (!token) return null;
+
+  try {
+    const decoded = verifyToken(token);
+    if (!decoded?.userId) return null;
+
+    const user = await User.findById(decoded.userId).select(
+      "_id name email avatar"
+    );
+
+    if (!user) return null;
+
+    return {
+      _id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+    };
+  } catch {
+    return null;
+  }
+};
 
 
 export const signToken = (user: any) => {

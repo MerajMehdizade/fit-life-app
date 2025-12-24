@@ -72,7 +72,7 @@ export default function GeneralSettings() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">تنظیمات عمومی اپلیکیشن</h1>
+      <h1 className="text-2xl font-bold text-white">تنظیمات عمومی اپلیکیشن</h1>
 
       <div className="space-y-4">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
