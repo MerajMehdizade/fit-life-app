@@ -1,31 +1,28 @@
-import { writeFile } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { getCurrentUser } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
-export async function POST(req: { formData: () => any; }) {
+export async function POST(req: Request) {
   const user = await getCurrentUser();
   if (!user)
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const data = await req.formData();
-  const file = data.get("avatar");
+  const file = data.get("avatar") as File;
   if (!file)
-    return Response.json({ error: "No file" }, { status: 400 });
+    return NextResponse.json({ error: "No file" }, { status: 400 });
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+  const ext = file.type.split("/")[1];
+  const fileName = `avatars/${user._id}-${Date.now()}.${ext}`;
 
-  const fileName = `${user._id}-${Date.now()}-${file.name}`;
-  const savePath = path.join(process.cwd(), "public/uploads", fileName);
-
-  await writeFile(savePath, buffer);
+  const blob = await put(fileName, file, { access: "public" });
 
   await connectDB();
   await User.findByIdAndUpdate(user._id, {
-    avatar: `/uploads/${fileName}`,
+    avatar: blob.url,
   });
 
-  return Response.json({ success: true, avatar: `/uploads/${fileName}` });
+  return NextResponse.json({ success: true, avatar: blob.url });
 }
