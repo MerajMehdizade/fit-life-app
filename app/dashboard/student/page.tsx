@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import DropdownMenu from "../../Components/DropdownMenu/DropdownMenu";
 import Link from "next/link";
 import Toast from "@/app/Components/toast/Toast";
+import AvatarCropper from "@/app/Components/AvatarCropper/AvatarCropper";
+import { cropImage } from "@/lib/cropImage";
 
 interface ProfileType {
   age?: number;
@@ -74,6 +76,7 @@ export default function DashboardPage() {
   const [toast, setToast] = useState({ show: false, message: "", type: "success" as "success" | "error" });
   const [step, setStep] = useState(1);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -93,7 +96,7 @@ export default function DashboardPage() {
     };
     fetchUser();
   }, [router]);
-  const avatarSubmit = async (e : any) => {
+  const avatarSubmit = async (e: any) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -199,9 +202,12 @@ export default function DashboardPage() {
                   type="file"
                   accept="image/*"
                   hidden
-                  onChange={avatarSubmit}
+                  onChange={e => setCropFile(e.target.files?.[0] || null)}
                 />
+
               </label>
+
+
             </div>
 
             <form onSubmit={handleProfileSubmit} className="flex flex-col justify-between gap-6 h-full p-5">
@@ -267,6 +273,18 @@ export default function DashboardPage() {
         </Link>
         <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
       </div>
+      {cropFile && (
+        <AvatarCropper
+          file={cropFile}
+          onDone={async (area: any) => {
+            const blob = await cropImage(URL.createObjectURL(cropFile), area);
+            const fd = new FormData();
+            fd.append("avatar", blob);
+            await fetch("/api/user/avatar", { method: "POST", body: fd });
+            location.reload();
+          }}
+        />
+      )}
     </>
   );
 }

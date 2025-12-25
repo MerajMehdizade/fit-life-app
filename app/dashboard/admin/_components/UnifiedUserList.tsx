@@ -133,7 +133,7 @@ export default function UnifiedUserList({ role }: Props) {
     const filteredData = data.filter((u) => {
         if (role === "student") {
             if (filter.noPlans && u.plansCount! > 0) return false;
-            if (filter.noCoach && u.hasCoach) return false; // 👈 این خط
+            if (filter.noCoach && u.hasCoach) return false;
             if (filter.suspended && u.status !== "suspended") return false;
         }
         if (role === "coach") {
