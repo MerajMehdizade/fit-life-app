@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Toast from "../Components/Toast/Toast";
+import Toast from "../Components/toast/Toast";
 import { Button } from "../Components/Form/Button";
 import { Input } from "../Components/Form/Input";
 import { Form } from "../Components/Form/Form";

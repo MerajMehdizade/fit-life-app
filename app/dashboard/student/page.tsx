@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import DropdownMenu from "../../Components/DropdownMenu/DropdownMenu";
 import Link from "next/link";
-import Toast from "@/app/Components/Toast/Toast";
+import Toast from "@/app/Components/toast/Toast";
 
 interface ProfileType {
   age?: number;

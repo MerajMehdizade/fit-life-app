@@ -4,7 +4,7 @@ import { Button } from "@/app/Components/Form/Button";
 import { Form } from "@/app/Components/Form/Form";
 import { Input } from "@/app/Components/Form/Input";
 import { PasswordInput } from "@/app/Components/Form/PasswordInput";
-import Toast from "@/app/Components/Toast/Toast";
+import Toast from "@/app/Components/toast/Toast";
 import { useState } from "react";
 import Loading from "@/app/Components/LoadingSpin/Loading";
 type Props = {
