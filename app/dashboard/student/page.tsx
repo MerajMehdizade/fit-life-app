@@ -96,17 +96,22 @@ export default function DashboardPage() {
     };
     fetchUser();
   }, [router]);
-  const avatarSubmit = async (e: any) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    setAvatarPreview(URL.createObjectURL(file));
-
+  const handleAvatarUpload = async (blob: Blob) => {
     const fd = new FormData();
-    fd.append("avatar", file);
+    fd.append("avatar", blob);
 
-    await fetch("/api/user/avatar", { method: "POST", body: fd });
-  }
+    const res = await fetch("/api/user/avatar", { method: "POST", body: fd });
+    const data = await res.json();
+    if (data.success) {
+      setAvatarPreview(data.avatar); // نمایش URL واقعی سرور
+      setUser((prev) => (prev ? { ...prev, avatar: data.avatar } : null));
+      setCropFile(null);
+    } else {
+      setToast({ show: true, message: "خطا در آپلود آواتار", type: "error" });
+    }
+  };
+
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const allFields = Object.values(stepsFields).flat();
@@ -278,11 +283,9 @@ export default function DashboardPage() {
           file={cropFile}
           onDone={async (area: any) => {
             const blob = await cropImage(URL.createObjectURL(cropFile), area);
-            const fd = new FormData();
-            fd.append("avatar", blob);
-            await fetch("/api/user/avatar", { method: "POST", body: fd });
-            location.reload();
+            await handleAvatarUpload(blob);
           }}
+          onCancel={() => setCropFile(null)}
         />
       )}
     </>
