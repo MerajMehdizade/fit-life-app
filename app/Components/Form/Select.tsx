@@ -22,7 +22,8 @@ export function Select({
       </span>
       <select
         value={value}
-        onMouseDown={() => setOpen(prev => !prev)}  
+        onChange={onChange}
+        onMouseDown={() => setOpen(prev => !prev)}
         onBlur={() => setOpen(false)}
         onKeyDown={() => setOpen(true)}
         className={`block w-full py-3 px-11 

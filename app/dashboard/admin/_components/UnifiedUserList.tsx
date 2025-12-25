@@ -38,7 +38,7 @@ export default function UnifiedUserList({ role }: Props) {
     const [filter, setFilter] = useState<Record<string, boolean>>({});
     const [open, setOpen] = useState(false);
     let urlRole = "";
-    
+
     useEffect(() => {
         if (role === "student") setFilter({ noPlans: false, noCoach: false, suspended: false });
         if (role === "coach") setFilter({ noStudents: false, suspended: false });
@@ -454,23 +454,27 @@ export default function UnifiedUserList({ role }: Props) {
                     onClose={() => setDeleteId(null)}
                     onConfirm={async () => {
                         if (!deleteId) return;
+                        const idToDelete = deleteId;
+
                         try {
-                            const url =
-                                role === "student"
-                                    ? `/api/admin/students/delete/${deleteId}`
-                                    : role === "coach"
-                                        ? `/api/admin/coaches/delete/${deleteId}`
-                                        : `/api/admin/users/delete/${deleteId}`;
+                            const url = `/api/admin/users/${idToDelete}`
                             const res = await fetch(url, { method: "DELETE", credentials: "include" });
                             const json = await res.json();
-                            if (json.success) {
-                                setData((prev) => prev.filter((u) => u._id !== deleteId));
+
+                            if (json.msg === "Deleted") {
+                                setData((prev) => prev.filter((u) => u._id !== idToDelete));
+                            } else {
+                                console.error("Delete failed:", json);
                             }
-                        } catch (err) { console.error(err); }
-                        setDeleteId(null);
+                        } catch (err) {
+                            console.error(err);
+                        } finally {
+                            setDeleteId(null);
+                        }
                     }}
                 />
             )}
+
         </div>
     );
 }

@@ -1,68 +1,97 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/app/context/UserContext";
 import DropdownMenu from "@/app/Components/DropdownMenu/DropdownMenu";
-import Link from "next/link";
-import Toast from "@/app/Components/toast/Toast";
 import AvatarCropper from "@/app/Components/AvatarCropper/AvatarCropper";
-import { cropImage } from "@/lib/cropImage";
-
-interface UserType {
-  name: string;
-  email: string;
-  avatar: string | null;
-}
+import Toast from "@/app/Components/toast/Toast";
+import Link from "next/link";
+import { createCroppedBlob } from "@/lib/createCroppedBlob";
 
 export default function CoachDashboard() {
-  const { user, logout, loading } = useUser();
+  const { user, logout, loading, setUser } = useUser();
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [cropFile, setCropFile] = useState<File | null>(null);
   const [toast, setToast] = useState({ show: false, message: "", type: "success" as "success" | "error" });
 
-  if (loading || !user) {
-    return <div className="text-white text-center mt-10">در حال بارگذاری...</div>;
-  }
+  // set avatarPreview on user load or change
+  useEffect(() => {
+    if (user) {
+      setAvatarPreview(user.avatar ? `${user.avatar}?t=${Date.now()}` : "/avatars/default.webp");
+    }
+  }, [user?.avatar]);
 
-  const handleAvatarUpload = async (blob: Blob) => {
+  if (loading || !user) return <div className="text-white text-center mt-10">در حال بارگذاری...</div>;
+
+  // Upload avatar with cache-busting
+  async function uploadAvatar(blob: Blob) {
     const fd = new FormData();
     fd.append("avatar", blob);
 
     try {
       const res = await fetch("/api/user/avatar", { method: "POST", body: fd, credentials: "include" });
       const data = await res.json();
-      if (data.success) {
-        setAvatarPreview(data.avatar);
-        setToast({ show: true, message: "آواتار با موفقیت آپلود شد", type: "success" });
+
+      if (res.ok && data.avatar) {
+        const newAvatarUrl = `${data.avatar}?t=${Date.now()}`;
+        setAvatarPreview(newAvatarUrl);
+        setUser(prev => prev ? { ...prev, avatar: data.avatar } : prev);
+        setToast({ show: true, message: "آواتار با موفقیت بروزرسانی شد", type: "success" });
         setCropFile(null);
       } else {
-        setToast({ show: true, message: "خطا در آپلود آواتار", type: "error" });
+        setToast({ show: true, message: data.error || "خطا در آپلود آواتار", type: "error" });
       }
     } catch {
       setToast({ show: true, message: "خطا در ارتباط با سرور", type: "error" });
     }
-  };
+  }
+
+  // Delete avatar
+  async function handleDeleteAvatar() {
+    try {
+      const res = await fetch("/api/user/avatar/delete", { method: "POST", credentials: "include" });
+      const data = await res.json();
+      if (data.success) {
+        const defaultAvatar = `/avatars/default.webp?t=${Date.now()}`;
+        setAvatarPreview(defaultAvatar);
+        setUser(prev => prev ? { ...prev, avatar: "" } : null);
+        setToast({ show: true, message: "آواتار حذف شد", type: "success" });
+      } else {
+        setToast({ show: true, message: data.error || "خطا در حذف آواتار", type: "error" });
+      }
+    } catch {
+      setToast({ show: true, message: "خطا در ارتباط با سرور", type: "error" });
+    }
+  }
 
   return (
     <div className="bg-gray-900 min-h-screen">
+      {/* DropdownMenu با role مربی */}
       <DropdownMenu
         role="Coach"
         items={[
-          { label: "شاگردا", href: "/dashboard/coach/students" },
+          { label: "شاگردها", href: "/dashboard/coach/students" },
           { label: "ترجیحات", href: "/preferences" },
           { label: "خروج", onClick: logout, danger: true },
         ]}
       />
 
-      <div className="mt-10 text-center space-y-5 text-white">
-        <h1 className="text-3xl font-bold">{user.name} Dashboard</h1>
-        <p>جستجوی شاگردها و مدیریت برنامه‌ها</p>
+      <div className="mt-10 text-center space-y-6 text-white">
+        <h1 className="text-3xl font-bold">{user.name}</h1>
 
-        <div className="flex flex-col items-center mb-6 gap-3">
+        <div className="flex flex-col items-center gap-3">
           <img
-            src={avatarPreview || user.avatar || "/avatars/default.png"}
-            className="w-28 h-28 rounded-full object-cover border-4 border-cyan-800"
+            src={avatarPreview || "/avatars/default.webp"}
+            className="w-28 h-28 rounded-full border-4 border-cyan-800 object-cover"
           />
+          <div className="flex gap-2 mt-2 justify-center">
+            <button
+              className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition"
+              onClick={handleDeleteAvatar}
+            >
+              حذف آواتار
+            </button>
+          </div>
 
           <label className="cursor-pointer bg-cyan-900 px-4 py-2 rounded-lg hover:bg-cyan-800 transition">
             تغییر آواتار
@@ -77,24 +106,31 @@ export default function CoachDashboard() {
 
         <Link
           href="/dashboard/coach/students"
-          className="p-2 bg-green-500 rounded-xl inline-block hover:bg-green-600 transition"
+          className="inline-block px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition"
         >
-          شاگرد ها
+          شاگردها
         </Link>
       </div>
 
+      {/* Avatar Cropper */}
       {cropFile && (
         <AvatarCropper
           file={cropFile}
-          onDone={async (area: any) => {
-            const blob = await cropImage(URL.createObjectURL(cropFile), area);
-            await handleAvatarUpload(blob);
+          onConfirm={async area => {
+            const blob = await createCroppedBlob(cropFile, area);
+            await uploadAvatar(blob);
           }}
           onCancel={() => setCropFile(null)}
         />
       )}
 
-      <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
+      {/* Toast */}
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast(prev => ({ ...prev, show: false }))}
+      />
     </div>
   );
 }

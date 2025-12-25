@@ -6,7 +6,8 @@ import DropdownMenu from "../../Components/DropdownMenu/DropdownMenu";
 import Link from "next/link";
 import Toast from "@/app/Components/toast/Toast";
 import AvatarCropper from "@/app/Components/AvatarCropper/AvatarCropper";
-import { cropImage } from "@/lib/cropImage";
+import { createCroppedBlob } from "@/lib/createCroppedBlob";
+import { useUser } from "@/app/context/UserContext";
 
 interface ProfileType {
   age?: number;
@@ -71,7 +72,7 @@ const stepsFields: Record<number, ProfileField[]> = {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<UserType | null>(null);
+  const { user, setUser } = useUser();
   const [profile, setProfile] = useState<ProfileType>({});
   const [toast, setToast] = useState({ show: false, message: "", type: "success" as "success" | "error" });
   const [step, setStep] = useState(1);
@@ -79,58 +80,63 @@ export default function DashboardPage() {
   const [cropFile, setCropFile] = useState<File | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/user/me");
-        const data = await res.json();
-        if (!res.ok) router.replace("/login");
-        else {
-          setUser(data.user);
-          setProfile(data.user.profile ?? {});
-          setToast({ show: true, message: `${data.user.name} عزیز خوش آمدید!`, type: "success" });
-          setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 5000);
-        }
-      } catch {
-        router.replace("/login");
+    if (!user) return;
+    setAvatarPreview(user.avatar ? `${user.avatar}?t=${Date.now()}` : "/avatars/default.webp");
+    setProfile(user.profile ?? {});
+  }, [user]);
+
+  const handleAvatarDelete = async () => {
+    try {
+      const res = await fetch("/api/user/avatar/delete", { method: "POST", credentials: "include" });
+      const data = await res.json();
+      if (data.success) {
+        const defaultAvatar = `/avatars/default.webp?t=${Date.now()}`;
+        setAvatarPreview(defaultAvatar);
+        setUser(prev => prev ? { ...prev, avatar: "" } : null);
+        setToast({ show: true, message: "آواتار حذف شد", type: "success" });
+      } else {
+        setToast({ show: true, message: data.error || "خطا در حذف آواتار", type: "error" });
       }
-    };
-    fetchUser();
-  }, [router]);
+    } catch {
+      setToast({ show: true, message: "خطا در ارتباط با سرور", type: "error" });
+    }
+  };
 
   const handleAvatarUpload = async (blob: Blob) => {
     const fd = new FormData();
     fd.append("avatar", blob);
 
-    const res = await fetch("/api/user/avatar", { method: "POST", body: fd });
-    const data = await res.json();
-    if (data.success) {
-      setAvatarPreview(data.avatar); // نمایش URL واقعی سرور
-      setUser((prev) => (prev ? { ...prev, avatar: data.avatar } : null));
-      setCropFile(null);
-    } else {
-      setToast({ show: true, message: "خطا در آپلود آواتار", type: "error" });
+    try {
+      const res = await fetch("/api/user/avatar", { method: "POST", body: fd, credentials: "include" });
+      const data = await res.json();
+
+      if (data.success && data.avatar) {
+        const newAvatarUrl = `${data.avatar}?t=${Date.now()}`;
+        setAvatarPreview(newAvatarUrl);
+        setUser(prev => prev ? { ...prev, avatar: data.avatar } : null);
+        setCropFile(null);
+        setToast({ show: true, message: "آواتار با موفقیت آپلود شد", type: "success" });
+      } else {
+        setToast({ show: true, message: data.error || "خطا در آپلود آواتار", type: "error" });
+      }
+    } catch {
+      setToast({ show: true, message: "خطا در ارتباط با سرور", type: "error" });
     }
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const allFields = Object.values(stepsFields).flat();
-    const emptyField = allFields.find((field) => {
-      const value = profile[field.name];
-      return value === undefined || value === "";
-    });
+    const emptyField = allFields.find(field => profile[field.name] === undefined || profile[field.name] === "");
     if (emptyField) {
       const fieldStep = Object.entries(stepsFields).find(([_, fields]) =>
-        fields.some((f) => f.name === emptyField.name)
+        fields.some(f => f.name === emptyField.name)
       );
       if (fieldStep) setStep(Number(fieldStep[0]));
-      setToast({
-        show: true,
-        message: `لطفا فیلد "${emptyField.placeholder}" را پر کنید`,
-        type: "error",
-      });
+      setToast({ show: true, message: `لطفا فیلد "${emptyField.placeholder}" را پر کنید`, type: "error" });
       return;
     }
+
     try {
       const res = await fetch("/api/user/update", {
         method: "PATCH",
@@ -139,21 +145,24 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       setToast({ show: true, message: data.message, type: res.ok ? "success" : "error" });
-      if (res.ok) setUser((prev) => (prev ? { ...prev, profile: data.profile } : null));
+      if (res.ok) setUser(prev => prev ? { ...prev, profile: data.profile } : null);
     } catch {
       setToast({ show: true, message: "خطا در ذخیره اطلاعات", type: "error" });
     }
   };
-  if (!user)
-    return <div className="flex items-center justify-center h-screen text-white text-xl">Loading...</div>;
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 4));
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
+  if (!user) return <div className="flex items-center justify-center h-screen text-white text-xl">Loading...</div>;
+
+  const nextStep = () => setStep(prev => Math.min(prev + 1, 4));
+  const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
+
   return (
     <>
-      <div className="bg-gray-900 ">
+      <div className="bg-gray-900 min-h-screen">
         <DropdownMenu role="Student" />
+
         <div className="flex flex-col items-center md:pt-10 text-white w-full px-4 md:px-0">
+          {/* Steps UI */}
           <ul className="relative flex gap-6 md:gap-2 mb-5 font-yekanBakhBold mt-10">
             {["اطلاعات فردی", "آمار بدنی", "ترجیحات تمرینی", "تنظیمات تغذیه"].map((title, idx) => {
               const index = idx + 1;
@@ -161,31 +170,16 @@ export default function DashboardPage() {
               return (
                 <li key={idx} className="group flex flex-1 flex-col items-center gap-2 md:flex-row">
                   <span className="min-h-7.5 min-w-7.5 inline-flex flex-col items-center gap-2 align-middle text-sm">
-                    <div className="flex items-center justify-center gap-5 ">
-                      <span
-                        className={`flex size-7.5 shrink-0 items-center justify-center rounded-full font-medium ${active ? "bg-blue-800 text-white shadow-sm" : "bg-gray-500/30 text-gray-200"
-                          }`}
-                      >
+                    <div className="flex items-center justify-center gap-5">
+                      <span className={`flex size-7.5 shrink-0 items-center justify-center rounded-full font-medium ${active ? "bg-blue-800 text-white shadow-sm" : "bg-gray-500/30 text-gray-200"}`}>
                         {active ? (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="size-5"
-                          >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                           </svg>
-                        ) : (
-                          index
-                        )}
+                        ) : index}
                       </span>
                       {index <= 3 && (
-                        <div
-                          className={`md:h-1 md:w-30 rounded-2xl ${active ? "bg-blue-800 shadow-sm" : "bg-gray-500/30 hidden md:block"
-                            }`}
-                        ></div>
+                        <div className={`md:h-1 md:w-30 rounded-2xl ${active ? "bg-blue-800 shadow-sm" : "bg-gray-500/30 hidden md:block"}`}></div>
                       )}
                     </div>
                     <span className="text-base-content text-nowrap font-medium mt-2">{title}</span>
@@ -194,99 +188,30 @@ export default function DashboardPage() {
               );
             })}
           </ul>
+
+          {/* Avatar Upload */}
           <div className="w-full rounded-lg p-4 shadow-sm max-w-4xl">
             <div className="flex flex-col items-center mb-6 gap-3">
-              <img
-                src={avatarPreview || user.avatar || "/avatars/default.png"}
-                className="w-28 h-28 rounded-full object-cover border-4 border-cyan-800"
-              />
-
+              <img src={avatarPreview || "/avatars/default.webp"} className="w-28 h-28 rounded-full object-cover border-4 border-cyan-800" />
+              <button className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition" onClick={handleAvatarDelete}>حذف آواتار</button>
               <label className="cursor-pointer bg-cyan-900 px-4 py-2 rounded-lg">
                 تغییر آواتار
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={e => setCropFile(e.target.files?.[0] || null)}
-                />
-
+                <input type="file" accept="image/*" hidden onChange={e => setCropFile(e.target.files?.[0] || null)} />
               </label>
-
-
             </div>
-
-            <form onSubmit={handleProfileSubmit} className="flex flex-col justify-between gap-6 h-full p-5">
-              <div className="flex flex-wrap gap-3">
-                {stepsFields[step].map((field) => (
-                  <input
-                    key={field.name}
-                    type={field.type}
-                    placeholder={field.placeholder}
-                    className={`p-2 bg-gray-700 text-white rounded-lg tex-sm w-full h-10 md:w-[calc(50%-0.75rem)] `}
-                    value={profile[field.name] ?? ""}
-                    onChange={(e) =>
-                      setProfile({
-                        ...profile,
-                        [field.name]:
-                          field.type === "number"
-                            ? e.target.value === ""
-                              ? undefined
-                              : +e.target.value
-                            : e.target.value,
-                      })
-                    }
-                  />
-                ))}
-              </div>
-
-              <div className="mt-5 flex items-center justify-between gap-y-2 ">
-                {step > 1 && (
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="hover:bg-red-500 w-24 h-12  p-3 rounded-md cursor-pointer transition-all text-center"
-                  >
-                    بازگشت
-                  </button>
-                )}
-                {step < 4 && (
-                  <button
-                    type="button"
-                    onClick={nextStep}
-                    className="bg-cyan-900 w-24 h-12 p-3 rounded-md cursor-pointer transition-all text-center ms-auto"
-                  >
-                    بعدی
-                  </button>
-                )}
-                {step === 4 && (
-                  <button
-                    type="submit"
-                    className="bg-cyan-950 w-30 h-12 p-3 rounded-md cursor-pointer transition-all text-center"
-                  >
-                    ذخیره اطلاعات
-                  </button>
-                )}
-              </div>
-            </form>
           </div>
         </div>
-        <Link
-          href="/dashboard/student/program"
-          className="p-2 bg-green-500 rounded-xl inline-block"
-        >
-          برنامه
-        </Link>
+
+        <Link href="/dashboard/student/program" className="p-2 bg-green-500 rounded-xl inline-block">برنامه</Link>
+
         <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
       </div>
+
       {cropFile && (
-        <AvatarCropper
-          file={cropFile}
-          onDone={async (area: any) => {
-            const blob = await cropImage(URL.createObjectURL(cropFile), area);
-            await handleAvatarUpload(blob);
-          }}
-          onCancel={() => setCropFile(null)}
-        />
+        <AvatarCropper file={cropFile} onConfirm={async area => {
+          const blob = await createCroppedBlob(cropFile, area);
+          handleAvatarUpload(blob);
+        }} onCancel={() => setCropFile(null)} />
       )}
     </>
   );

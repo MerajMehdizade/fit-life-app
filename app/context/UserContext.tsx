@@ -4,19 +4,22 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { useRouter } from "next/navigation";
 
 export type ProfileType = {
-  id?: string;
-  name?: string;
-  email?: string;
-  avatar?: string;
-  role?: "Admin" | "Coach" | "Student";
+  profile: {};
+  _id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  role: "student" | "coach" | "admin";
 };
+
 
 type UserContextType = {
   user: ProfileType | null;
-  setUser: (u: ProfileType | null) => void;
+  setUser: React.Dispatch<React.SetStateAction<ProfileType | null>>;
   logout: () => Promise<void>;
   loading: boolean;
 };
+
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 

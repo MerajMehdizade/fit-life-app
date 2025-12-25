@@ -4,15 +4,9 @@ import User from "@/models/User";
 import { verifyToken } from "@/lib/auth";
 import { logAdminAction } from "@/lib/log";
 
-//==========================
-//  دریافت Token مطمئن
-//==========================
 async function getToken(req: Request) {
-  // try cookie header
   const raw = req.headers.get("cookie") || "";
   let token = raw.split("token=")?.[1]?.split(";")?.[0] || "";
-
-  // try bearer
   if (!token) {
     const auth = req.headers.get("authorization") || "";
     if (auth.toLowerCase().startsWith("bearer "))
@@ -21,10 +15,6 @@ async function getToken(req: Request) {
 
   return token;
 }
-
-//==========================
-//  DELETE - حذف کاربر
-//==========================
 export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
@@ -41,7 +31,6 @@ export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }
   if (!adminId || payload.role !== "admin")
     return NextResponse.json({ msg: "Forbidden" }, { status: 403 });
 
-  // delete
   const deletedUser = await User.findByIdAndDelete(id);
 
   if (deletedUser) {
@@ -59,9 +48,6 @@ export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }
 }
 
 
-//==========================
-//  PUT - ویرایش کاربر
-//==========================
 export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
@@ -80,7 +66,6 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
 
   const data = await req.json();
 
-  // قبل از ویرایش، اطلاعات قدیمی بگیر
   const oldUser = await User.findById(id);
   if (!oldUser)
     return NextResponse.json({ msg: "User not found" }, { status: 404 });

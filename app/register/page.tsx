@@ -16,7 +16,6 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<"student" | "coach">("student");
   const [toast, setToast] = useState({
     show: false,
@@ -104,6 +103,7 @@ export default function RegisterPage() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             placeholder="رمز عبور"
+            required
           />
 
           <div className="mt-6">
