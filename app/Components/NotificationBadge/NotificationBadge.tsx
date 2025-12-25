@@ -27,11 +27,11 @@ export default function NotificationBadge() {
   };
 
   useEffect(() => {
-    if (loading || !user?.id) return;
+    if (loading || !user?._id) return;
     // initial sync
     fetchUnread();
 
-    const channelName = `user-${user.id}`;
+    const channelName = `user-${user._id}`;
     const channel = pusherClient.subscribe(channelName);
 
     const sync = () => fetchUnread();
@@ -48,7 +48,7 @@ export default function NotificationBadge() {
       pusherClient.connection.unbind("connected", sync);
       pusherClient.unsubscribe(channelName);
     };
-  }, [loading, user?.id]);
+  }, [loading, user?._id]);
 
   if (!user || count === 0) {
     return (
