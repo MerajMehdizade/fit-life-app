@@ -153,7 +153,7 @@ export default function SendNotificationPage() {
                 {dropdownOpen && (
                   <div className="absolute z-50 w-full mt-1 max-h-64 overflow-y-auto bg-gray-800 rounded-lg border border-gray-700 p-2 space-y-2">
 
-                    <Select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+                    <Select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} icon={true}>
                       <option value="">همه نقش‌ها</option>
                       <option value="admin">ادمین</option>
                       <option value="coach">مربی</option>

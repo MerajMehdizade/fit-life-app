@@ -24,16 +24,32 @@ export async function POST(req: Request) {
     .webp({ quality: 85 })
     .toBuffer();
 
-  const blob = await put(`avatars/${user._id}.webp`, final, {
+  await connectDB();
+
+  // 🔹 حذف آواتار قدیمی اگر موجود باشد
+  if (user.avatar) {
+    const key = user.avatar.split("/").slice(-1)[0];
+    try {
+      await fetch(`https://api.vercel.com/v1/blob/${key}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` }
+      });
+    } catch (err) {
+      console.warn("Failed to delete old avatar:", err);
+    }
+  }
+
+  // 🔹 نام یکتا برای آواتار جدید
+  const filename = `avatars/${user._id}-${Date.now()}.webp`;
+
+  const blob = await put(filename, final, {
     access: "public",
     token: process.env.BLOB_READ_WRITE_TOKEN!,
-    allowOverwrite: true,
   });
-  if (!blob?.url) {
-    return NextResponse.json({ error: "Failed to upload avatar" }, { status: 500 });
-  }
-  await connectDB();
-  await User.findByIdAndUpdate(user._id, { avatar: blob.url });
+
+  if (!blob?.url) return NextResponse.json({ error: "Failed to upload avatar" }, { status: 500 });
+
+  await User.findByIdAndUpdate(user._id, { $set: { avatar: blob.url } });
 
   return NextResponse.json({ success: true, avatar: blob.url });
 }

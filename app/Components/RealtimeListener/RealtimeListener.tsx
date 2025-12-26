@@ -43,7 +43,7 @@ export default function RealtimeListener({
     return () => {
       channel.unbind("new-notification", handleNew);
       channel.unbind("notification-read", handleRead);
-      // ❌ unsubscribe نکن
+
     };
   }, [userId]);
 

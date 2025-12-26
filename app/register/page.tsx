@@ -94,7 +94,7 @@ export default function RegisterPage() {
               </svg>
             }
           />
-          <Select value={role}
+          <Select value={role} icon={true}
             onChange={(e) => setRole(e.target.value as "student" | "coach")}>
             <option value="student">دانشجو</option>
             <option value="coach">مربی</option>

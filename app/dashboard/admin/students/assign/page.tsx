@@ -87,7 +87,7 @@ export default function AssignPage() {
           {/* دانشجو */}
           <div className="mb-5">
             <label className="block mb-2 text-sm text-gray-300">دانشجو</label>
-            <Select
+            <Select icon={true}
               value={selectedStudent}
               onChange={(e) => setSelectedStudent(e.target.value)}
             >
@@ -103,7 +103,7 @@ export default function AssignPage() {
           {/* مربی */}
           <div className="mb-8">
             <label className="block mb-2 text-sm text-gray-300">مربی</label>
-            <Select
+            <Select icon={true}
               value={selectedCoach}
               onChange={(e) => setSelectedCoach(e.target.value)}
             >

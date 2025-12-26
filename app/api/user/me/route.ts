@@ -28,11 +28,11 @@ export async function GET() {
 
   return NextResponse.json({
     user: {
-      id: user._id, 
+      id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      avatar: user.avatar,
+      avatar: user.avatar || "",
       profile: user.profile ?? {},
     },
   });

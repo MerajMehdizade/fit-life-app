@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 export type ProfileType = {
   profile: {};
-  _id: string;
+  id: string;
   name: string;
   email: string;
   avatar: string;
@@ -38,8 +38,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
         if (!mounted) return;
         if (res.ok) {
           const data = await res.json();
-          setUser(data?.user ?? null);
-        } else {
+          const avatarUrl = data.user?.avatar ? `${data.user.avatar}?t=${Date.now()}` : "/avatars/default.webp";
+          setUser({ ...data.user, avatar: avatarUrl });
+        }
+
+        else {
           setUser(null);
         }
       } catch (err) {
@@ -52,7 +55,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     fetchUser();
 
     return () => { mounted = false; };
-  }, [router]);
+  }, []);
 
   // logout (client) — حتماً credentials: "include" بذار
   const logout = async () => {

@@ -29,7 +29,6 @@ export async function PATCH(req: Request, context: any) {
     coach.status = newStatus;
     await coach.save();
 
-    // 🟢 ثبت لاگ ادمین — نسخه کاملاً درست
     await logAdminAction({
       adminId: admin._id,
       targetUserId: id,

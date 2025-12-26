@@ -14,16 +14,16 @@ export default function CoachDashboard() {
   const [cropFile, setCropFile] = useState<File | null>(null);
   const [toast, setToast] = useState({ show: false, message: "", type: "success" as "success" | "error" });
 
-  // set avatarPreview on user load or change
+  // ✅ Set avatarPreview on user load or change
   useEffect(() => {
     if (user) {
-      setAvatarPreview(user.avatar ? `${user.avatar}?t=${Date.now()}` : "/avatars/default.webp");
+      setAvatarPreview(user.avatar || "/avatars/default.webp");
     }
   }, [user?.avatar]);
 
   if (loading || !user) return <div className="text-white text-center mt-10">در حال بارگذاری...</div>;
 
-  // Upload avatar with cache-busting
+  // ✅ Upload avatar
   async function uploadAvatar(blob: Blob) {
     const fd = new FormData();
     fd.append("avatar", blob);
@@ -33,8 +33,7 @@ export default function CoachDashboard() {
       const data = await res.json();
 
       if (res.ok && data.avatar) {
-        const newAvatarUrl = `${data.avatar}?t=${Date.now()}`;
-        setAvatarPreview(newAvatarUrl);
+        setAvatarPreview(data.avatar);
         setUser(prev => prev ? { ...prev, avatar: data.avatar } : prev);
         setToast({ show: true, message: "آواتار با موفقیت بروزرسانی شد", type: "success" });
         setCropFile(null);
@@ -46,14 +45,13 @@ export default function CoachDashboard() {
     }
   }
 
-  // Delete avatar
+  // ✅ Delete avatar
   async function handleDeleteAvatar() {
     try {
       const res = await fetch("/api/user/avatar/delete", { method: "POST", credentials: "include" });
       const data = await res.json();
       if (data.success) {
-        const defaultAvatar = `/avatars/default.webp?t=${Date.now()}`;
-        setAvatarPreview(defaultAvatar);
+        setAvatarPreview("/avatars/default.webp");
         setUser(prev => prev ? { ...prev, avatar: "" } : null);
         setToast({ show: true, message: "آواتار حذف شد", type: "success" });
       } else {
@@ -64,9 +62,15 @@ export default function CoachDashboard() {
     }
   }
 
+  // ✅ Check if user has a custom avatar
+  const hasCustomAvatar =
+    user.avatar &&
+    user.avatar !== "" &&
+    !user.avatar.includes("default.webp");
+
   return (
     <div className="bg-gray-900 min-h-screen">
-      {/* DropdownMenu با role مربی */}
+      {/* DropdownMenu */}
       <DropdownMenu
         role="Coach"
         items={[
@@ -81,27 +85,32 @@ export default function CoachDashboard() {
 
         <div className="flex flex-col items-center gap-3">
           <img
-            src={avatarPreview || "/avatars/default.webp"}
+            src={avatarPreview  || "/avatars/default.webp"}
             className="w-28 h-28 rounded-full border-4 border-cyan-800 object-cover"
           />
-          <div className="flex gap-2 mt-2 justify-center">
-            <button
-              className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition"
-              onClick={handleDeleteAvatar}
-            >
-              حذف آواتار
-            </button>
-          </div>
 
-          <label className="cursor-pointer bg-cyan-900 px-4 py-2 rounded-lg hover:bg-cyan-800 transition">
-            تغییر آواتار
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={e => setCropFile(e.target.files?.[0] || null)}
-            />
-          </label>
+          <div className="flex gap-2 mt-2 justify-center">
+            {hasCustomAvatar && (
+              <button
+                className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition"
+                onClick={handleDeleteAvatar}
+              >
+                حذف آواتار
+              </button>
+            )}
+
+            {!hasCustomAvatar && (
+              <label className="cursor-pointer bg-cyan-900 px-4 py-2 rounded-lg hover:bg-cyan-800 transition">
+                تغییر آواتار
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={e => setCropFile(e.target.files?.[0] || null)}
+                />
+              </label>
+            )}
+          </div>
         </div>
 
         <Link

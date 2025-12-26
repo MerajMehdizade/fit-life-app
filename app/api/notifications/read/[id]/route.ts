@@ -30,7 +30,7 @@ export async function PATCH(
     await pusherServer.trigger(
       `user-${updated.userId}`,
       "notification-read",
-      { id: updated._id }
+      { id: updated.id }
     );
 
     return NextResponse.json({ success: true, updated });

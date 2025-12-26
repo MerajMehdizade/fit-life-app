@@ -71,27 +71,33 @@ const stepsFields: Record<number, ProfileField[]> = {
 };
 
 export default function DashboardPage() {
-  const router = useRouter();
   const { user, setUser } = useUser();
   const [profile, setProfile] = useState<ProfileType>({});
   const [toast, setToast] = useState({ show: false, message: "", type: "success" as "success" | "error" });
   const [step, setStep] = useState(1);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [cropFile, setCropFile] = useState<File | null>(null);
+  const [avatarLoaded, setAvatarLoaded] = useState(false);
+useEffect(() => {
+  if (!user) return;
 
-  useEffect(() => {
-    if (!user) return;
-    setAvatarPreview(user.avatar ? `${user.avatar}?t=${Date.now()}` : "/avatars/default.webp");
-    setProfile(user.profile ?? {});
-  }, [user]);
+  // avatar همیشه با timestamp
+  const avatarUrl = user.avatar && user.avatar !== ""
+    ? `${user.avatar}?t=${Date.now()}`
+    : "/avatars/default.webp";
+  setAvatarPreview(avatarUrl);
+  setProfile(user.profile ?? {});
+  setAvatarLoaded(true);
+}, [user]);
+
+
 
   const handleAvatarDelete = async () => {
     try {
       const res = await fetch("/api/user/avatar/delete", { method: "POST", credentials: "include" });
       const data = await res.json();
       if (data.success) {
-        const defaultAvatar = `/avatars/default.webp?t=${Date.now()}`;
-        setAvatarPreview(defaultAvatar);
+        setAvatarPreview(data.avatar);
         setUser(prev => prev ? { ...prev, avatar: "" } : null);
         setToast({ show: true, message: "آواتار حذف شد", type: "success" });
       } else {
@@ -111,8 +117,7 @@ export default function DashboardPage() {
       const data = await res.json();
 
       if (data.success && data.avatar) {
-        const newAvatarUrl = `${data.avatar}?t=${Date.now()}`;
-        setAvatarPreview(newAvatarUrl);
+        setAvatarPreview(data.avatar);
         setUser(prev => prev ? { ...prev, avatar: data.avatar } : null);
         setCropFile(null);
         setToast({ show: true, message: "آواتار با موفقیت آپلود شد", type: "success" });
@@ -155,6 +160,10 @@ export default function DashboardPage() {
 
   const nextStep = () => setStep(prev => Math.min(prev + 1, 4));
   const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
+  const hasCustomAvatar =
+    user.avatar &&
+    user.avatar !== "" &&
+    !user.avatar.includes("default.webp");
 
   return (
     <>
@@ -192,13 +201,42 @@ export default function DashboardPage() {
           {/* Avatar Upload */}
           <div className="w-full rounded-lg p-4 shadow-sm max-w-4xl">
             <div className="flex flex-col items-center mb-6 gap-3">
-              <img src={avatarPreview || "/avatars/default.webp"} className="w-28 h-28 rounded-full object-cover border-4 border-cyan-800" />
-              <button className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition" onClick={handleAvatarDelete}>حذف آواتار</button>
-              <label className="cursor-pointer bg-cyan-900 px-4 py-2 rounded-lg">
-                تغییر آواتار
-                <input type="file" accept="image/*" hidden onChange={e => setCropFile(e.target.files?.[0] || null)} />
-              </label>
+              <div className="w-28 h-28 rounded-full border-4 border-cyan-800 overflow-hidden relative">
+                {!avatarLoaded && (
+                  <div className="absolute inset-0 animate-pulse bg-gray-700/50 flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gray-500 rounded-full"></div>
+                  </div>
+                )}
+                {avatarLoaded && (
+                  <img
+                    src={avatarPreview || "/avatars/default.webp"}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                )}
+              </div>
+
+              {hasCustomAvatar && (
+                <button
+                  className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition"
+                  onClick={handleAvatarDelete}
+                >
+                  حذف آواتار
+                </button>
+              )}
+
+              {!hasCustomAvatar && (
+                <label className="cursor-pointer bg-cyan-900 px-4 py-2 rounded-lg">
+                  تغییر آواتار
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={e => setCropFile(e.target.files?.[0] || null)}
+                  />
+                </label>
+              )}
             </div>
+
           </div>
         </div>
 

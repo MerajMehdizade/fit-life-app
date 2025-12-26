@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@/app/Components/Form/Select";
 import { useState, useEffect } from "react";
 
 const timeZones = Intl.supportedValuesOf ? Intl.supportedValuesOf("timeZone") : [
@@ -125,20 +126,19 @@ export default function GeneralSettings() {
 
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <label className="w-32 font-medium">زبان پیش‌فرض:</label>
-          <select
-            className="border rounded px-3 py-2"
+          <Select
             value={language}
             onChange={e => setLanguage(e.target.value)}
           >
             {languages.map(l => (
               <option key={l.value} value={l.value}>{l.label}</option>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <label className="w-32 font-medium">تایم‌زون:</label>
-          <select
+          <Select
             className="border rounded px-3 py-2"
             value={timeZone}
             onChange={e => setTimeZone(e.target.value)}
@@ -146,7 +146,7 @@ export default function GeneralSettings() {
             {timeZones.map(tz => (
               <option key={tz} value={tz}>{tz}</option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
 

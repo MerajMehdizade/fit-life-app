@@ -1,12 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { formatDateFa, parseUserAgent, downloadCSV } from "@/lib/logHelpers";
+import { Select } from "@/app/Components/Form/Select";
+import { Input } from "@/app/Components/Form/Input";
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [type, setType] = useState<"login"|"audit"|"coachActivity">("login");
+  const [type, setType] = useState<"login" | "audit" | "coachActivity">("login");
   const [role, setRole] = useState("");
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
@@ -47,7 +49,7 @@ export default function LogsPage() {
     const rows: string[][] = [];
 
     if (type === "login") {
-      header = ["کاربر","نقش","IP","مرورگر","نسخه","سیستم","دستگاه","تاریخ","UserAgent"];
+      header = ["کاربر", "نقش", "IP", "مرورگر", "نسخه", "سیستم", "دستگاه", "تاریخ", "UserAgent"];
       rows.push(header);
       logs.forEach((log) => {
         const ua = parseUserAgent(log.userAgent);
@@ -64,7 +66,7 @@ export default function LogsPage() {
         ]);
       });
     } else if (type === "audit") {
-      header = ["ادمین","کاربر هدف","عمل","توضیحات","تاریخ"];
+      header = ["ادمین", "کاربر هدف", "عمل", "توضیحات", "تاریخ"];
       rows.push(header);
       logs.forEach((log) => {
         rows.push([
@@ -76,7 +78,7 @@ export default function LogsPage() {
         ]);
       });
     } else if (type === "coachActivity") {
-      header = ["نام","ایمیل","تعداد شاگرد","تعداد ورود","تعداد عملیات","آخرین ورود"];
+      header = ["نام", "ایمیل", "تعداد شاگرد", "تعداد ورود", "تعداد عملیات", "آخرین ورود"];
       rows.push(header);
       logs.forEach((c) => {
         rows.push([
@@ -109,33 +111,36 @@ export default function LogsPage() {
 
       {/* فیلترها */}
       <div className="flex flex-col md:flex-row gap-2 md:gap-3 items-stretch md:items-center">
-        <select
+
+        <Select
           value={type}
           onChange={e => { setType(e.target.value as any); setPage(1); }}
-          className="border rounded-md p-2 flex-1 md:flex-none min-w-[140px] bg-gray-900 text-white"
+          
         >
           <option value="login">لاگ ورود</option>
           <option value="audit">لاگ تغییرات</option>
           <option value="coachActivity">فعالیت مربیان</option>
-        </select>
+        </Select>
 
-        <select
+
+        {/* Select نقش */}
+        <Select
           value={role}
           onChange={e => { setRole(e.target.value); setPage(1); }}
-          className="border rounded-md p-2 flex-1 md:flex-none min-w-[140px] bg-gray-900 text-white"
+          
         >
           <option value="">همه نقش‌ها</option>
           <option value="student">دانشجو</option>
           <option value="coach">مربی</option>
           <option value="admin">ادمین</option>
-        </select>
+        </Select>
 
         {(type === "login" || type === "audit") && (
-          <input
+          <Input
             placeholder={type === "login" ? "فیلتر براساس IP" : "فیلتر براساس عمل"}
             value={filter}
             onChange={e => { setFilter(e.target.value); setPage(1); }}
-            className="border rounded-md p-2 flex-1"
+            className="border rounded-md p-2 flex-1 w-full"
           />
         )}
       </div>
@@ -145,39 +150,39 @@ export default function LogsPage() {
         <table className="w-full text-sm table-auto">
           <thead className="bg-gray-100 dark:bg-gray-700">
             <tr>
-              {type==="login" && ["کاربر","نقش","IP","مرورگر","سیستم / دستگاه","تاریخ"].map(h => <th key={h} className="p-2 text-right">{h}</th>)}
-              {type==="audit" && ["ادمین","کاربر هدف","عمل","توضیحات","تاریخ"].map(h => <th key={h} className="p-2 text-right">{h}</th>)}
-              {type==="coachActivity" && ["نام","ایمیل","شاگردان","ورودها","عملیات","آخرین ورود"].map(h => <th key={h} className="p-2 text-right">{h}</th>)}
+              {type === "login" && ["کاربر", "نقش", "IP", "مرورگر", "سیستم / دستگاه", "تاریخ"].map(h => <th key={h} className="p-2 text-right">{h}</th>)}
+              {type === "audit" && ["ادمین", "کاربر هدف", "عمل", "توضیحات", "تاریخ"].map(h => <th key={h} className="p-2 text-right">{h}</th>)}
+              {type === "coachActivity" && ["نام", "ایمیل", "شاگردان", "ورودها", "عملیات", "آخرین ورود"].map(h => <th key={h} className="p-2 text-right">{h}</th>)}
             </tr>
           </thead>
           <tbody>
             {logs.length === 0 ? (
               <tr><td colSpan={6} className="p-4 text-center text-gray-500">موردی پیدا نشد</td></tr>
-            ) : logs.map((log:any) => (
+            ) : logs.map((log: any) => (
               <tr key={log._id || log.coachId} className="border-t">
-                {type==="login" && (() => {
+                {type === "login" && (() => {
                   const ua = parseUserAgent(log.userAgent);
                   return (
                     <>
-                      <td className="p-2">{log.userId?.name||"—"}</td>
-                      <td className="p-2">{log.role||"—"}</td>
-                      <td className="p-2">{log.ip||"—"}</td>
+                      <td className="p-2">{log.userId?.name || "—"}</td>
+                      <td className="p-2">{log.role || "—"}</td>
+                      <td className="p-2">{log.ip || "—"}</td>
                       <td className="p-2">{ua.browser} {ua.version}</td>
                       <td className="p-2">{ua.os} / {ua.device}</td>
                       <td className="p-2">{formatDateFa(log.createdAt)}</td>
                     </>
                   )
                 })()}
-                {type==="audit" && (
+                {type === "audit" && (
                   <>
-                    <td className="p-2">{log.adminId?.name||"—"}</td>
-                    <td className="p-2">{log.targetUserId?.name||"—"}</td>
+                    <td className="p-2">{log.adminId?.name || "—"}</td>
+                    <td className="p-2">{log.targetUserId?.name || "—"}</td>
                     <td className="p-2">{log.action}</td>
                     <td className="p-2">{log.description}</td>
                     <td className="p-2">{formatDateFa(log.createdAt)}</td>
                   </>
                 )}
-                {type==="coachActivity" && (
+                {type === "coachActivity" && (
                   <>
                     <td className="p-2">{log.name}</td>
                     <td className="p-2">{log.email}</td>
@@ -195,38 +200,38 @@ export default function LogsPage() {
 
       {/* کارت موبایل */}
       <div className="flex flex-col gap-3 md:hidden">
-        {logs.map((log:any) => (
+        {logs.map((log: any) => (
           <div key={log._id || log.coachId} className="border rounded-md p-3 bg-white dark:bg-gray-800 shadow-sm">
-            {type==="login" && (() => {
+            {type === "login" && (() => {
               const ua = parseUserAgent(log.userAgent);
               return (
                 <div className="grid grid-cols-2 gap-1 text-sm">
-                  <div className="font-semibold">کاربر:</div><div>{log.userId?.name||"—"}</div>
-                  <div className="font-semibold">نقش:</div><div>{log.role||"—"}</div>
-                  <div className="font-semibold">IP:</div><div>{log.ip||"—"}</div>
+                  <div className="font-semibold">کاربر:</div><div>{log.userId?.name || "—"}</div>
+                  <div className="font-semibold">نقش:</div><div>{log.role || "—"}</div>
+                  <div className="font-semibold">IP:</div><div>{log.ip || "—"}</div>
                   <div className="font-semibold">مرورگر:</div><div>{ua.browser} {ua.version}</div>
                   <div className="font-semibold">سیستم / دستگاه:</div><div>{ua.os} / {ua.device}</div>
                   <div className="font-semibold">تاریخ:</div><div>{formatDateFa(log.createdAt)}</div>
                 </div>
               )
             })()}
-            {type==="audit" && (
+            {type === "audit" && (
               <div className="grid grid-cols-2 gap-1 text-sm">
-                <div className="font-semibold">ادمین:</div><div>{log.adminId?.name||"—"}</div>
-                <div className="font-semibold">کاربر هدف:</div><div>{log.targetUserId?.name||"—"}</div>
+                <div className="font-semibold">ادمین:</div><div>{log.adminId?.name || "—"}</div>
+                <div className="font-semibold">کاربر هدف:</div><div>{log.targetUserId?.name || "—"}</div>
                 <div className="font-semibold">عمل:</div><div>{log.action}</div>
                 <div className="font-semibold">توضیحات:</div><div>{log.description}</div>
                 <div className="font-semibold">تاریخ:</div><div>{formatDateFa(log.createdAt)}</div>
               </div>
             )}
-            {type==="coachActivity" && (
+            {type === "coachActivity" && (
               <div className="grid grid-cols-2 gap-1 text-sm">
                 <div className="font-semibold">نام:</div><div>{log.name}</div>
                 <div className="font-semibold">ایمیل:</div><div>{log.email}</div>
                 <div className="font-semibold">شاگردان:</div><div>{log.studentCount}</div>
                 <div className="font-semibold">ورودها:</div><div>{log.loginCount}</div>
                 <div className="font-semibold">عملیات:</div><div>{log.actionCount}</div>
-                <div className="font-semibold">آخرین ورود:</div><div>{log.lastLogin?formatDateFa(log.lastLogin):"-"}</div>
+                <div className="font-semibold">آخرین ورود:</div><div>{log.lastLogin ? formatDateFa(log.lastLogin) : "-"}</div>
               </div>
             )}
           </div>
@@ -234,17 +239,17 @@ export default function LogsPage() {
       </div>
 
       {/* Pagination */}
-      {type!=="coachActivity" && logs.length > 0 && (
+      {type !== "coachActivity" && logs.length > 0 && (
         <div className="flex justify-center items-center gap-2 mt-3 text-sm">
           <button
-            disabled={page===1}
-            onClick={()=>setPage(p=>Math.max(1,p-1))}
+            disabled={page === 1}
+            onClick={() => setPage(p => Math.max(1, p - 1))}
             className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
           >قبلی</button>
           <span>{page}/{pages}</span>
           <button
-            disabled={page===pages}
-            onClick={()=>setPage(p=>Math.min(pages,p+1))}
+            disabled={page === pages}
+            onClick={() => setPage(p => Math.min(pages, p + 1))}
             className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
           >بعدی</button>
         </div>

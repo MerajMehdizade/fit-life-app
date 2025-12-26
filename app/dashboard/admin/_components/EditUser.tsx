@@ -138,7 +138,7 @@ export default function EditUser({ id }: { id: string }) {
           />
 
           <Select value={form.role}
-            onChange={(e) => setForm({ ...form, role: e.target.value })}>
+            onChange={(e) => setForm({ ...form, role: e.target.value })} icon={true}>
             <option value="student">Student</option>
             <option value="coach">Coach</option>
             <option value="admin">Admin</option>

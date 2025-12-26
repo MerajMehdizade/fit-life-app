@@ -98,7 +98,7 @@ export default function NotificationsPage() {
   return (
     <>
       <RealtimeListener
-        userId={user!._id!}
+        userId={user!.id!}
         onNewNotification={(notif) => {
           setNotifications(prev => [notif, ...prev]);
           if (audioRef.current && soundEnabled) {

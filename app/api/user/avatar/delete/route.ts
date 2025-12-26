@@ -15,7 +15,9 @@ export async function POST() {
     await connectDB();
 
     const isLocal = process.env.NODE_ENV === "development";
+
     if (isLocal) {
+      // حذف فایل از پوشه public/uploads در حالت توسعه
       const filename = user.avatar?.split("/").pop();
       if (filename) {
         const filePath = path.join(process.cwd(), "public/uploads", filename);
@@ -36,7 +38,10 @@ export async function POST() {
       }
     }
 
-    await User.findByIdAndUpdate(user._id, { avatar: "" });
+    // ⚡ مهم: مقدار avatar را "" قرار می‌دهیم تا UI هماهنگ باشد
+    await User.findByIdAndUpdate(user._id, {
+      $set: { avatar: "" }
+    });
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
