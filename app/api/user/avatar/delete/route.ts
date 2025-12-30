@@ -1,3 +1,4 @@
+// app/api/user/avatar/delete/route.ts
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
@@ -9,10 +10,18 @@ export const runtime = "nodejs";
 
 export async function POST() {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     await connectDB();
+
+    // یوزر واقعی از دیتابیس بگیریم
+    const user = await User.findById(currentUser.userId);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     const isLocal = process.env.NODE_ENV === "development";
 
@@ -21,7 +30,11 @@ export async function POST() {
       const filename = user.avatar?.split("/").pop();
       if (filename) {
         const filePath = path.join(process.cwd(), "public/uploads", filename);
-        try { await fs.unlink(filePath); } catch {}
+        try {
+          await fs.unlink(filePath);
+        } catch (err) {
+          console.warn("Failed to delete local file:", err);
+        }
       }
     } else {
       // حذف از Vercel Blob
@@ -31,20 +44,24 @@ export async function POST() {
           await fetch(`https://api.vercel.com/v1/blob/${key}`, {
             method: "DELETE",
             headers: {
-              Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
-            }
+              Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
+            },
           });
-        } catch {}
+        } catch (err) {
+          console.warn("Failed to delete Vercel blob:", err);
+        }
       }
     }
 
-    // ⚡ مهم: مقدار avatar را "" قرار می‌دهیم تا UI هماهنگ باشد
-    await User.findByIdAndUpdate(user._id, {
-      $set: { avatar: "" }
-    });
+    // مقدار avatar را در دیتابیس خالی کن
+    user.avatar = "";
+    await user.save();
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Server error" },
+      { status: 500 }
+    );
   }
 }
