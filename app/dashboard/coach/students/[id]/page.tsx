@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import TrainingProgram from "../TrainingProgram/TrainingProgram";
 import DietProgram from "../DietProgram/DietProgram";
 import ProgressHistory from "../ProgressHistory/ProgressHistory";
+import Loading from "@/app/Components/LoadingSpin/Loading";
 
 export default function StudentProfilePage() {
   const params = useParams();
@@ -30,7 +31,7 @@ export default function StudentProfilePage() {
     loadStudent();
   }, []);
 
-  if (loading) return <p className="p-10">در حال بارگذاری...</p>;
+  if (loading) return <Loading />
   if (!student) return <p className="p-10 text-red-500">دانشجو یافت نشد.</p>;
 
   return (

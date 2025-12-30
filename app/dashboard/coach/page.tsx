@@ -7,6 +7,7 @@ import AvatarCropper from "@/app/Components/AvatarCropper/AvatarCropper";
 import Toast from "@/app/Components/toast/Toast";
 import Link from "next/link";
 import { createCroppedBlob } from "@/lib/createCroppedBlob";
+import Loading from "@/app/Components/LoadingSpin/Loading";
 
 export default function CoachDashboard() {
   const { user, logout, loading, setUser } = useUser();
@@ -21,7 +22,7 @@ export default function CoachDashboard() {
     }
   }, [user?.avatar]);
 
-  if (loading || !user) return <div className="text-white text-center mt-10">در حال بارگذاری...</div>;
+  if (loading || !user) return <Loading />
 
   // ✅ Upload avatar
   async function uploadAvatar(blob: Blob) {

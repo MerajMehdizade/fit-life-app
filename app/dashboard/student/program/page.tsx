@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Accordion from "@/app/Components/Accordion/Accordion";
+import Loading from "@/app/Components/LoadingSpin/Loading";
 
 export default function StudentDashboard() {
   const [training, setTraining] = useState(null);
@@ -28,7 +29,7 @@ export default function StudentDashboard() {
     loadPrograms();
   }, []);
 
-  if (loading) return <p className="p-5">در حال بارگذاری...</p>;
+  if (loading) return <Loading  />
 
   return (
     <div className="p-10 space-y-6">

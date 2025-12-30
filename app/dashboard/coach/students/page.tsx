@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/app/Components/LoadingSpin/Loading";
 import { useEffect, useState } from "react";
 
 export default function CoachStudentsPage() {
@@ -22,7 +23,7 @@ export default function CoachStudentsPage() {
     load();
   }, []);
 
-  if (loading) return <p className="p-10 ">در حال بارگذاری...</p>;
+  if (loading) return <Loading />
 
   return (
     <div className="p-10">

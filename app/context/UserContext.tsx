@@ -57,21 +57,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return () => { mounted = false; };
   }, []);
 
-  // logout (client) — حتماً credentials: "include" بذار
   const logout = async () => {
     try {
-      // include ensures browser sends cookies and accepts set-cookie from same-origin
       const res = await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
       if (res.ok) {
         setUser(null);
         router.replace("/login");
       } else {
-        // fallback: still clear local user state
         setUser(null);
         router.replace("/login");
       }
     } catch (e) {
-      // بی‌رحمانه: اگر بک‌اند خطا داد، ما محلی پاک می‌کنیم و می‌ریم لاگین
       setUser(null);
       router.replace("/login");
     }

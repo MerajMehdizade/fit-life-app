@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import Reset_Form from "./Reset_Form";
+import Loading from "../Components/LoadingSpin/Loading";
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<p className="text-center mt-10">در حال بارگذاری...</p>}>
+    <Suspense fallback={<Loading />}>
       <Reset_Form />
     </Suspense>
   );
