@@ -41,8 +41,8 @@ const steps: { title: string; fields: Field[] }[] = [
                 type: "image",
                 helperText: "لطفاً جنسیت خود را انتخاب کنید",
                 images: {
-                    male: "/body/gender/male.png",
-                    female: "/body/gender/female.png",
+                    male: "/body/gender/male.PNG",
+                    female: "/body/gender/female.PNG",
                 },
             },
         ],
