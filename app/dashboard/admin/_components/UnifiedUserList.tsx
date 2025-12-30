@@ -37,7 +37,6 @@ export default function UnifiedUserList({ role }: Props) {
     const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
     const [filter, setFilter] = useState<Record<string, boolean>>({});
     const [open, setOpen] = useState(false);
-    let urlRole = "";
 
     useEffect(() => {
         if (role === "student") setFilter({ noPlans: false, noCoach: false, suspended: false });
@@ -143,15 +142,8 @@ export default function UnifiedUserList({ role }: Props) {
         return true;
     });
 
-    if (role === 'student') {
-        urlRole = 'students'
-    } else if (role === 'coach') {
-        urlRole = 'coaches'
-    } else if (role === 'admin') {
-        urlRole = 'admins'
-    }
     return (
-        <div className="space-y-6 p-3 pb-5 bg-gray-900 text-gray-100" dir="rtl">
+        <div className="space-y-6 p-3 pb-5 bg-gray-900 text-gray-100 w-full" dir="rtl">
             <h1 className="text-xl md:text-2xl font-bold mb-4">
                 {role === "student" ? "لیست دانشجوها" : role === "coach" ? "لیست مربیان" : "لیست ادمین‌ها"}
             </h1>
@@ -162,7 +154,7 @@ export default function UnifiedUserList({ role }: Props) {
                     {/* Admin */}
                     {role === "admin" && (
                         <a
-                            href={`/dashboard/admin/${urlRole}/create`}
+                            href={`/dashboard/admin/admins/create`}
                             className="px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
                         >
                             ادمین جدید
@@ -172,7 +164,7 @@ export default function UnifiedUserList({ role }: Props) {
                     {/* Coach */}
                     {role === "coach" && (
                         <a
-                            href={`/dashboard/admin/${urlRole}/create`}
+                            href={`/dashboard/admin/coaches/create`}
                             className="px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
                         >
                             مربی جدید
@@ -183,13 +175,13 @@ export default function UnifiedUserList({ role }: Props) {
                     {role === "student" && (
                         <>
                             <a
-                                href={`/dashboard/admin/${urlRole}/create`}
+                                href={`/dashboard/admin/students/create`}
                                 className="hidden md:block px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
                             >
                                 دانشجو جدید
                             </a>
                             <a
-                                href={`/dashboard/admin/${urlRole}/assign`}
+                                href={`/dashboard/admin/students/assign`}
                                 className="hidden md:block px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
                             >
                                 انتساب دانشجو به مربی
@@ -199,7 +191,6 @@ export default function UnifiedUserList({ role }: Props) {
                             <div className="md:hidden relative w-full flex justify-end">
                                 <button
                                     onClick={() => setOpen(!open)}
-                                    onBlur={() => setOpen(false)}
                                     className="p-2 text-sm font-medium tracking-wide  capitalize transition-colors duration-300 transform text-green-600 rounded hover:text-green-700 focus:outline-none  flex items-center gap-2"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-hexagon-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M19.875 6.27c.7 .398 1.13 1.143 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z" /><path d="M9 12h6" /><path d="M12 9v6" /></svg>
@@ -208,9 +199,8 @@ export default function UnifiedUserList({ role }: Props) {
                                 {open && (
                                     <div className="absolute left-0 top-full mt-2 w-56 bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-20 text-white">
                                         <a
-                                            href="/dashboard/admin/students/create"
+                                            href={`/dashboard/admin/students/create`}
                                             className="block px-4 py-3 text-sm hover:bg-gray-900 transition-colors"
-                                            onClick={() => setOpen(false)}
                                         >
                                             دانشجو جدید
                                         </a>
@@ -218,7 +208,6 @@ export default function UnifiedUserList({ role }: Props) {
                                         <a
                                             href="/dashboard/admin/students/assign"
                                             className="block px-4 py-3 text-sm hover:bg-gray-900 transition-colors"
-                                            onClick={() => setOpen(false)}
                                         >
                                             انتساب دانشجو به مربی
                                         </a>

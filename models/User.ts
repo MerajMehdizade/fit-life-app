@@ -74,6 +74,10 @@ const userSchema = new Schema(
     },
 
 
+    profileCompleted: {
+      type: Boolean,
+      default: false,
+    },
 
     profile: {
       age: Number,

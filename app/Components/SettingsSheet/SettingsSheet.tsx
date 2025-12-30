@@ -27,12 +27,12 @@ export default function SettingsSheet({
   if (!openSheet) return null;
 
   return (
-    <div className="fixed inset-0 z-40 transition-all duration-300 pointer-events-auto">
+    <div className="fixed inset-0 z-40 transition-all duration-300 pointer-events-auto ">
       <div
         onClick={() => setOpenSheet(null)}
         className="absolute inset-0 bg-black/40 transition-opacity duration-300 opacity-100"
       />
-      <div className="absolute bottom-0 inset-x-0 bg-gray-800 rounded-t-2xl p-4 transform transition-transform duration-300 ease-out text-white max-h-[90vh] overflow-y-auto translate-y-0">
+      <div className="absolute bottom-0 inset-x-0 bg-gray-800 rounded-t-2xl p-4 transform transition-transform duration-300 ease-out text-white max-h-[90vh] overflow-y-auto translate-y-0 animate-sheet-up">
         <div className="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-4" />
         <ul className="space-y-3">
           {sheets[openSheet].map((item, i) =>

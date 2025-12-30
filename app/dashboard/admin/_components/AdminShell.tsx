@@ -91,7 +91,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     <div className="container mx-auto px-5 md:p-5 font-vazir relative">
       <SettingsSheet openSheet={openSheet} sheets={sheets} setOpenSheet={setOpenSheet} logout={logout} isActive={isActive} />
       <BottomNav items={mobileNavItems} isActive={isActive} handleNavClick={handleNavClick} />
-      <main className="p-4 pb-20 sm:p-10 bg-gray-900 text-gray-100">{children}</main>
+      <main>{children}</main>
     </div>
   );
 }

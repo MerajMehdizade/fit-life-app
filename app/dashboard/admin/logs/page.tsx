@@ -96,7 +96,7 @@ export default function LogsPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" dir="rtl">
+    <div className="p-4 md:p-6 space-y-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 w-full" dir="rtl">
 
       {/* هدر و Export */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
@@ -199,7 +199,7 @@ export default function LogsPage() {
       </div>
 
       {/* کارت موبایل */}
-      <div className="flex flex-col gap-3 md:hidden">
+      <div className="flex flex-col gap-3 md:hidden ">
         {logs.map((log: any) => (
           <div key={log._id || log.coachId} className="border rounded-md p-3 bg-white dark:bg-gray-800 shadow-sm">
             {type === "login" && (() => {
@@ -240,7 +240,7 @@ export default function LogsPage() {
 
       {/* Pagination */}
       {type !== "coachActivity" && logs.length > 0 && (
-        <div className="flex justify-center items-center gap-2 mt-3 text-sm">
+        <div className="flex justify-center items-center gap-2 mt-3 text-sm mb-20">
           <button
             disabled={page === 1}
             onClick={() => setPage(p => Math.max(1, p - 1))}

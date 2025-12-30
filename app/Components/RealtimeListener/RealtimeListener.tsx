@@ -23,7 +23,7 @@ export default function RealtimeListener({
     if (!userId) return;
 
     const channelName = `user-${userId}`;
-    audioRef.current = new Audio("/public/sound/notify.mp3");
+    audioRef.current = new Audio("/sound/notify.mp3");
     audioRef.current.volume = 0.6;
     const channel =
       pusherClient.channel(channelName) ??
@@ -35,6 +35,7 @@ export default function RealtimeListener({
 
     const handleRead = (data: any) => {
       onReadNotification?.(data.id);
+      handleNewNotification?.(data.id)
     };
 
     channel.bind("new-notification", handleNew);
