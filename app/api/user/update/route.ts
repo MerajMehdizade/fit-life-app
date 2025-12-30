@@ -23,10 +23,10 @@ export async function PATCH(req: Request) {
   const user = await User.findById(userId);
   if (!user) return NextResponse.json({ message: "کاربر یافت نشد" }, { status: 404 });
 
-  // Merge کامل با مقادیر قبلی
-  user.profile = { ...user.profile, ...body };
+  Object.entries(body).forEach(([k, v]) => {
+    if (v !== undefined) user.profile[k] = v;
+  });
 
-  // تبدیل numeric ها به Number
   const numericFields = [
     "age", "height", "weight",
     "currentWeight", "bodyFatPercentage",
@@ -38,21 +38,32 @@ export async function PATCH(req: Request) {
     }
   });
 
-  // چک کامل بودن همه فیلدهای ضروری
-  const requiredFields = [
-    "age", "gender", "height", "weight",
-    "primaryGoal", "currentWeight", "bodyFatPercentage",
-    "waistCircumference", "chestCircumference", "armCircumference",
-    "trainingLevel", "bodyGoalType", "workOutDays",
-    "calorieTarget", "foodAllergies", "dietaryRstrictions", "dietPlanType"
+  const requiredFields: (keyof typeof user.profile)[] = [
+    "gender",
+    "currentBodyType",
+    "primaryGoal",
+    "age",
+    "height",
+    "weight",
+    "trainingLevel",
+    "workOutDays",
+    "calorieTarget",
+    "foodAllergies",
+    "dietaryRstrictions",
+    "dietPlanType"
   ];
+
+
 
   const isComplete = requiredFields.every(f => {
     const val = user.profile?.[f];
     if (val === undefined || val === null) return false;
     if (typeof val === "string" && val.trim() === "") return false;
+    if (typeof val === "number" && isNaN(val)) return false;
     return true;
   });
+
+
 
   user.profileCompleted = isComplete;
 
