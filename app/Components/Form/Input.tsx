@@ -14,7 +14,7 @@ export function Input({
   wrapperClassName?: string;
 }) {
   return (
-    <div className={`relative flex items-center ${wrapperClassName}`}>
+    <div className={`relative flex items-center w-full ${wrapperClassName}`}>
       {rightIcon && <span className="absolute right-0">{rightIcon}</span>}
       {leftIcon && <span className="absolute left-0">{leftIcon}</span>}
 
