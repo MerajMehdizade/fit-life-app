@@ -18,7 +18,9 @@ type UserContextType = {
   setUser: React.Dispatch<React.SetStateAction<ProfileType | null>>;
   logout: () => Promise<void>;
   loading: boolean;
+  refreshUser: () => Promise<void>;
 };
+
 
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -28,33 +30,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<ProfileType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchUser = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/user/me", { cache: "no-store", credentials: "include" });
-        if (!mounted) return;
-        if (res.ok) {
-          const data = await res.json();
-          const avatarUrl = data.user?.avatar ? `${data.user.avatar}?t=${Date.now()}` : "/avatars/default.webp";
-          setUser({ ...data.user, avatar: avatarUrl });
-        }
-
-        else {
-          setUser(null);
-        }
-      } catch (err) {
+  const fetchUser = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/user/me", { cache: "no-store", credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        const avatarUrl = data.user?.avatar
+          ? `${data.user.avatar}?t=${Date.now()}`
+          : "/avatars/default.webp";
+        setUser({ ...data.user, avatar: avatarUrl });
+      } else {
         setUser(null);
-      } finally {
-        if (mounted) setLoading(false);
       }
-    };
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUser();
-
-    return () => { mounted = false; };
   }, []);
 
   const logout = async () => {
@@ -74,7 +71,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, logout, loading }}>
+    <UserContext.Provider value={{ user, setUser, logout, loading, refreshUser: fetchUser }}>
       {children}
     </UserContext.Provider>
   );

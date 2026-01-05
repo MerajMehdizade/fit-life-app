@@ -73,8 +73,17 @@ const userSchema = new Schema(
       default: 0,
     },
 
-
     profileCompleted: {
+      type: Boolean,
+      default: false,
+    },
+
+    startDate: {
+      type: Date,
+      default: () => new Date()
+    },
+    
+    progressFinished: {
       type: Boolean,
       default: false,
     },

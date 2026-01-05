@@ -1,51 +1,178 @@
 "use client";
 
+import { useMemo } from "react";
+
 interface BodyTypeComparisonProps {
   gender?: "male" | "female";
   currentType?: "slim" | "average" | "fit" | "muscular";
   targetType?: "slim" | "average" | "fit" | "muscular";
+  weight?: number;
+  currentWeight?: number;
+  currentWeek?: number;
 }
 
-export default function BodyTypeComparison({ gender, currentType, targetType }: BodyTypeComparisonProps) {
+const TOTAL_WEEKS = 10;
+
+const week10Messages = [
+  "10 هفته تا جهش",
+  "10 هفته تا تغییر",
+  "10 هفته تا بهترینت",
+  "10 هفته تا عبور",
+  "10 هفته تا جایزه",
+  "10 هفته تا نقطه عطف",
+  "10 هفته تا پیروزی",
+  "10 هفته تا قدرت",
+  "10 هفته تا پیشرفت",
+  "10 هفته تا تفاوت",
+  "10 هفته تا اوج",
+  "10 هفته تا برگشت",
+  "10 هفته تا نتیجه",
+];
+
+const finishedMessages = [
+  "🔥 تبریک! دوره ۱۰ هفته‌ای با موفقیت تموم شد",
+  "🏆 کارت عالی بود، آماده مرحله بعدی؟",
+  "💪 این فقط شروع راهه، نه پایانش",
+  "🎯 به هدفت خیلی نزدیک شدی",
+];
+
+export default function BodyTypeComparison({
+  gender,
+  currentType,
+  targetType,
+  weight,
+  currentWeight,
+  currentWeek = 1,
+}: BodyTypeComparisonProps) {
+  const effectiveWeek = Math.min(currentWeek, TOTAL_WEEKS);
+  const isFinished = effectiveWeek >= TOTAL_WEEKS;
+
   const g = gender ?? "male";
-  const currentImg = currentType ? `/body/${g}/${currentType}.PNG` : `/body/${g}/average.PNG`;
-  const targetImg = targetType ? `/body/${g}/${targetType}.PNG` : `/body/${g}/average.PNG`;
+
+  const currentImg = currentType
+    ? `/body/${g}/${currentType}.PNG`
+    : `/body/${g}/average.PNG`;
+
+  const targetImg = targetType
+    ? `/body/${g}/${targetType}.PNG`
+    : `/body/${g}/average.PNG`;
+
+  const message = useMemo(() => {
+    if (isFinished) {
+      return finishedMessages[
+        Math.floor(Math.random() * finishedMessages.length)
+      ];
+    }
+    return week10Messages[
+      Math.floor(Math.random() * week10Messages.length)
+    ];
+  }, [isFinished]);
+
+  const progressPercent = Math.min(
+    (effectiveWeek / TOTAL_WEEKS) * 100,
+    100
+  );
+
+  const ringColor = isFinished ? "#22c55e" : "#facc15";
 
   return (
-    <div className="flex  items-center justify-center gap-6 bg-gray-800/70 p-6 rounded-3xl border border-gray-700 shadow-lg w-full max-w-4xl">
-      <div className="flex flex-col items-center">
-        <span className="text-gray-400 mb-2">هدف</span>
+    <div className="flex items-center justify-center gap-6 p-6 rounded-3xl border border-gray-700 bg-gray-800/25 shadow-lg w-full max-w-4xl">
+
+      {/* TARGET BODY */}
+      <div className="flex flex-col items-center drop-shadow-[0_0_15px_rgba(34,197,94,0.25)]">
+        <span className="text-green-500 font-semibold mb-2 text-sm md:text-base">
+          بدن هدف
+        </span>
+        <span className="text-green-400 px-3 py-1.5 border border-green-400 rounded-2xl mb-2 text-xs md:text-sm">
+          (kg) {currentWeight ?? "-"}
+        </span>
         <img
           src={targetImg}
-          alt={targetType ?? "target"}
-          className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg border-2 border-green-600"
+          alt="Target Body"
+          className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
         />
       </div>
-      <span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width={24}
-          height={24}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="icon icon-tabler icons-tabler-outline icon-tabler-arrow-narrow-right-dashed"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M5 12h.5m3 0h1.5m3 0h6" />
-          <path d="M15 16l4 -4" />
-          <path d="M15 8l4 4" />
+
+      {/* CENTER */}
+      <div className="flex flex-col items-center justify-center relative text-center min-w-40 mt-4 md:mt-0">
+
+        {/* Progress Ring */}
+        <svg className="absolute -top-4" width="110" height="110">
+          <circle
+            cx="55"
+            cy="55"
+            r="50"
+            stroke="#1f2933"
+            strokeWidth="6"
+            fill="none"
+          />
+          <circle
+            cx="55"
+            cy="55"
+            r="50"
+            stroke={ringColor}
+            strokeWidth="6"
+            fill="none"
+            strokeDasharray={314}
+            strokeDashoffset={314 - (314 * progressPercent) / 100}
+            strokeLinecap="round"
+          />
         </svg>
-      </span>
-      <div className="flex flex-col items-center">
-        <span className="text-gray-400 mb-2">وضعیت فعلی</span>
+
+        {/* Capsule */}
+        <div
+          className={`relative z-10 backdrop-blur-md rounded-2xl px-4 py-3 shadow-lg border max-w-[150px]
+            ${isFinished
+              ? "bg-green-500/10 border-green-400/40"
+              : "bg-yellow-400/20 border-yellow-400/30"
+            }`}
+        >
+          <span className="text-yellow-300 font-bold text-[13px] leading-tight">
+            {message}
+          </span>
+          <span className="block text-[11px] text-yellow-200 mt-1 opacity-70">
+            {isFinished
+              ? "دوره با موفقیت تکمیل شد 🎉"
+              : `${effectiveWeek} / ${TOTAL_WEEKS} هفته • ${Math.round(
+                progressPercent
+              )}%`}
+          </span>
+        </div>
+
+        {/* Arrow */}
+        {!isFinished && (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={26}
+            height={26}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-yellow-400 mt-2 animate-bounce"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M10 18h4" />
+            <path d="M3 8a9 9 0 0 1 9 9v1l1.428 -4.285a12 12 0 0 1 6.018 -6.938l.554 -.277" />
+            <path d="M15 6h5v5" />
+          </svg>
+        )}
+      </div>
+
+      {/* CURRENT BODY */}
+      <div className="flex flex-col items-center opacity-80 scale-95 mt-4 md:mt-0">
+        <span className="text-cyan-500 font-semibold mb-2 text-sm md:text-base">
+          بدن فعلی
+        </span>
+        <span className="text-cyan-500 px-3 py-1.5 border border-cyan-400 rounded-2xl mb-2 text-xs md:text-sm">
+          (kg) {weight ?? "-"}
+        </span>
         <img
           src={currentImg}
-          alt={currentType ?? "current"}
-          className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg border-2 border-cyan-600"
+          alt="Current Body"
+          className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
         />
       </div>
     </div>

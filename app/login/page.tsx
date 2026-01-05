@@ -12,7 +12,7 @@ import { Input } from "../Components/Form/Input";
 export default function LoginPage() {
   useAuthGuard();
   const router = useRouter();
-  const { setUser } = useUser();
+  const { setUser, refreshUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [toast, setToast] = useState({
@@ -30,8 +30,7 @@ export default function LoginPage() {
     });
     const data = await res.json();
     if (res.ok) {
-      setUser(data.user);
-      router.refresh();
+      await refreshUser();
       if (data.user.role === "student")
         router.push("/dashboard/student");
       else if (data.user.role === "coach")

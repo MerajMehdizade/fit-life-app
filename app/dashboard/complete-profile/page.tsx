@@ -17,6 +17,7 @@ type ProfileForm = {
   age?: number;
   height?: number;
   weight?: number;
+  currentWeight?: number;
   trainingLevel?: "beginner" | "intermediate" | "pro";
   workOutDays?: string;
   calorieTarget?: number;
@@ -85,11 +86,12 @@ const steps: { title: string; fields: Field[]; required: (keyof ProfileForm)[] }
   },
   {
     title: "مرحله ۴: اطلاعات پایه",
-    required: ["age", "height", "weight"],
+    required: ["age", "height", "weight", "currentWeight"],
     fields: [
       { name: "age", placeholder: "سن (سال)", type: "number" },
       { name: "height", placeholder: "قد (cm)", type: "number" },
       { name: "weight", placeholder: "وزن (kg)", type: "number" },
+      { name: "currentWeight", placeholder: "وزن هدف (kg)", type: "number" },
     ],
   },
   {
@@ -139,7 +141,7 @@ const generateConfetti = (count: number) => {
 /* ================= COMPONENT ================= */
 
 export default function CompleteProfilePage() {
-  const { setUser } = useUser();
+  const { refreshUser, setUser } = useUser();
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<ProfileForm>({});
@@ -230,7 +232,7 @@ export default function CompleteProfilePage() {
         setUser(meData.user);
       }
       setToast({ show: true, message: "پروفایل با موفقیت ثبت شد", type: "success" });
-     
+      await refreshUser();
       router.replace("/dashboard/student");
       setTimeout(() => setConfetti([]), 3000);
     } catch {

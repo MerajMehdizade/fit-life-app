@@ -28,31 +28,56 @@ interface ProfileType {
 
 export default function DashboardPage() {
   const { user, loading } = useUser();
-  const [profile, setProfile] = useState<ProfileType | null>(user?.profile ?? null);
+  const profile: ProfileType | null = user?.profile ?? null;
+  const [progress, setProgress] = useState<{ currentWeek: number; percent: number } | null>(null);
 
   useEffect(() => {
-    setProfile(user?.profile ?? null);
+    if (!user) return;
+const FORCE_TEST = false; // تست = true
+
+const url = FORCE_TEST
+  ? "/api/progress?test=1&testWeek=10"
+  : "/api/progress";
+
+    const run = async () => {
+      const res = await fetch(url, {
+        credentials: "include",
+        cache: "no-store",
+      });
+
+      const data = await res.json();
+      setProgress(data);
+    };
+
+    run();
   }, [user]);
+
+
+
 
   if (loading) return <Loading />;
 
-  if (!user || !profile || Object.keys(profile).length === 0) {
-    return <p className="text-white text-2xl text-center mt-10">اطلاعات پروفایل هنوز تکمیل نشده است.</p>;
+  if (!user) return null;
+
+  if (!profile || Object.keys(profile).length === 0) {
+    return (
+      <p className="text-white text-2xl text-center mt-10">
+        اطلاعات پروفایل هنوز تکمیل نشده است.
+      </p>
+    );
   }
 
-
   return (
-    <div className="flex flex-col items-center md:pt-10 w-full px-4 md:px-0 gap-8">
-      <h1 className="text-3xl font-bold my-4 text-white">داشبورد شخصی</h1>
-
-      {/* مقایسه نوع بدن */}
+    <div className="flex flex-col items-center md:pt-10 w-full px-4 md:px-0 gap-8 mt-10">
       <BodyTypeComparison
         gender={profile.gender}
         currentType={profile.currentBodyType}
         targetType={profile.primaryGoal}
+        weight={profile.weight}
+        currentWeight={profile.currentWeight}
+        currentWeek={progress?.currentWeek ?? 1}
       />
 
-      {/* آمار پروفایل */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl w-full mt-6">
         {Object.entries(profile)
           .filter(([key]) => !["currentBodyType", "primaryGoal", "gender"].includes(key))

@@ -45,6 +45,7 @@ export async function PATCH(req: Request) {
     "age",
     "height",
     "weight",
+    "currentWeight",
     "trainingLevel",
     "workOutDays",
     "calorieTarget",
