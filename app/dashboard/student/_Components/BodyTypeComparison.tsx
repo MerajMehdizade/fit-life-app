@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import AnalysisJourneyPath from "./AnalysisJourneyPath";
 
 interface BodyTypeComparisonProps {
   gender?: "male" | "female";
@@ -78,7 +79,7 @@ export default function BodyTypeComparison({
     <div className="flex items-center justify-center gap-6 p-6 rounded-3xl border border-gray-700 bg-gray-800/25 shadow-lg w-full max-w-4xl">
 
       {/* TARGET BODY */}
-      <div className="flex flex-col items-center drop-shadow-[0_0_15px_rgba(34,197,94,0.25)] whitespace-nowrap">
+      <div className="flex flex-col items-center  drop-shadow-[0_0_15px_rgba(34,197,94,0.25)] whitespace-nowrap">
         <span className="text-green-500 font-semibold mb-2 text-sm md:text-base">
           بدن هدف
         </span>
@@ -137,10 +138,11 @@ export default function BodyTypeComparison({
               )}%`}
           </span>
         </div>
+        <AnalysisJourneyPath />
       </div>
 
       {/* CURRENT BODY */}
-      <div className="flex flex-col items-center opacity-80 mt-4 md:mt-0 whitespace-nowrap">
+      <div className="flex flex-col items-center opacity-80  whitespace-nowrap">
         <span className="text-cyan-500 font-semibold mb-2 text-sm md:text-base">
           بدن فعلی
         </span>

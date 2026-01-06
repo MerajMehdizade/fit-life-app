@@ -111,8 +111,8 @@ const userSchema = new Schema(
       progressPhoto: String,
       trainingLevel: String,
       bodyGoalType: String,
-      workOutDays: String,
-      calorieTarget: String,
+      workOutDays: Number,
+      calorieTarget: Number,
 
       macros: [
         {

@@ -18,7 +18,7 @@ export default function CoachDashboard() {
   // ✅ Set avatarPreview on user load or change
   useEffect(() => {
     if (user) {
-      setAvatarPreview(user.avatar || "/avatars/default.webp");
+      setAvatarPreview(user.avatar || "/avatars/default.png");
     }
   }, [user?.avatar]);
 
@@ -52,7 +52,7 @@ export default function CoachDashboard() {
       const res = await fetch("/api/user/avatar/delete", { method: "POST", credentials: "include" });
       const data = await res.json();
       if (data.success) {
-        setAvatarPreview("/avatars/default.webp");
+        setAvatarPreview("/avatars/default.png");
         setUser(prev => prev ? { ...prev, avatar: "" } : null);
         setToast({ show: true, message: "آواتار حذف شد", type: "success" });
       } else {
@@ -67,7 +67,7 @@ export default function CoachDashboard() {
   const hasCustomAvatar =
     user.avatar &&
     user.avatar !== "" &&
-    !user.avatar.includes("default.webp");
+    !user.avatar.includes("default.png");
 
   return (
     <div className="bg-gray-900 min-h-screen">
@@ -86,7 +86,7 @@ export default function CoachDashboard() {
 
         <div className="flex flex-col items-center gap-3">
           <img
-            src={avatarPreview  || "/avatars/default.webp"}
+            src={avatarPreview  || "/avatars/default.png"}
             className="w-28 h-28 rounded-full border-4 border-cyan-800 object-cover"
           />
 

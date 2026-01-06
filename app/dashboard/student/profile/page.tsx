@@ -7,7 +7,7 @@ import Toast from "@/app/Components/toast/Toast";
 
 export default function ProfilePage() {
   const { user, setUser } = useUser();
-  const [avatarSrc, setAvatarSrc] = useState("/avatars/default.webp");
+  const [avatarSrc, setAvatarSrc] = useState("/avatars/default.png");
   const [cropFile, setCropFile] = useState<File | null>(null);
   const [toast, setToast] = useState({ show: false, message: "", type: "success" as "success" | "error" });
 
@@ -38,7 +38,7 @@ export default function ProfilePage() {
       const data = await res.json();
       if (data.success) {
         setUser(u => u ? { ...u, avatar: "" } : null);
-        setAvatarSrc("/avatars/default.webp");
+        setAvatarSrc("/avatars/default.png");
         setToast({ show: true, message: "آواتار حذف شد", type: "success" });
       }
     } catch {
@@ -64,7 +64,7 @@ export default function ProfilePage() {
           }} className="px-4 py-2 rounded-xl bg-gray-700">
             تغییر تصویر
           </button>
-          {avatarSrc !== "/avatars/default.webp" && (
+          {avatarSrc !== "/avatars/default.png" && (
             <button onClick={deleteAvatar} className="px-4 py-2 rounded-xl bg-red-500">
               حذف
             </button>

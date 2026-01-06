@@ -29,14 +29,13 @@ export async function GET(request: Request) {
 
   const progress = calculateProgress(user.startDate);
 
-  // ✅ تست فقط در dev
+
   const effectiveWeek =
     enableTest && testWeekParam
       ? Number(testWeekParam)
       : progress.currentWeek;
 
 
-  // ✅ ارسال نوتیف فقط یک بار
   if (effectiveWeek >= 10) {
     const updatedUser = await User.findOneAndUpdate(
       { _id: user._id, progressFinished: false },

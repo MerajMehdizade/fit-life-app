@@ -51,7 +51,7 @@ export async function GET(req: Request) {
       email: c.email,
       status: c.status,
       studentsCount: c.students?.length || 0,
-      avatar: c.avatar || "/avatars/default.webp",
+      avatar: c.avatar || "/avatars/default.png",
     }));
 
     return NextResponse.json({

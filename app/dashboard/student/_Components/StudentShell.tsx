@@ -20,7 +20,7 @@ export default function StudentShell({ children }: { children: ReactNode }) {
     const router = useRouter();
     const [openSheet, setOpenSheet] = useState<SheetKey | null>(null);
     const [avatarMenu, setAvatarMenu] = useState(false);
-    const [avatarSrc, setAvatarSrc] = useState(user?.avatar || "/avatars/default.webp");
+    const [avatarSrc, setAvatarSrc] = useState(user?.avatar || "/avatars/default.png");
     const avatarRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const isActive = (url?: string) => url ? pathname === url : false;
@@ -33,7 +33,7 @@ export default function StudentShell({ children }: { children: ReactNode }) {
     }, [loading, user, router]);
     useEffect(() => {
         if (!user) return;
-        setAvatarSrc(user.avatar || "/avatars/default.webp");
+        setAvatarSrc(user.avatar || "/avatars/default.png");
     }, [user]);
 
     useEffect(() => {
@@ -91,7 +91,7 @@ export default function StudentShell({ children }: { children: ReactNode }) {
         },
         {
             key: "avatar",
-            title: "",
+            title: "پروفایل",
             icon: <AvatarNavItem avatarSrc={avatarSrc} avatarRef={avatarRef} onClick={() => setOpenSheet("settings")} />,
         },
     ];

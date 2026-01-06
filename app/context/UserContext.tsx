@@ -38,7 +38,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
         const avatarUrl = data.user?.avatar
           ? `${data.user.avatar}?t=${Date.now()}`
-          : "/avatars/default.webp";
+          : "/avatars/default.png";
         setUser({ ...data.user, avatar: avatarUrl });
       } else {
         setUser(null);
