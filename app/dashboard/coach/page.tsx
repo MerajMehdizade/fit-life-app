@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@/app/context/UserContext";
-import DropdownMenu from "@/app/Components/DropdownMenu/DropdownMenu";
 import AvatarCropper from "@/app/Components/AvatarCropper/AvatarCropper";
 import Toast from "@/app/Components/toast/Toast";
 import Link from "next/link";
@@ -71,16 +70,6 @@ export default function CoachDashboard() {
 
   return (
     <div className="bg-gray-900 min-h-screen">
-      {/* DropdownMenu */}
-      <DropdownMenu
-        role="Coach"
-        items={[
-          { label: "شاگردها", href: "/dashboard/coach/students" },
-          { label: "ترجیحات", href: "/preferences" },
-          { label: "خروج", onClick: logout, danger: true },
-        ]}
-      />
-
       <div className="mt-10 text-center space-y-6 text-white">
         <h1 className="text-3xl font-bold">{user.name}</h1>
 
