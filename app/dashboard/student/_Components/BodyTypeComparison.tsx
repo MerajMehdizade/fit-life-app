@@ -30,7 +30,6 @@ const week10Messages = [
 ];
 
 const finishedMessages = [
-  "🔥 تبریک! دوره ۱۰ هفته‌ای با موفقیت تموم شد",
   "🏆 کارت عالی بود، آماده مرحله بعدی؟",
   "💪 این فقط شروع راهه، نه پایانش",
   "🎯 به هدفت خیلی نزدیک شدی",
@@ -79,11 +78,11 @@ export default function BodyTypeComparison({
     <div className="flex items-center justify-center gap-6 p-6 rounded-3xl border border-gray-700 bg-gray-800/25 shadow-lg w-full max-w-4xl">
 
       {/* TARGET BODY */}
-      <div className="flex flex-col items-center drop-shadow-[0_0_15px_rgba(34,197,94,0.25)]">
+      <div className="flex flex-col items-center drop-shadow-[0_0_15px_rgba(34,197,94,0.25)] whitespace-nowrap">
         <span className="text-green-500 font-semibold mb-2 text-sm md:text-base">
           بدن هدف
         </span>
-        <span className="text-green-400 px-3 py-1.5 border border-green-400 rounded-2xl mb-2 text-xs md:text-sm">
+        <span className="text-green-400  px-3 py-1.5 border border-green-400 rounded-2xl mb-2 text-xs md:text-sm">
           (kg) {currentWeight ?? "-"}
         </span>
         <img
@@ -121,7 +120,7 @@ export default function BodyTypeComparison({
 
         {/* Capsule */}
         <div
-          className={`relative z-10 backdrop-blur-md rounded-2xl px-4 py-3 shadow-lg border max-w-[150px]
+          className={`relative z-10 backdrop-blur-md rounded-2xl px-4 py-3 shadow-lg border max-w-[150px] animate-pulse
             ${isFinished
               ? "bg-green-500/10 border-green-400/40"
               : "bg-yellow-400/20 border-yellow-400/30"
@@ -138,31 +137,10 @@ export default function BodyTypeComparison({
               )}%`}
           </span>
         </div>
-
-        {/* Arrow */}
-        {!isFinished && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={26}
-            height={26}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-yellow-400 mt-2 animate-bounce"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M10 18h4" />
-            <path d="M3 8a9 9 0 0 1 9 9v1l1.428 -4.285a12 12 0 0 1 6.018 -6.938l.554 -.277" />
-            <path d="M15 6h5v5" />
-          </svg>
-        )}
       </div>
 
       {/* CURRENT BODY */}
-      <div className="flex flex-col items-center opacity-80 scale-95 mt-4 md:mt-0">
+      <div className="flex flex-col items-center opacity-80 mt-4 md:mt-0 whitespace-nowrap">
         <span className="text-cyan-500 font-semibold mb-2 text-sm md:text-base">
           بدن فعلی
         </span>
