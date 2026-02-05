@@ -32,37 +32,36 @@ interface ProfileType {
 }
 
 export default function DashboardPage() {
-  const { user, loading } = useUser();
-  const profile: ProfileType | null = user?.profile ?? null;
+  const { user, loading: userLoading } = useUser();
   const [progress, setProgress] = useState<{ currentWeek: number; percent: number } | null>(null);
+  const [pageLoading, setPageLoading] = useState(true);
+
+  const profile: ProfileType | null = user?.profile ?? null;
 
   useEffect(() => {
     if (!user) return;
-    const FORCE_TEST = false; // تست = true
-
-    const url = FORCE_TEST
-      ? "/api/progress?test=1&testWeek=10"
-      : "/api/progress";
 
     const run = async () => {
-      const res = await fetch(url, {
-        credentials: "include",
-        cache: "no-store",
-      });
+      try {
+        const res = await fetch("/api/progress", {
+          credentials: "include",
+          cache: "no-store",
+        });
 
-      const data = await res.json();
-      setProgress(data);
+        const data = await res.json();
+        setProgress(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setPageLoading(false);
+      }
     };
 
     run();
   }, [user]);
 
-
-
-
-  if (loading) return <Loading />;
-
-  if (!user) return null;
+  // ⭐ loading unified
+  if (userLoading || pageLoading || !user) return <Loading />;
 
   if (!profile || Object.keys(profile).length === 0) {
     return (
@@ -71,25 +70,26 @@ export default function DashboardPage() {
       </p>
     );
   }
-const mappedPrimaryGoal: "slim" | "average" | "fit" | "muscular" = (() => {
-  switch (profile?.primaryGoal) {
-    case "slim":
-    case "weight_loss":
-    case "cut":
-      return "slim";
 
-    case "muscular":
-    case "muscle_gain":
-    case "bulk":
-      return "muscular";
+  const mappedPrimaryGoal: "slim" | "average" | "fit" | "muscular" = (() => {
+    switch (profile?.primaryGoal) {
+      case "slim":
+      case "weight_loss":
+      case "cut":
+        return "slim";
 
-    case "fit":
-      return "fit";
+      case "muscular":
+      case "muscle_gain":
+      case "bulk":
+        return "muscular";
 
-    default:
-      return "average";
-  }
-})();
+      case "fit":
+        return "fit";
+
+      default:
+        return "average";
+    }
+  })();
 
   return (
     <div className="flex flex-col items-center md:pt-10 w-full px-4 md:px-0 gap-8 mt-10 container mx-auto">
@@ -101,17 +101,13 @@ const mappedPrimaryGoal: "slim" | "average" | "fit" | "muscular" = (() => {
         currentWeight={profile.currentWeight}
         currentWeek={progress?.currentWeek ?? 1}
       />
+
       <div className="mt-40 w-full md:w-96">
-        <BMICard
-          height={profile.height}
-          weight={profile.weight}
-        />
+        <BMICard height={profile.height} weight={profile.weight} />
       </div>
+
       <div className="flex justify-center items-center flex-col md:flex-row gap-6 h-full w-full flex-wrap">
-        <WaterIntakeCard
-          weight={profile.weight}
-          workOutDays={profile.workOutDays}
-        />
+        <WaterIntakeCard weight={profile.weight} workOutDays={profile.workOutDays} />
 
         <CalorieNeedsCard
           gender={profile.gender}
@@ -122,8 +118,13 @@ const mappedPrimaryGoal: "slim" | "average" | "fit" | "muscular" = (() => {
           primaryGoal={mappedPrimaryGoal}
           calorieTarget={profile.calorieTarget}
         />
-        <ActivityLevelCard workOutDays={profile.workOutDays} primaryGoal={mappedPrimaryGoal} height={profile.height}
-          weight={profile.weight} />
+
+        <ActivityLevelCard
+          workOutDays={profile.workOutDays}
+          primaryGoal={mappedPrimaryGoal}
+          height={profile.height}
+          weight={profile.weight}
+        />
 
         <BodyStatusSummaryCard
           bmi={
@@ -134,7 +135,6 @@ const mappedPrimaryGoal: "slim" | "average" | "fit" | "muscular" = (() => {
           workOutDays={profile.workOutDays}
           primaryGoal={mappedPrimaryGoal}
         />
-
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl w-full mt-5">

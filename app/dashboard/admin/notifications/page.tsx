@@ -178,7 +178,7 @@ export default function NotificationsPage() {
             📭 اعلانی وجود ندارد
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 mb-10">
             {filtered.map(n => (
               <div
                 key={n._id}

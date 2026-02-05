@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import RealtimeListener from "@/app/Components/RealtimeListener/RealtimeListener";
 import { useUser } from "@/app/context/UserContext";
+import Loading from "@/app/Components/LoadingSpin/Loading";
 
 type Notify = {
   _id: string;
@@ -31,32 +32,33 @@ function timeAgo(dateString: string) {
 }
 
 export default function UserNotifications() {
+  const { user, loading: userLoading } = useUser();
   const [notifications, setNotifications] = useState<Notify[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
   const [soundEnabled, setSoundEnabled] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { user } = useUser();
-
-  async function loadNotifications() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/notifications", {
-        credentials: "include",
-        cache: "no-store",
-      });
-      const data = await res.json();
-      setNotifications(data ?? []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        const res = await fetch("/api/notifications", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const data = await res.json();
+        setNotifications(data ?? []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
     loadNotifications();
   }, []);
+
+  if (userLoading || pageLoading || !user) return <Loading />;
 
   const enableSound = () => {
     if (!audioRef.current)
@@ -99,28 +101,15 @@ export default function UserNotifications() {
     setNotifications(prev => prev.filter(n => n._id !== id));
   }
 
-  if (loading) {
-    return (
-      <div className="p-4 space-y-3">
-        {[1, 2, 3].map(i => (
-          <div
-            key={i}
-            className="h-24 bg-gray-800 rounded-xl animate-pulse"
-          />
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 space-y-5">
-      {user?.id && (
+      {user?.id ? (
         <RealtimeListener
           userId={user.id}
           onNewNotification={notif => {
             setNotifications(prev => [notif, ...prev]);
             if (audioRef.current && soundEnabled) {
-              audioRef.current.play().catch(() => {});
+              audioRef.current.play().catch(() => { });
             }
           }}
           onReadNotification={id => {
@@ -131,7 +120,14 @@ export default function UserNotifications() {
             );
           }}
         />
-      )}
+      ) : <div className="p-4 space-y-3">
+        {[1, 2, 3].map(i => (
+          <div
+            key={i}
+            className="h-24 bg-gray-800 rounded-xl animate-pulse"
+          />
+        ))}
+      </div>}
 
       <div className="flex flex-col gap-2">
         <h1 className="text-xl font-bold">اعلان‌ها</h1>
@@ -157,11 +153,10 @@ export default function UserNotifications() {
               key={f}
               onClick={() => setFilter(f as any)}
               className={`px-3 py-1 rounded-full text-xs transition
-              ${
-                filter === f
+              ${filter === f
                   ? "bg-blue-600 text-white"
                   : "bg-gray-800 text-gray-400"
-              }`}
+                }`}
             >
               {f === "all" && "همه"}
               {f === "unread" && "خوانده‌نشده"}
@@ -190,11 +185,10 @@ export default function UserNotifications() {
             <div
               key={n._id}
               className={`relative rounded-xl p-4 border transition
-              ${
-                n.isRead
+              ${n.isRead
                   ? "bg-gray-800 border-gray-700"
                   : "bg-gray-850 border-blue-500/40"
-              }`}
+                }`}
             >
               {!n.isRead && (
                 <span className="absolute right-0 top-0 h-full w-1 bg-blue-500 rounded-r-xl" />

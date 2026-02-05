@@ -392,7 +392,6 @@ export default function CompleteProfilePage() {
 
         <div className="flex flex-col gap-4">{steps[step].fields.map(renderField)}</div>
 
-        {/* Buttons */}
         <div className="flex justify-between mt-6">
           {step < steps.length - 1 && <button onClick={next} className="text-green-500 border px-4 py-2 rounded-2xl">بعدی</button>}
           {step === steps.length - 1 && <button onClick={() => setShowConfirm(true)} className="text-green-500 border px-4 py-2 rounded-2xl">تایید نهایی</button>}

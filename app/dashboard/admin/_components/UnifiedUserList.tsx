@@ -36,6 +36,14 @@ export default function UnifiedUserList({ role }: Props) {
     const [mobileOpenId, setMobileOpenId] = useState<string | null>(null);
     const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
     const [filter, setFilter] = useState<Record<string, boolean>>({});
+    const [loadingLinks, setLoadingLinks] = useState<{
+        admin?: boolean;
+        coach?: boolean;
+        studentCreate?: boolean;
+        studentAssign?: boolean;
+        studentCreateMobile?: boolean;
+        studentAssignMobile?: boolean;
+    }>({});
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -151,12 +159,15 @@ export default function UnifiedUserList({ role }: Props) {
             <div className="flex justify-between items-center gap-5">
                 <SearchBox value={search} onChange={setSearch} placehold={`جستجوی ${roleTitle}...`} />
                 <div className="flex flex-wrap w-100 justify-end items-center gap-3">
-                    {/* Admin */}
                     {role === "admin" && (
                         <a
                             href={`/dashboard/admin/admins/create`}
-                            className="px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+                            onClick={() => setLoadingLinks((prev) => ({ ...prev, admin: true }))}
+                            className="px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 flex items-center gap-2"
                         >
+                            {loadingLinks.admin && (
+                                <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                            )}
                             ادمین جدید
                         </a>
                     )}
@@ -165,8 +176,12 @@ export default function UnifiedUserList({ role }: Props) {
                     {role === "coach" && (
                         <a
                             href={`/dashboard/admin/coaches/create`}
-                            className="px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+                            onClick={() => setLoadingLinks((prev) => ({ ...prev, coach: true }))}
+                            className="px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 flex items-center gap-2"
                         >
+                            {loadingLinks.coach && (
+                                <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                            )}
                             مربی جدید
                         </a>
                     )}
@@ -176,14 +191,23 @@ export default function UnifiedUserList({ role }: Props) {
                         <>
                             <a
                                 href={`/dashboard/admin/students/create`}
-                                className="hidden md:block px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+                                onClick={() => setLoadingLinks((prev) => ({ ...prev, studentCreate: true }))}
+                                className="hidden md:flex px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 items-center gap-2"
                             >
+                                {loadingLinks.studentCreate && (
+                                    <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                )}
                                 دانشجو جدید
                             </a>
+
                             <a
                                 href={`/dashboard/admin/students/assign`}
-                                className="hidden md:block px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+                                onClick={() => setLoadingLinks((prev) => ({ ...prev, studentAssign: true }))}
+                                className="hidden md:flex px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700  items-center gap-2"
                             >
+                                {loadingLinks.studentAssign && (
+                                    <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                )}
                                 انتساب دانشجو به مربی
                             </a>
 
@@ -191,24 +215,48 @@ export default function UnifiedUserList({ role }: Props) {
                             <div className="md:hidden relative w-full flex justify-end">
                                 <button
                                     onClick={() => setOpen(!open)}
-                                    className="p-2 text-sm font-medium tracking-wide  capitalize transition-colors duration-300 transform text-green-600 rounded hover:text-green-700 focus:outline-none  flex items-center gap-2"
+                                    className="p-2 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform text-green-600 rounded hover:text-green-700 focus:outline-none flex items-center gap-2"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-hexagon-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M19.875 6.27c.7 .398 1.13 1.143 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z" /><path d="M9 12h6" /><path d="M12 9v6" /></svg>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width={30}
+                                        height={30}
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth={2}
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="icon icon-tabler icons-tabler-outline icon-tabler-hexagon-plus"
+                                    >
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M19.875 6.27c.7 .398 1.13 1.143 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z" />
+                                        <path d="M9 12h6" />
+                                        <path d="M12 9v6" />
+                                    </svg>
                                 </button>
 
                                 {open && (
                                     <div className="absolute left-0 top-full mt-2 w-56 bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-20 text-white">
                                         <a
                                             href={`/dashboard/admin/students/create`}
-                                            className="block px-4 py-3 text-sm hover:bg-gray-900 transition-colors"
+                                            onClick={() => setLoadingLinks((prev) => ({ ...prev, studentCreateMobile: true }))}
+                                            className=" px-4 py-3 text-sm hover:bg-gray-900 transition-colors flex items-center gap-2"
                                         >
+                                            {loadingLinks.studentCreateMobile && (
+                                                <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                            )}
                                             دانشجو جدید
                                         </a>
 
                                         <a
                                             href="/dashboard/admin/students/assign"
-                                            className="block px-4 py-3 text-sm hover:bg-gray-900 transition-colors"
+                                            onClick={() => setLoadingLinks((prev) => ({ ...prev, studentAssignMobile: true }))}
+                                            className=" px-4 py-3 text-sm hover:bg-gray-900 transition-colors flex items-center gap-2"
                                         >
+                                            {loadingLinks.studentAssignMobile && (
+                                                <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                            )}
                                             انتساب دانشجو به مربی
                                         </a>
                                     </div>

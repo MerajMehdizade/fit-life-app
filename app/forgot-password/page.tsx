@@ -7,14 +7,17 @@ import { Form } from "../Components/Form/Form";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({
     show: false,
     message: "",
     type: "success" as "success" | "error",
   });
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+ const handleSubmit = async (e: any) => {
+  e.preventDefault();
 
+  try {
+    setLoading(true);
 
     const res = await fetch("/api/auth/forgot-password", {
       method: "POST",
@@ -23,17 +26,27 @@ export default function ForgotPasswordPage() {
     });
 
     const data = await res.json();
+
     setToast({
       show: true,
       message: data.message,
       type: res.ok ? "success" : "error",
     });
-  };
+  } catch (err) {
+    setToast({
+      show: true,
+      message: "خطایی رخ داد، دوباره تلاش کنید",
+      type: "error",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <section className="bg-white dark:bg-gray-900">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
-       <Form onSubmit={handleSubmit} className="w-full max-w-md space-y-3">
+        <Form onSubmit={handleSubmit} className="w-full max-w-md space-y-3">
           <div className="flex justify-center mx-auto">
             <img className="w-auto h-24 sm:h-32" src="/forgot-password.svg" alt="" />
           </div>
@@ -51,7 +64,13 @@ export default function ForgotPasswordPage() {
             }
           />
           <div className="mt-6">
-            <Button type="submit"> دریافت لینک یک بار مصرف</Button>
+            <Button
+              type="submit"
+              loading={loading}
+            >
+              دریافت لینک یک بار مصرف
+            </Button>
+
           </div>
 
         </Form>

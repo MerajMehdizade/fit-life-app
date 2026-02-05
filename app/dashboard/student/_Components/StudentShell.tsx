@@ -11,16 +11,13 @@ import AvatarNavItem from "./AvatarNavItem";
 import { usePathname, useRouter } from "next/navigation";
 import Loading from "@/app/Components/LoadingSpin/Loading";
 
-
-
 type SheetKey = "settings";
 
 export default function StudentShell({ children }: { children: ReactNode }) {
     const { user, logout, loading } = useUser();
     const router = useRouter();
     const [openSheet, setOpenSheet] = useState<SheetKey | null>(null);
-    const [avatarMenu, setAvatarMenu] = useState(false);
-    const [avatarSrc, setAvatarSrc] = useState(user?.avatar || "/avatars/default.png");
+    const [avatarSrc, setAvatarSrc] = useState(user?.avatar || "/avatars/default.jpg");
     const avatarRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const isActive = (url?: string) => url ? pathname === url : false;
@@ -31,15 +28,16 @@ export default function StudentShell({ children }: { children: ReactNode }) {
             router.replace("/login");
         }
     }, [loading, user, router]);
+
     useEffect(() => {
         if (!user) return;
-        setAvatarSrc(user.avatar || "/avatars/default.png");
+        setAvatarSrc(user.avatar || "/avatars/default.jpg");
     }, [user]);
 
     useEffect(() => {
         function handleClickOutside(e: any) {
             if (avatarRef.current && !avatarRef.current.contains(e.target)) {
-                setAvatarMenu(false);
+                setOpenSheet(null);
             }
         }
         document.addEventListener("click", handleClickOutside);
@@ -53,9 +51,8 @@ export default function StudentShell({ children }: { children: ReactNode }) {
             setOpenSheet("settings");
         }
     };
-    if (loading) {
-        return <Loading />
-    }
+
+    if (loading) return <Loading />;
     const navItems: MobileNavItemType[] = [
         {
             key: "notifications",
@@ -69,6 +66,7 @@ export default function StudentShell({ children }: { children: ReactNode }) {
         {
             key: "coaches",
             title: "جستجو مربی",
+            url: "/dashboard/student/coachSearch",
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h1.5" /><path d="M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M20.2 20.2l1.8 1.8" /></svg>
             ),
@@ -90,32 +88,29 @@ export default function StudentShell({ children }: { children: ReactNode }) {
             ),
         },
         {
-            key: "avatar",
-            title: "پروفایل",
-            icon: <AvatarNavItem avatarSrc={avatarSrc} avatarRef={avatarRef} onClick={() => setOpenSheet("settings")} />,
-        },
+      key: "avatar",
+      title: "پروفایل",
+    url: "/dashboard/student/profile",
+      icon: <AvatarNavItem avatarSrc={avatarSrc} avatarRef={avatarRef} />,
+    },
     ];
 
-    return (
-        <div className="bg-gray-900 min-h-screen text-white pb-20">
-            <SettingsSheet
-                openSheet={openSheet}
-                setOpenSheet={setOpenSheet}
-                logout={logout}
-                isActive={isActive}
-                sheets={{
-                    settings: [
-                        { title: "حساب کاربری", url: "/dashboard/student/profile" },
-                        { title: "خروج", action: "logout", danger: true },
-                    ],
-                }}
-            />
+return (
+    <div className="bg-gray-900 min-h-screen text-white pb-20">
+      <BottomNav
+        items={navItems}
+        isActive={isActive}
+        handleNavClick={handleNavClick}
+      />
 
-            <BottomNav items={navItems} isActive={isActive} handleNavClick={handleNavClick} />
+      <main>{children}</main>
 
-            <main>{children}</main>
-
-            <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
-        </div>
-    );
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ ...toast, show: false })}
+      />
+    </div>
+  );
 }

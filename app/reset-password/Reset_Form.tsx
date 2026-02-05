@@ -10,9 +10,9 @@ import { Form } from "../Components/Form/Form";
 export default function Reset_Form() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+
   const [password, setPassword] = useState("");
-  const [status, setStatus] =
-    useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const [toast, setToast] = useState({
     show: false,
@@ -38,26 +38,35 @@ export default function Reset_Form() {
 
     setStatus("loading");
 
-    const res = await fetch("/api/auth/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, password }),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      setStatus("success");
-      setToast({
-        show: true,
-        message: "رمز عبور با موفقیت تغییر کرد!",
-        type: "success",
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password }),
       });
-    } else {
+      const data = await res.json();
+
+      if (data.success) {
+        setStatus("success");
+        setToast({
+          show: true,
+          message: "رمز عبور با موفقیت تغییر کرد!",
+          type: "success",
+        });
+        setPassword("");
+      } else {
+        setStatus("error");
+        setToast({
+          show: true,
+          message: data.error || "خطا در تغییر رمز عبور",
+          type: "error",
+        });
+      }
+    } catch (err) {
       setStatus("error");
       setToast({
         show: true,
-        message: data.error || "خطا در تغییر رمز عبور",
+        message: "خطا در ارتباط با سرور",
         type: "error",
       });
     }
@@ -65,23 +74,23 @@ export default function Reset_Form() {
 
   return (
     <section className="bg-white dark:bg-gray-900">
-      <div className="container flex items-center justify-center  px-6 mx-auto">
+      <div className="container flex items-center justify-center px-6 mx-auto">
         <Form onSubmit={handleSubmit} className="w-full max-w-md">
-
-          <div className="flex justify-center mx-auto flex-col items-center gap-3">
+          <div className="flex flex-col items-center justify-center gap-3 mb-6">
             <span className="text-red-400 md:text-xl">این لینک فقط 15 دقیقه فعال است</span>
-            <img className="w-auto sm:h-32 h-16" src="/change-password.svg" alt="" />
+            <img className="w-auto sm:h-32 h-16" src="/change-password.svg" alt="تغییر رمز عبور" />
           </div>
 
           <PasswordInput
             value={password}
             onChange={e => setPassword(e.target.value)}
             placeholder="رمز عبور"
+            required
           />
 
-          <div className="mt-6">
-            <Button type="submit">
-              {status === "loading" ? "در حال تغییر..." : "تغییر رمز"}
+          <div className="mt-6 text-center">
+            <Button type="submit" loading={status === "loading"}>
+              تغییر رمز عبور
             </Button>
           </div>
         </Form>

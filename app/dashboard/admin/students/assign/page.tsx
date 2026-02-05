@@ -65,7 +65,7 @@ export default function AssignPage() {
 
     setToast({
       show: true,
-      message: res.ok ? "✔ با موفقیت اختصاص داده شد" : "❌ خطا در عملیات",
+      message: res.ok ? "✔ با موفقیت انتساب داده شد" : "❌ خطا در عملیات",
       type: res.ok ? "success" : "error",
     });
   };
@@ -73,53 +73,54 @@ export default function AssignPage() {
   useEffect(() => {
     loadData();
   }, []);
-  if (loading) return <Loading />
   return (
     <>
 
-      <section className="bg-white dark:bg-gray-900 flex items-center justify-center">
-        <Form onSubmit={(e) => { e.preventDefault(); assignNow(); }}>
+      <section className="bg-white dark:bg-gray-900 w-full p-4 pb-20 sm:p-10 text-gray-100 flex justify-center items-center h-screen md:h-full">
+        <div className="container flex items-center justify-center px-6 mx-auto">
+          <Form onSubmit={(e) => { e.preventDefault(); assignNow(); }}>
 
-          <h1 className="text-white text-2xl text-center mb-10">
-            اختصاص دانشجو به مربی
-          </h1>
+            <h1 className="text-white text-2xl text-center mb-10">
+              انتساب دانشجو به مربی
+            </h1>
 
-          {/* دانشجو */}
-          <div className="mb-5">
-            <label className="block mb-2 text-sm text-gray-300">دانشجو</label>
-            <Select icon={true}
-              value={selectedStudent}
-              onChange={(e) => setSelectedStudent(e.target.value)}
-            >
-              <option value="">انتخاب دانشجو</option>
-              {students.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name} — {s.email}
-                </option>
-              ))}
-            </Select>
-          </div>
+            {/* دانشجو */}
+            <div className="mb-5">
+              <label className="block mb-2 text-sm text-gray-300">دانشجو</label>
+              <Select icon={true}
+                value={selectedStudent}
+                onChange={(e) => setSelectedStudent(e.target.value)}
+              >
+                <option value="">انتخاب دانشجو</option>
+                {students.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name} — {s.email}
+                  </option>
+                ))}
+              </Select>
+            </div>
 
-          {/* مربی */}
-          <div className="mb-8">
-            <label className="block mb-2 text-sm text-gray-300">مربی</label>
-            <Select icon={true}
-              value={selectedCoach}
-              onChange={(e) => setSelectedCoach(e.target.value)}
-            >
-              <option value="">انتخاب مربی</option>
-              {coaches.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name} — {c.email}
-                </option>
-              ))}
-            </Select>
-          </div>
+            {/* مربی */}
+            <div className="mb-8">
+              <label className="block mb-2 text-sm text-gray-300">مربی</label>
+              <Select icon={true}
+                value={selectedCoach}
+                onChange={(e) => setSelectedCoach(e.target.value)}
+              >
+                <option value="">انتخاب مربی</option>
+                {coaches.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name} — {c.email}
+                  </option>
+                ))}
+              </Select>
+            </div>
 
-          <Button type="submit" disabled={loading}>
-            {loading ? "در حال ثبت..." : "اختصاص"}
-          </Button>
-        </Form>
+            <Button type="submit" loading={loading}>
+              انتساب
+            </Button>
+          </Form>
+        </div>
 
         <Toast
           show={toast.show}

@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [role, setRole] = useState<"student" | "coach">("student");
   const [toast, setToast] = useState({
     show: false,
@@ -27,6 +28,8 @@ export default function RegisterPage() {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,20 +39,30 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        if (data.user.role === 'admin')
+        if (data.user.role === "admin")
           router.push("/dashboard/admin");
-        else if (data.user.role === 'coach')
+        else if (data.user.role === "coach")
           router.push("/dashboard/coach");
-        else if (data.user.role === 'student')
+        else if (data.user.role === "student")
           router.push("/dashboard/student");
-      }
-      else {
-        setToast({ show: true, message: data.message, type: "error" });
+      } else {
+        setToast({
+          show: true,
+          message: data.message,
+          type: "error",
+        });
       }
     } catch (err) {
-      setToast({ show: true, message: "خطا در ارتباط با سرور", type: "error" });
+      setToast({
+        show: true,
+        message: "خطا در ارتباط با سرور",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <section className="bg-white dark:bg-gray-900">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
@@ -107,7 +120,10 @@ export default function RegisterPage() {
           />
 
           <div className="mt-6">
-            <Button type="submit">عضویت در فیت</Button>
+            <Button
+              type="submit"
+              loading={loading}
+            >عضویت در فیت</Button>
             <div className="mt-6 text-center">
               <a href="./login" className="text-sm text-blue-500 hover:underline dark:text-blue-400">
                 قبلاً ثبت‌نام کرده‌اید؟

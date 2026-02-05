@@ -15,20 +15,27 @@ export default function LoginPage() {
   const { setUser, refreshUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({
     show: false,
     message: "",
     type: "success" as "success" | "error",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    setLoading(true);
+
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
+
     const data = await res.json();
+
     if (res.ok) {
       await refreshUser();
       if (data.user.role === "student")
@@ -37,9 +44,24 @@ export default function LoginPage() {
         router.push("/dashboard/coach");
       else if (data.user.role === "admin")
         router.push("/dashboard/admin");
+    } else {
+      setToast({
+        show: true,
+        message: data.message,
+        type: "error",
+      });
     }
-    else setToast({ show: true, message: data.message, type: "error" });
-  };
+  } catch (err) {
+    setToast({
+      show: true,
+      message: "خطایی رخ داد، دوباره تلاش کنید",
+      type: "error",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
     <section className="bg-white dark:bg-gray-900 ">
       <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
@@ -79,16 +101,17 @@ export default function LoginPage() {
           />
 
           <div className="flex items-center mt-4 gap-1 ms-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="size-6 text-gray-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992M2.985 19.644v-4.992h4.992m-4.992 0 3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-restore text-gray-300 "><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3.06 13a9 9 0 1 0 .49 -4.087" /><path d="M3 4.001v5h5" /><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
             <a href="./forgot-password" className="text-gray-300 font-bold text-sm">
               فراموشی رمز عبور
             </a>
           </div>
 
           <div className="mt-6">
-            <Button type="submit">ورود به پنل کاربری</Button>
+            <Button
+              type="submit"
+              loading={loading}
+            >ورود به پنل کاربری</Button>
             <div className="mt-6 text-center">
               <a href="./register" className="text-sm text-blue-500 hover:underline dark:text-blue-400">
                 ثبت نام در فیت

@@ -21,14 +21,12 @@ export default function EditUser({ id }: { id: string }) {
     message: "",
     type: "success" as "success" | "error",
   });
-  let roleTitle = ""
-  if (form.role === 'admin') {
-    roleTitle = "ادمین"
-  } else if (form.role === 'student') {
-    roleTitle = "دانشجو"
-  } else {
-    roleTitle = "مربی"
-  }
+
+  let roleTitle = "";
+  if (form.role === "admin") roleTitle = "ادمین";
+  else if (form.role === "student") roleTitle = "دانشجو";
+  else roleTitle = "مربی";
+
   const loadUser = useCallback(async () => {
     try {
       const res = await fetch(`/api/admin/users`, { credentials: "include" });
@@ -36,21 +34,24 @@ export default function EditUser({ id }: { id: string }) {
 
       const user = list.data?.find((u: any) => u._id === id);
 
-      if (user) setForm({
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      });
-
+      if (user)
+        setForm({
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        });
     } catch (err) {
       console.error("Failed to load user:", err);
     }
     setLoading(false);
   }, [id]);
 
-  const submit = async (e: any) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+
     try {
+      setLoading(true);
       const res = await fetch(`/api/admin/users/${id}`, {
         method: "PUT",
         body: JSON.stringify(form),
@@ -67,7 +68,15 @@ export default function EditUser({ id }: { id: string }) {
           : data.message || "خطایی رخ داد",
         type: res.ok ? "success" : "error",
       });
-    } catch (err) {
+
+      if (!res.ok) return;
+
+      if (form.role === "coach") {
+        window.location.href = `/dashboard/admin/${form.role}es/list`;
+      } else {
+        window.location.href = `/dashboard/admin/${form.role}s/list`;
+      }
+    } catch {
       setToast({
         show: true,
         message: "خطا در ارتباط با سرور",
@@ -76,31 +85,25 @@ export default function EditUser({ id }: { id: string }) {
     } finally {
       setLoading(false);
     }
-    if (form.role === 'coach') {
-      window.location.href = `/dashboard/admin/${form.role}es/list`;
-    } else {
-      window.location.href = `/dashboard/admin/${form.role}s/list`;
-    }
   };
 
   useEffect(() => {
     loadUser();
   }, [loadUser]);
 
-  if (loading) return <Loading />
-
   return (
-    <section className="bg-white dark:bg-gray-900">
-      <div className="container flex items-center justify-center  px-6 mx-auto">
+    <section className="bg-white dark:bg-gray-900 w-full p-4 pb-20 sm:p-10 text-gray-100 flex justify-center items-center h-screen md:h-full">
+      <div className="container flex items-center justify-center px-6 mx-auto">
         <Form onSubmit={submit} className="w-full max-w-md">
-          <h1 className="text-white text-2xl text-center mb-10">ویرایش کاربر {form.name}</h1>
+          <h1 className="text-white text-2xl text-center mb-10">
+            ویرایش کاربر {form.name}
+          </h1>
+
           <Input
             type="text"
             placeholder={`نام ${roleTitle}`}
             value={form.name}
-            onChange={(e) =>
-              setForm({ ...form, name: e.target.value })
-            }
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
             className="px-11"
             rightIcon={
@@ -125,33 +128,45 @@ export default function EditUser({ id }: { id: string }) {
             type="email"
             placeholder="ایمیل"
             value={form.email}
-            onChange={(e) =>
-              setForm({ ...form, email: e.target.value })
-            }
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
             className="px-11"
             rightIcon={
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
               </svg>
             }
           />
 
-          <Select value={form.role}
-            onChange={(e) => setForm({ ...form, role: e.target.value })} icon={true}>
+          <Select
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+            icon={true}
+          >
             <option value="student">Student</option>
             <option value="coach">Coach</option>
             <option value="admin">Admin</option>
           </Select>
 
-
           <div className="mt-6 text-center">
-            <Button type="submit" disabled={loading}>
-              {loading ? "در حال ساخت..." : "ثبت تغییرات"}
+            <Button type="submit" loading={loading}>
+              ثبت تغییرات
             </Button>
           </div>
         </Form>
       </div>
+
       <Toast
         show={toast.show}
         message={toast.message}
