@@ -38,7 +38,7 @@ export default function MobileNavItem({
         {item.icon}
         {item.badge && <span className="absolute -top-1 -right-1">{item.badge}</span>}
       </div>
-      <span className={`select-none${active ? "font-semibold" : ""}`}>{item.title}</span>
+      <span className={`${active ? "font-semibold" : ""}`}>{item.title}</span>
     </li>
   );
 }

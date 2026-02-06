@@ -15,7 +15,7 @@ export default function BottomNav({
     shiftUp?: boolean;
 }) {
     return (
-       <nav className={`fixed bottom-4 inset-x-4 bg-gray-800/90 rounded-3xl z-50 transition-transform duration-300
+       <nav className={`fixed select-none bottom-4 inset-x-4 bg-gray-800/90 rounded-3xl z-50 transition-transform duration-300
   ${shiftUp ? "translate-y-[-60px]" : "translate-y-0"}`}>
 
   {/* محتوا نوار */}
@@ -32,7 +32,7 @@ export default function BottomNav({
 
   {/* هاله حرفه‌ای زیر نوار */}
   <div className="absolute -bottom-4 left-0 w-full h-8 rounded-t-3xl pointer-events-none
-      bg-black/50 blur-[12px] mix-blend-multiply" />
+      bg-black/50 blur-md mix-blend-multiply" />
 </nav>
 
     );
