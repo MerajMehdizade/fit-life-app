@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/Components/LoadingSpin/Loading.tsx"  ],
+, "app/Components/LoadingSpin/Loading.tsx", "app/Components/StepContainer", "app/Components/ProgressBar", "app/Components/NumberInput", "app/Components/ImageSelect", "app/Components/FieldRenderer"  ],
   "exclude": ["node_modules"]
 }

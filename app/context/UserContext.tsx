@@ -3,15 +3,59 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
+export type UserStatus = "active" | "suspended" | "deleted";
+export type UserRole = "student" | "coach" | "admin";
+
+export type UserProfile = {
+  age?: number;
+  gender?: "male" | "female";
+  height?: number;
+  role: UserRole;
+  status?: UserStatus;
+
+  currentWeight?: number;
+  targetWeight?: number;
+
+  bodyFatPercentage?: number;
+
+  trainingLevel?: string;
+  workoutDaysPerWeek?: number;
+
+  nutritionPlan?: {
+    calorieTarget?: number;
+    calculatedAt?: string;
+  };
+  motivationLevel?: number;
+  confidenceLevel?: number;
+  medical?: {
+    injuries?: string[];
+    chronicDiseases?: string[];
+    medications?: string[];
+    doctorRestrictions?: string;
+  };
+};
+type BodyVisualKey = "body_1" | "body_2" | "body_3" | "body_4";
+
+export type UiPreferences = {
+  bodyVisuals?: {
+    current?: BodyVisualKey;
+    target?: BodyVisualKey;
+  };
+};
+
+
 export type ProfileType = {
-  profile: {};
   id: string;
   name: string;
   email: string;
   avatar: string;
   role: "student" | "coach" | "admin";
+  status?: "active" | "suspended" | "deleted";
+  assignedCoach?: any; 
+  students?: any[];  
+  profile?: UserProfile;
+  uiPreferences?: UiPreferences;
 };
-
 
 type UserContextType = {
   user: ProfileType | null;
@@ -38,8 +82,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
         const avatarUrl = data.user?.avatar
           ? `${data.user.avatar}?t=${Date.now()}`
-          : "/avatars/default.png";
-        setUser({ ...data.user, avatar: avatarUrl });
+          : "/avatars/default.jpg";
+        setUser({
+          ...data.user,
+          status: data.user?.status ?? "active",
+          avatar: avatarUrl,
+        });
+
       } else {
         setUser(null);
       }

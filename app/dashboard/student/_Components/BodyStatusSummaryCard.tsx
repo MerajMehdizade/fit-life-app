@@ -3,14 +3,21 @@
 interface BodyStatusSummaryCardProps {
   bmi?: number;
   workOutDays?: number;
-  primaryGoal?: "slim" | "average" | "fit" | "muscular";
+  primaryGoal?: 
+    | "fat_loss"
+    | "muscle_gain"
+    | "cut"
+    | "health"
+    | "strength"
+    | "recomposition";
 }
 
 export default function BodyStatusSummaryCard({
   bmi,
   workOutDays = 0,
-  primaryGoal = "average",
+  primaryGoal = "health",
 }: BodyStatusSummaryCardProps) {
+
   let status: "good" | "warning" | "attention" = "good";
 
   if (bmi && bmi >= 30) status = "attention";
@@ -19,11 +26,11 @@ export default function BodyStatusSummaryCard({
   const statusMeta = {
     good: {
       color: "text-green-400 bg-green-400/15",
-      message: "بدن شما در مسیر مناسبی قرار دارد ",
+      message: "بدن شما در مسیر مناسبی قرار دارد",
     },
     warning: {
       color: "text-amber-400 bg-amber-400/15",
-      message: "با افزایش تحرک می‌توانید سریع‌تر به هدفتان برسید",
+      message: "با افزایش تحرک سریع‌تر به هدفتان می‌رسید",
     },
     attention: {
       color: "text-red-400 bg-red-400/15",
@@ -31,11 +38,19 @@ export default function BodyStatusSummaryCard({
     },
   };
 
+  const goalLabelMap: Record<string, string> = {
+    fat_loss: "چربی‌سوزی",
+    cut: "کات",
+    muscle_gain: "عضله‌سازی",
+    strength: "افزایش قدرت",
+    recomposition: "ریکامپ",
+    health: "سلامتی",
+  };
+
   const meta = statusMeta[status];
 
   return (
     <div className="w-full md:w-1/3 h-52 rounded-2xl border border-gray-700 bg-gray-800/30 backdrop-blur px-4 py-5 shadow-md">
-      {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <span className="text-sm text-gray-300">وضعیت کلی بدن</span>
         <span className={`text-xs px-2 py-1 rounded-full ${meta.color}`}>
@@ -43,17 +58,12 @@ export default function BodyStatusSummaryCard({
         </span>
       </div>
 
-      {/* Content */}
       <div className="flex flex-col items-center justify-center h-full text-center -mt-4">
         <div className="text-2xl font-bold text-white mb-2">
-          {primaryGoal === "muscular"
-            ? "عضله‌سازی"
-            : primaryGoal === "slim"
-            ? "چربی‌سوزی"
-            : "متعادل"}
+          {goalLabelMap[primaryGoal]}
         </div>
 
-        <p className="text-sm text-gray-300 leading-relaxed max-w-[220px]">
+        <p className="text-sm text-gray-300 max-w-[220px]">
           {meta.message}
         </p>
 

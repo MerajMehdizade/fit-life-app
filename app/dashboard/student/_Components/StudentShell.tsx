@@ -91,7 +91,7 @@ export default function StudentShell({ children }: { children: ReactNode }) {
     ];
 
     return (
-        <div className="bg-gray-900 min-h-screen text-white pb-20">
+        <div className="bg-gray-950 min-h-screen text-white pb-20">
             <DashboardHeader avatarSrc={avatarSrc} avatarRef={avatarRef} />
             <BottomNav
                 items={navItems}

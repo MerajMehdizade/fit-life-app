@@ -68,7 +68,7 @@ export default function CreateUser({ role }: Props) {
     } catch {
       setToast({
         show: true,
-        message: "خطا در ارتباط با سرور",
+        message: " لطفا اینترنت خود را بررسی کرده و دوباره تلاش کنید",
         type: "error",
       });
     } finally {

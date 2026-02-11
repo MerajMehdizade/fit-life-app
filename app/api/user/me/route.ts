@@ -34,6 +34,7 @@ export async function GET() {
       role: user.role,
       avatar: user.avatar || "",
       profile: user.profile ?? {},
+      uiPreferences: user.uiPreferences ?? {},
     },
   });
 }
