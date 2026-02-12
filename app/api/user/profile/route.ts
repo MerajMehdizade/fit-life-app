@@ -233,10 +233,21 @@ export async function PATCH(req: Request) {
       { new: true, runValidators: true }
     );
 
-    return NextResponse.json({
-      success: true,
-      profile: updatedUser?.profile,
-    });
+   return NextResponse.json({
+  success: true,
+  user: {
+    _id: updatedUser?._id,
+    name: updatedUser?.name,
+    email: updatedUser?.email,
+    role: updatedUser?.role,
+    status: updatedUser?.status,
+    avatar: updatedUser?.avatar,
+    profile: updatedUser?.profile,
+    students: updatedUser?.students,
+    assignedCoach: updatedUser?.assignedCoach,
+  },
+});
+
   } catch (error) {
     console.error("PROFILE UPDATE ERROR:", error);
     return NextResponse.json(

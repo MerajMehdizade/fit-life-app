@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import BodyTypeComparison from "./_Components/BodyTypeComparison";
+import BodyTypeComparison from "../_Components/BodyTypeComparison";
 import { useUser } from "@/app/context/UserContext";
 import Loading from "@/app/Components/LoadingSpin/Loading";
-import BMICard from "./_Components/BMICard";
-import CalorieNeedsCard from "./_Components/CalorieNeedsCard";
-import WaterIntakeCard from "./_Components/WaterIntakeCard";
-import ActivityLevelCard from "./_Components/ActivityLevelCard";
-import BodyStatusSummaryCard from "./_Components/BodyStatusSummaryCard";
+import BMICard from "../_Components/BMICard";
+import CalorieNeedsCard from "../_Components/CalorieNeedsCard";
+import WaterIntakeCard from "../_Components/WaterIntakeCard";
+import ActivityLevelCard from "../_Components/ActivityLevelCard";
+import BodyStatusSummaryCard from "../_Components/BodyStatusSummaryCard";
 
 interface DashboardProfile {
   age?: number;

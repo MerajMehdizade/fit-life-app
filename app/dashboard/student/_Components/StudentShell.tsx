@@ -6,8 +6,6 @@ import Toast from "@/app/Components/toast/Toast";
 import BottomNav from "@/app/Components/BottomNav/BottomNav";
 import { MobileNavItemType } from "@/app/Components/MobileNavItem/MobileNavItem";
 import NotificationBadge from "@/app/Components/NotificationBadge/NotificationBadge";
-import SettingsSheet from "@/app/Components/SettingsSheet/SettingsSheet";
-import AvatarNavItem from "./AvatarNavItem";
 import { usePathname, useRouter } from "next/navigation";
 import Loading from "@/app/Components/LoadingSpin/Loading";
 import DashboardHeader from "@/app/Components/DashboardHeader/DashboardHeader";
@@ -23,12 +21,20 @@ export default function StudentShell({ children }: { children: ReactNode }) {
     const pathname = usePathname();
     const isActive = (url?: string) => url ? pathname === url : false;
     const [toast, setToast] = useState({ show: false, message: "", type: "success" as "success" | "error" });
+    const isLocked = user?.status === "suspended";
+    const profilePath = "/dashboard/student/profile";
 
     useEffect(() => {
         if (!loading && !user) {
             router.replace("/login");
         }
     }, [loading, user, router]);
+
+    useEffect(() => {
+        if (!loading && user && isLocked && pathname !== profilePath) {
+            router.replace(profilePath);
+        }
+    }, [loading, user, isLocked, pathname, router]);
 
     useEffect(() => {
         if (!user) return;
@@ -46,12 +52,23 @@ export default function StudentShell({ children }: { children: ReactNode }) {
     }, []);
 
     const handleNavClick = (item: MobileNavItemType) => {
+
+        if (isLocked && item.url !== profilePath) {
+            setToast({
+                show: true,
+                message: "حساب شما غیرفعال است. فقط امکان مشاهده پروفایل دارید.",
+                type: "error"
+            });
+            return;
+        }
+
         if (item.url) {
             router.push(item.url);
         } else if (item.key === "profile") {
             setOpenSheet("settings");
         }
     };
+
 
     if (loading) return <Loading />;
     const navItems: MobileNavItemType[] = [
@@ -92,6 +109,8 @@ export default function StudentShell({ children }: { children: ReactNode }) {
 
     return (
         <div className="bg-gray-950 min-h-screen text-white pb-20">
+           
+
             <DashboardHeader avatarSrc={avatarSrc} avatarRef={avatarRef} />
             <BottomNav
                 items={navItems}

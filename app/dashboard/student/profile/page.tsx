@@ -7,7 +7,6 @@ import AvatarCropper from "@/app/Components/AvatarCropper/AvatarCropper";
 import { createCroppedBlob } from "@/lib/createCroppedBlob";
 import Toast from "@/app/Components/toast/Toast";
 import Loading from "@/app/Components/LoadingSpin/Loading";
-
 import ProfileHeader from "../_Components/profile/ProfileHeader";
 import BodyOverview from "../_Components/profile/BodyOverview";
 import TrainingOverview from "../_Components/profile/TrainingOverview";
@@ -16,7 +15,6 @@ import NutritionOverview from "../_Components/profile/NutritionOverview";
 export default function ProfilePage() {
   const { user, setUser, logout, loading } = useUser();
   const router = useRouter();
-
   const [avatarSrc, setAvatarSrc] = useState("/avatars/default.jpg");
   const [cropFile, setCropFile] = useState<File | null>(null);
 

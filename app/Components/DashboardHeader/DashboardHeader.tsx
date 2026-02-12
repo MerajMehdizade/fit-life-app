@@ -13,7 +13,7 @@ export default function DashboardHeader({ avatarSrc, avatarRef }: Props) {
   const router = useRouter();
 
   return (
-    <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-gray-900">
+    <header className="flex items-center justify-between px-4 py-3 border-b border-gray-900 bg-gray-950">
       <img
         src="/logo.png"
         alt="logo"

@@ -16,12 +16,13 @@ export async function getCurrentUser() {
       "role profileCompleted status"
     );
 
-    if (!user || user.status !== "active") return null;
+    if (!user) return null;
 
     return {
       userId: user._id.toString(),
       role: user.role,
       profileCompleted: user.profileCompleted,
+      status: user.status,
     };
   } catch {
     return null;

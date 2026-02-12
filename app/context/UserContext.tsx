@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
-export type UserStatus = "active" | "suspended" | "deleted";
+export type UserStatus = "active" | "suspended";
 export type UserRole = "student" | "coach" | "admin";
 
 export type UserProfile = {
@@ -50,7 +50,7 @@ export type ProfileType = {
   email: string;
   avatar: string;
   role: "student" | "coach" | "admin";
-  status?: "active" | "suspended" | "deleted";
+  status?: "active" | "suspended";
   assignedCoach?: any; 
   students?: any[];  
   profile?: UserProfile;
