@@ -1,11 +1,14 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
-import { Select } from "@/app/Components/Form/Select";
-import { Input } from "@/app/Components/Form/Input";
-
+import { Dispatch, SetStateAction, useState } from "react";
 import { steps } from "../steps";
 import { ProfileForm, Field } from "../types";
+import DatePicker from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import OptionSelector from "@/app/Components/Form/OptionSelector";
+import FormInput from "./FormInput";
+
 
 type Props = {
   step: number;
@@ -35,37 +38,6 @@ const NUMBER_LIMITS: Partial<
   confidenceLevel: { min: 1, max: 10 },
 };
 
-/* ===== LABEL MAP (FA) ===== */
-const LABELS: Record<string, string> = {
-  fat_loss: "چربی‌سوزی",
-  muscle_gain: "افزایش عضله",
-  cut: "کات",
-  health: "سلامتی",
-  strength: "افزایش قدرت",
-  recomposition: "اصلاح ترکیب بدن",
-
-  beginner: "مبتدی",
-  intermediate: "متوسط",
-  advanced: "پیشرفته",
-
-  balanced: "متعادل",
-  keto: "کتوژنیک",
-  vegan: "وگان",
-
-  poor: "ضعیف",
-  average: "متوسط",
-  good: "خوب",
-
-  sedentary: "بی‌تحرک",
-  light: "کم‌تحرک",
-  moderate: "متوسط",
-  active: "فعال",
-  very_active: "بسیار فعال",
-
-  gym: "باشگاه",
-  home: "خانه",
-  outdoor: "فضای باز",
-};
 
 export default function StepRenderer({
   step,
@@ -125,20 +97,17 @@ export default function StepRenderer({
 
     if (field.type === "select") {
       return (
-        <Select
-          icon={false}
-          key={key}
-          value={form[key]?.toString() ?? ""}
-          onChange={(e) => update(key, e.target.value)}
-          className="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-green-500 text-white"
-        >
-          <option value="">{field.placeholder}</option>
-          {field.options?.map((o) => (
-            <option key={o} value={o}>
-              {LABELS[o] ?? o}
-            </option>
-          ))}
-        </Select>
+        <div key={key} className="flex flex-col gap-2">
+          <p className="text-sm text-gray-400">
+            {field.placeholder}
+          </p>
+
+          <OptionSelector
+            value={form[key]?.toString()}
+            options={field.options}
+            onChange={(val) => update(key, val)}
+          />
+        </div>
       );
     }
 
@@ -190,48 +159,68 @@ export default function StepRenderer({
                 ? 7
                 : 10000;
 
+
       return (
         <div key={key} className="flex items-center justify-between gap-2">
-          <Input
-            type="number"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            min={min}
-            max={max}
-            value={
-              form[key] instanceof Date
-                ? form[key].toISOString().split("T")[0]
-                : form[key] ?? ""
-            }
+          <FormInput
+  key={key}
+  type="number"
+  inputMode="numeric"
+  pattern="[0-9]*"
+  min={min}
+  max={max}
+  value={
+  form[key] instanceof Date
+    ? form[key].toISOString().split("T")[0]
+    : (form[key] as string | number | undefined) ?? ""
+}
+  label={field.placeholder || ""}
+  onChange={(e) => {
+    update(key, e.target.value === "" ? "" : Number(e.target.value));
+  }}
+  onBlur={() => {
+    const limits = NUMBER_LIMITS[key];
+    const raw = form[key];
 
-            placeholder={field.placeholder}
-            onChange={(e) => {
-              update(key, e.target.value === "" ? "" : Number(e.target.value));
-            }}
-            onBlur={() => {
-              const limits = NUMBER_LIMITS[key];
-              const raw = form[key];
+    if (!limits || raw === undefined || raw === null) return;
 
-              if (!limits || raw === undefined || raw === null) return;
+    let value = Number(raw);
+    if (isNaN(value)) return;
 
-              let value = Number(raw);
-              if (isNaN(value)) return;
-
-              value = Math.min(limits.max, Math.max(limits.min, value));
-              update(key, value);
-            }}
-
-            className={`w-full p-3 rounded-xl bg-gray-800 border ${isInvalidNumber(key) ? "border-red-500" : "border-gray-700"
-              } placeholder-gray-400 focus:ring-2 focus:ring-green-500 text-white`}
-          />
+    value = Math.min(limits.max, Math.max(limits.min, value));
+    update(key, value);
+  }}
+  className={`${
+    isInvalidNumber(key)
+      ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+      : ""
+  }`}
+/>
 
 
         </div>
       );
     }
 
+    if (field.type === "date") {
+      return (
+        <DatePicker
+          key={key}
+          calendar={persian}
+          locale={persian_fa}
+          value={form[key] || ""}
+          onChange={(date) => {
+            update(key, date?.toDate?.() || date);
+          }}
+          inputClass="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500"
+          placeholder={field.placeholder}
+          calendarPosition="bottom-center"
+        />
+      );
+    }
+
     return (
-      <Input
+      <FormInput
         key={key}
         type={field.type}
         value={
@@ -239,14 +228,38 @@ export default function StepRenderer({
             ? form[key].toISOString().split("T")[0]
             : form[key] ?? ""
         }
-        placeholder={field.placeholder}
+        label={field.placeholder || ""}
         onChange={(e) => update(key, e.target.value)}
-        className="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-green-500 text-white"
       />
     );
+
+    // <Input
+    //   key={key}
+    //   type={field.type}
+    //   value={
+    //     form[key] instanceof Date
+    //       ? form[key].toISOString().split("T")[0]
+    //       : form[key] ?? ""
+    //   }
+    //   placeholder={field.placeholder}
+    //   onChange={(e) => update(key, e.target.value)}
+    //   className="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-green-500 text-white"
+    // />
+
   };
 
   const invalid = validateStep();
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const measurementFields = ["waist", "chest", "arm", "hip"];
+  const optionalFields = [
+    "bodyFatPercentage",
+    "waist",
+    "chest",
+    "arm",
+    "hip",
+  ];
+
 
   return (
     <>
@@ -261,8 +274,44 @@ export default function StepRenderer({
       )}
 
       <div className="flex flex-col gap-4">
-        {steps[step].fields.map(renderField)}
+        {steps[step].fields
+          .filter((field) => {
+            if (step === 3 && optionalFields.includes(field.name)) {
+              return showAdvanced;
+            }
+            return true;
+          })
+          .map((field) => {
+            // اگر مرحله ۴ و جزو اندازه‌هاست، بعداً جدا رندر می‌کنیم
+            if (step === 3 && measurementFields.includes(field.name)) {
+              return null;
+            }
+            return renderField(field);
+          })}
+
+        {/* اندازه‌ها دو ستونه */}
+        {step === 3 && showAdvanced && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {steps[step].fields
+              .filter((field) => measurementFields.includes(field.name))
+              .map(renderField)}
+          </div>
+        )}
+
+        {step === 3 && (
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((prev) => !prev)}
+            className="text-sm text-green-200 rounded-md cursor-pointer underline bg-green-900 p-2 mt-2"
+          >
+            {showAdvanced
+              ? "بستن اطلاعات پیشرفته"
+              : "افزودن اطلاعات بیشتر (اختیاری)"}
+          </button>
+        )}
       </div>
+
+
 
       <div className="flex justify-between mt-6">
         {step < steps.length - 1 && (

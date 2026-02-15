@@ -59,7 +59,7 @@ export default function UnifiedUserList({ role }: Props) {
     } else {
         roleTitle = "ادمین"
     }
-    const load = async (pageParam = page, searchParam = search) => {
+    const load = async (pageParam: number, searchParam: string) => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
@@ -126,16 +126,17 @@ export default function UnifiedUserList({ role }: Props) {
     const handleSort = () => setSort((prev) => (prev === "asc" ? "desc" : "asc"));
 
     useEffect(() => {
-        load();
-    }, [page, sort, role]);
+        load(page, search);
+    }, [page, sort, role, search]);
 
     useEffect(() => {
         const t = setTimeout(() => {
             setPage(1);
-            load(1, search);
         }, 500);
+
         return () => clearTimeout(t);
     }, [search]);
+
 
     const filteredData = data.filter((u) => {
         if (role === "student") {
@@ -151,7 +152,7 @@ export default function UnifiedUserList({ role }: Props) {
     });
 
     return (
-        <div className="space-y-6 p-3 pb-5 bg-gray-900 text-gray-100 w-full" dir="rtl">
+        <div className="space-y-6 p-3 pb-20 bg-gray-900 text-gray-100 w-full" dir="rtl">
             <h1 className="text-xl md:text-2xl font-bold mb-4">
                 {role === "student" ? "لیست دانشجوها" : role === "coach" ? "لیست مربیان" : "لیست ادمین‌ها"}
             </h1>
@@ -530,10 +531,14 @@ export default function UnifiedUserList({ role }: Props) {
                             const json = await res.json();
 
                             if (json.msg === "Deleted") {
-                                setData((prev) => prev.filter((u) => u._id !== idToDelete));
-                            } else {
-                                console.error("Delete failed:", json);
+                                // اگر این آخرین آیتم صفحه بود و صفحه > 1
+                                if (data.length === 1 && page > 1) {
+                                    setPage((prev) => prev - 1);
+                                } else {
+                                    load(page, search);
+                                }
                             }
+
                         } catch (err) {
                             console.error(err);
                         } finally {

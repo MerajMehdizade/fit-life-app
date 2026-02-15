@@ -2,13 +2,12 @@ import { StepConfig } from "./types";
 
 export const steps: StepConfig[] = [
   {
-    title: "مرحله ۱: جنسیتت رو انتخاب کن",
+    title: "جنسیتت رو انتخاب کن",
     required: ["gender"],
     fields: [
       {
         name: "gender",
         type: "image",
-        helperText: "جنسیت خود را انتخاب کنید",
         images: {
           male: "/body/gender/male.PNG",
           female: "/body/gender/female.PNG",
@@ -17,7 +16,7 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: " مرحله 2: وضعیت بدن فعلی ",
+    title: " وضعیت بدن فعلی",
     required: ["currentBodyVisual"],
     fields: [
       {
@@ -33,7 +32,7 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: " مرحله 3: بدن هدف ",
+    title: " بدن هدف ",
     required: ["targetBodyVisual"],
     fields: [
       {
@@ -49,18 +48,14 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: "مرحله ۴: اطلاعات پایه",
+    title: " اطلاعات پایه",
     required: ["age", "height", "currentWeight", "targetWeight"],
     fields: [
       { name: "age", placeholder: "سن (سال)", type: "number" },
       { name: "height", placeholder: "قد (cm)", type: "number" },
       { name: "currentWeight", placeholder: "وزن فعلی (kg)", type: "number" },
       { name: "targetWeight", placeholder: "وزن هدف (kg)", type: "number" },
-
-      // اختیاری
       { name: "bodyFatPercentage", placeholder: "درصد چربی بدن (اختیاری)", type: "number" },
-
-      // اختیاری - اندازه‌ها
       { name: "waist", placeholder: "دور کمر (اختیاری)", type: "number" },
       { name: "chest", placeholder: "دور سینه (اختیاری)", type: "number" },
       { name: "arm", placeholder: "دور بازو (اختیاری)", type: "number" },
@@ -68,7 +63,7 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: "مرحله ۵: هدفت از تمرین چیه؟",
+    title: " هدفت از تمرین چیه؟",
     required: ["mainObjective"],
     fields: [
       {
@@ -89,7 +84,7 @@ export const steps: StepConfig[] = [
   },
 
   {
-    title: "مرحله 6: تمرین",
+    title: " تمرین",
     required: ["trainingLevel", "workoutDaysPerWeek"],
     fields: [
       {
@@ -106,17 +101,17 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: "مرحله 7: تغذیه",
+    title: "تغذیه",
     required: ["dietPlanPreference"],
     fields: [
-      { name: "foodAllergies", placeholder: "آلرژی غذایی (اختیاری)", type: "text" },
-      { name: "dietaryRestrictions", placeholder: "محدودیت غذایی (اختیاری)", type: "text" },
       {
         name: "dietPlanPreference",
         type: "select",
         placeholder: "نوع رژیم",
         options: ["balanced", "keto", "vegan"],
       },
+      { name: "foodAllergies", placeholder: "آلرژی غذایی (اختیاری)", type: "text" },
+      { name: "dietaryRestrictions", placeholder: "محدودیت غذایی (اختیاری)", type: "text" },
     ],
   },
   {
@@ -132,7 +127,7 @@ export const steps: StepConfig[] = [
       {
         name: "goalDeadline",
         type: "date",
-        placeholder: "ددلاین هدف (اختیاری)",
+        placeholder: "تاریخ رسیدن به هدف (اختیاری)",
       },
     ],
   },
@@ -151,13 +146,13 @@ export const steps: StepConfig[] = [
     title: "خواب (اختیاری)",
     optional: true,
     fields: [
-      { name: "sleepHours", placeholder: "میانگین ساعت خواب", type: "number" },
       {
         name: "sleepQuality",
         type: "select",
         placeholder: "کیفیت خواب",
         options: ["poor", "average", "good"],
       },
+      { name: "sleepHours", placeholder: "میانگین ساعت خواب", type: "number" },
     ],
   },
   {
@@ -176,14 +171,14 @@ export const steps: StepConfig[] = [
     title: "جزئیات تمرین (اختیاری)",
     optional: true,
     fields: [
-      { name: "trainingExperienceYears", placeholder: "سابقه تمرین (سال)", type: "number" },
-      { name: "maxWorkoutDuration", placeholder: "حداکثر زمان تمرین (دقیقه)", type: "number" },
       {
         name: "trainingLocation",
         type: "select",
         placeholder: "محل تمرین",
         options: ["gym", "home", "outdoor"],
       },
+      { name: "trainingExperienceYears", placeholder: "سابقه تمرین (سال)", type: "number" },
+      { name: "maxWorkoutDuration", placeholder: "حداکثر زمان تمرین (دقیقه)", type: "number" },
       { name: "availableEquipment", placeholder: "تجهیزات", type: "text" },
     ],
   },
