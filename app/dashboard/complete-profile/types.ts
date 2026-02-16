@@ -58,7 +58,7 @@ export type ProfileForm = {
 export type Field = {
   name: keyof ProfileForm;
   placeholder?: string;
-  type: "text" | "number" | "select" | "image" | "date";
+  type: "text" | "number" | "select" | "image" | "date" | "triple-image";
   options?: string[];
   images?: Record<string, string>;
   helperText?: string;

@@ -2,27 +2,16 @@ import { StepConfig } from "./types";
 
 export const steps: StepConfig[] = [
   {
-    title: "جنسیتت رو انتخاب کن",
-    required: ["gender"],
+    title: "اطلاعات بدنی",
+    required: ["gender", "currentBodyVisual", "targetBodyVisual"],
     fields: [
       {
         name: "gender",
-        type: "image",
+        type: "triple-image",
         images: {
           male: "/body/gender/male.PNG",
           female: "/body/gender/female.PNG",
-        },
-      },
-    ],
-  },
-  {
-    title: " وضعیت بدن فعلی",
-    required: ["currentBodyVisual"],
-    fields: [
-      {
-        name: "currentBodyVisual",
-        type: "image",
-        images: {
+
           body_1: "/body/{gender}/slim.PNG",
           body_2: "/body/{gender}/average.PNG",
           body_3: "/body/{gender}/fit.PNG",
@@ -32,23 +21,7 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: " بدن هدف ",
-    required: ["targetBodyVisual"],
-    fields: [
-      {
-        name: "targetBodyVisual",
-        type: "image",
-        images: {
-          body_1: "/body/{gender}/slim.PNG",
-          body_2: "/body/{gender}/average.PNG",
-          body_3: "/body/{gender}/fit.PNG",
-          body_4: "/body/{gender}/muscular.PNG",
-        },
-      },
-    ],
-  },
-  {
-    title: " اطلاعات پایه",
+    title: "اطلاعات پایه",
     required: ["age", "height", "currentWeight", "targetWeight"],
     fields: [
       { name: "age", placeholder: "سن (سال)", type: "number" },
@@ -63,7 +36,7 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: " هدفت از تمرین چیه؟",
+    title: "هدف تمرین",
     required: ["mainObjective"],
     fields: [
       {
@@ -84,7 +57,7 @@ export const steps: StepConfig[] = [
   },
 
   {
-    title: " تمرین",
+    title: "برنامه تمرین",
     required: ["trainingLevel", "workoutDaysPerWeek"],
     fields: [
       {
@@ -94,11 +67,21 @@ export const steps: StepConfig[] = [
         options: ["beginner", "intermediate", "advanced"],
       },
       {
+        name: "trainingLocation",
+        type: "select",
+        placeholder: "محل تمرین",
+        options: ["home", "outdoor", "gym"],
+      },
+      {
         name: "workoutDaysPerWeek",
         placeholder: "تعداد روز تمرین در هفته",
         type: "number",
       },
+      { name: "trainingExperienceYears", placeholder: "سابقه تمرین (سال)", type: "number" },
+      { name: "maxWorkoutDuration", placeholder: "حداکثر زمان تمرین (دقیقه)", type: "number" },
+      { name: "availableEquipment", placeholder: "تجهیزات (اختیاری)", type: "text" },
     ],
+
   },
   {
     title: "تغذیه",
@@ -133,7 +116,7 @@ export const steps: StepConfig[] = [
   },
 
   {
-    title: "وضعیت پزشکی (اختیاری)",
+    title: "وضعیت پزشکی",
     optional: true,
     fields: [
       { name: "injuries", placeholder: "آسیب‌دیدگی‌ها", type: "text" },
@@ -143,9 +126,15 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: "خواب (اختیاری)",
+    title: "سبک زندگی",
     optional: true,
     fields: [
+      {
+        name: "dailyActivityLevel",
+        type: "select",
+        placeholder: "سطح فعالیت روزانه",
+        options: ["sedentary", "light", "moderate", "active", "very_active"],
+      },
       {
         name: "sleepQuality",
         type: "select",
@@ -156,34 +145,7 @@ export const steps: StepConfig[] = [
     ],
   },
   {
-    title: "فعالیت روزانه (اختیاری)",
-    optional: true,
-    fields: [
-      {
-        name: "dailyActivityLevel",
-        type: "select",
-        placeholder: "سطح فعالیت روزانه",
-        options: ["sedentary", "light", "moderate", "active", "very_active"],
-      },
-    ],
-  },
-  {
-    title: "جزئیات تمرین (اختیاری)",
-    optional: true,
-    fields: [
-      {
-        name: "trainingLocation",
-        type: "select",
-        placeholder: "محل تمرین",
-        options: ["gym", "home", "outdoor"],
-      },
-      { name: "trainingExperienceYears", placeholder: "سابقه تمرین (سال)", type: "number" },
-      { name: "maxWorkoutDuration", placeholder: "حداکثر زمان تمرین (دقیقه)", type: "number" },
-      { name: "availableEquipment", placeholder: "تجهیزات", type: "text" },
-    ],
-  },
-  {
-    title: "انگیزه (اختیاری)",
+    title: "آمادگی ذهنی",
     optional: true,
     fields: [
       { name: "motivationLevel", placeholder: "انگیزه (1 تا 10)", type: "number" },

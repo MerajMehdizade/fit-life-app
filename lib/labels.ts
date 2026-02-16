@@ -36,9 +36,10 @@ export const LABELS: Record<string, string> = {
   home: "خانه",
   outdoor: "فضای باز",
 
-
   appearance: "ظاهر",
   performance: "عملکرد",
+
+  suspended:"تعلیق شده"
 };
 export const getLabel = (value?: string | null) => {
   if (!value) return null;

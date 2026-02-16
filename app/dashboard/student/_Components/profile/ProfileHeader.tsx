@@ -34,7 +34,7 @@ export default function ProfileAccountCard({
 
   const statusStyles: Record<UserStatus, string> = {
     active: "bg-green-600",
-    suspended: "bg-yellow-600",
+    suspended: "bg-red-600",
   };
 
   const roleStyles: Record<UserRole, string> = {
@@ -103,7 +103,7 @@ export default function ProfileAccountCard({
                       {user.name || "بدون نام"}
                     </h1>
                     <p className="text-gray-400">
-                      {user.email || "—"}
+                      {user.email || "خالی"}
                     </p>
                   </>
                 )}
@@ -127,7 +127,7 @@ export default function ProfileAccountCard({
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="flex justify-around gap-5 text-center">
 
               <InfoItem
                 label="سطح انگیزه"

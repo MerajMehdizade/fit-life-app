@@ -105,7 +105,7 @@ export default function BodyOverview({ profile }: Props) {
     const value = form[field.key];
 
     if (!isEditing) {
-      if (!value) return "—";
+      if (!value) return <span className="text-gray-600">خالی</span>;
 
       if (field.key === "mainObjective" || field.key === "userPriority")
         return getLabel(String(value));

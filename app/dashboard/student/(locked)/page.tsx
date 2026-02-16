@@ -38,7 +38,6 @@ export default function DashboardPage() {
 
   const [pageLoading, setPageLoading] = useState(true);
 
-  /** ✅ visual keys safe */
   const currentVisual =
     user?.uiPreferences?.bodyVisuals?.current as BodyVisualKey | undefined;
 
