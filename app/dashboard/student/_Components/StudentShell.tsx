@@ -16,7 +16,7 @@ export default function StudentShell({ children }: { children: ReactNode }) {
     const { user, logout, loading } = useUser();
     const router = useRouter();
     const [openSheet, setOpenSheet] = useState<SheetKey | null>(null);
-    const [avatarSrc, setAvatarSrc] = useState(user?.avatar || "/avatars/default.jpg");
+    const [avatarSrc, setAvatarSrc] = useState(user?.avatar || "/avatars/default.png");
     const avatarRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const isActive = (url?: string) => url ? pathname === url : false;
@@ -38,7 +38,7 @@ export default function StudentShell({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!user) return;
-        setAvatarSrc(user.avatar || "/avatars/default.jpg");
+        setAvatarSrc(user.avatar || "/avatars/default.png");
     }, [user]);
 
     useEffect(() => {

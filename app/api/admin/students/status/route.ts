@@ -54,7 +54,7 @@ export async function GET(req: Request) {
       status: s.status,
       coachName: s.assignedCoach?.name || "بدون مربی",
       hasCoach: !!s.assignedCoach,
-      avatar: s.avatar || "/avatars/default.jpg",
+      avatar: s.avatar || "/avatars/default.png",
       plansCount:
         (s.trainingPlan ? 1 : 0) +
         (s.dietPlan ? 1 : 0),

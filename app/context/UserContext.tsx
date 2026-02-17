@@ -82,7 +82,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
         const avatarUrl = data.user?.avatar
           ? `${data.user.avatar}?t=${Date.now()}`
-          : "/avatars/default.jpg";
+          : "/avatars/default.png";
         setUser({
           ...data.user,
           status: data.user?.status ?? "active",

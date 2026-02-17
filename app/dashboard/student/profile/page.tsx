@@ -15,7 +15,7 @@ import NutritionOverview from "../_Components/profile/NutritionOverview";
 export default function ProfilePage() {
   const { user, setUser, logout, loading } = useUser();
   const router = useRouter();
-  const [avatarSrc, setAvatarSrc] = useState("/avatars/default.jpg");
+  const [avatarSrc, setAvatarSrc] = useState("/avatars/default.png");
   const [cropFile, setCropFile] = useState<File | null>(null);
 
   const [toast, setToast] = useState({
@@ -76,7 +76,7 @@ export default function ProfilePage() {
       if (!data.success) throw new Error();
 
       setUser((u: any) => (u ? { ...u, avatar: "" } : null));
-      setAvatarSrc("/avatars/default.jpg");
+      setAvatarSrc("/avatars/default.png");
 
       setToast({
         show: true,

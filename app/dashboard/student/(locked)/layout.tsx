@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/getUser";
 import type { ReactNode } from "react";
-import StudentShell from "../_Components/StudentShell";
 import Link from "next/link";
 
 export default async function LockedStudentLayout({
@@ -12,10 +11,6 @@ export default async function LockedStudentLayout({
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-
-  if (user.role !== "student") {
-    redirect(`/dashboard/${user.role}`);
-  }
 
   if (!user.profileCompleted) {
     redirect("/dashboard/complete-profile");
@@ -32,13 +27,12 @@ export default async function LockedStudentLayout({
             : ""
         }
       >
-        <StudentShell>{children}</StudentShell>
+        {children}
       </div>
 
       {isSuspended && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
           <div className="bg-gray-900 text-white px-10 py-12 rounded-2xl shadow-2xl text-center max-w-md border border-yellow-500">
-
             <h1 className="text-2xl mb-4 text-yellow-400 font-bold">
               حساب شما غیرفعال شده است
             </h1>
@@ -53,7 +47,6 @@ export default async function LockedStudentLayout({
             >
               رفتن به پروفایل
             </Link>
-
           </div>
         </div>
       )}

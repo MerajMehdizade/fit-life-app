@@ -44,7 +44,7 @@ export default function ProfileAccountCard({
   };
 
   const resolvedAvatar =
-    avatarSrc || user.avatar || "/avatars/default.jpg";
+    avatarSrc || user.avatar || "/avatars/default.png";
 
   const handleSave = async () => {
     const res = await fetch("/api/user/profile", {
@@ -170,7 +170,7 @@ export default function ProfileAccountCard({
               تغییر تصویر
             </button>
 
-            {resolvedAvatar !== "/avatars/default.jpg" && (
+            {resolvedAvatar !== "/avatars/default.png" && (
               <button
                 onClick={onDeleteAvatar}
                 className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm"
