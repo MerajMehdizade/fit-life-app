@@ -233,20 +233,21 @@ export async function PATCH(req: Request) {
       { new: true, runValidators: true }
     );
 
-   return NextResponse.json({
-  success: true,
-  user: {
-    _id: updatedUser?._id,
-    name: updatedUser?.name,
-    email: updatedUser?.email,
-    role: updatedUser?.role,
-    status: updatedUser?.status,
-    avatar: updatedUser?.avatar,
-    profile: updatedUser?.profile,
-    students: updatedUser?.students,
-    assignedCoach: updatedUser?.assignedCoach,
-  },
-});
+    return NextResponse.json({
+      success: true,
+      user: {
+        _id: updatedUser?._id,
+        name: updatedUser?.name,
+        email: updatedUser?.email,
+        role: updatedUser?.role,
+        status: updatedUser?.status,
+        avatar: updatedUser?.avatar,
+        profile: updatedUser?.profile,
+        students: updatedUser?.students,
+        assignedCoach: updatedUser?.assignedCoach,
+        uiPreferences: updatedUser?.uiPreferences,
+      },
+    });
 
   } catch (error) {
     console.error("PROFILE UPDATE ERROR:", error);

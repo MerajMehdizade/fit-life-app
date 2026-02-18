@@ -3,7 +3,7 @@ export const LABELS: Record<string, string> = {
   female: "زن",
   // ===== Goals =====
   fat_loss: "چربی‌سوزی",
-  muscle_gain: "افزایش عضله",
+  muscle_gain: "حجم و عضله سازی",
   cut: "کات",
   health: "سلامتی",
   strength: "افزایش قدرت",

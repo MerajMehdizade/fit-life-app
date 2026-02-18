@@ -6,10 +6,20 @@ import { getLabel } from "@/lib/labels";
 import { useUser } from "@/app/context/UserContext";
 import { Select } from "@/app/Components/Form/Select";
 import { Input } from "@/app/Components/Form/Input";
+import FormInput from "@/app/dashboard/complete-profile/components/FormInput";
 
 interface Props {
   profile: any;
 }
+
+const NUMBER_LIMITS: Partial<
+  Record<keyof NutritionForm, { min: number; max: number }>
+> = {
+  calorieTarget: { min: 100, max: 10000 },
+  protein: { min: 10, max: 500 },
+  carbs: { min: 10, max: 1000 },
+  fat: { min: 5, max: 300 },
+};
 
 /* ================= TYPE ================= */
 
@@ -52,10 +62,25 @@ export default function NutritionOverview({ profile }: Props) {
 
   const handleChange = (
     key: keyof NutritionForm,
-    value: string | number
+    rawValue: string
   ) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    const limits = NUMBER_LIMITS[key];
+
+    if (limits) {
+      if (rawValue === "") {
+        setForm((prev) => ({ ...prev, [key]: "" }));
+        return;
+      }
+
+      const num = Number(rawValue);
+      if (isNaN(num)) return;
+
+      setForm((prev) => ({ ...prev, [key]: num }));
+    } else {
+      setForm((prev) => ({ ...prev, [key]: rawValue }));
+    }
   };
+
 
   const handleSave = async () => {
     const payload = {
@@ -139,21 +164,66 @@ export default function NutritionOverview({ profile }: Props) {
       );
     }
 
-    return (
-      <Input
-        className="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 placeholder-gray-400 focus:ring-2 text-white"
-        type={field.type}
-        value={value ?? ""}
-        onChange={(e) =>
-          handleChange(
-            field.key,
-            field.type === "number"
-              ? Number(e.target.value)
-              : e.target.value
-          )
-        }
-      />
-    );
+    if (field.type === "number") {
+      const limits = NUMBER_LIMITS[field.key];
+      const numericValue = form[field.key];
+
+      const hasError =
+        limits &&
+        numericValue !== "" &&
+        numericValue !== undefined &&
+        (Number(numericValue) < limits.min ||
+          Number(numericValue) > limits.max);
+
+      return (
+        <FormInput
+          label={""}
+          type="number"
+          inputMode="numeric"
+          min={limits?.min}
+          max={limits?.max}
+          value={numericValue ?? ""}
+          onChange={(e) =>
+            handleChange(field.key, e.target.value)
+          }
+          onBlur={() => {
+            if (!limits) return;
+
+            const val = form[field.key];
+            if (val === "" || val === undefined) return;
+
+            let num = Number(val);
+            if (isNaN(num)) return;
+
+            num = Math.min(limits.max, Math.max(limits.min, num));
+
+            setForm((prev) => ({
+              ...prev,
+              [field.key]: num,
+            }));
+          }}
+          className={
+            hasError
+              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+              : ""
+          }
+        />
+      );
+    }
+
+    if (field.type === "text") {
+      return (
+        <FormInput
+          label={""}
+          type="text"
+          value={value ?? ""}
+          onChange={(e) =>
+            handleChange(field.key, e.target.value)
+          }
+        />
+      );
+    }
+
   };
 
   return (

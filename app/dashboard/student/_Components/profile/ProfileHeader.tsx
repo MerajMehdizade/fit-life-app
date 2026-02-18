@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditableCard from "./EditableCard";
 import { getLabel } from "@/lib/labels";
 import {
@@ -28,9 +28,17 @@ export default function ProfileAccountCard({
   onUserUpdate,
 }: Props) {
   const [form, setForm] = useState({
-    name: user.name || "",
-    email: user.email || "",
+    name: "",
+    email: "",
   });
+
+  useEffect(() => {
+    setForm({
+      name: user?.name || "",
+      email: user?.email || "",
+    });
+  }, [user]);
+
 
   const statusStyles: Record<UserStatus, string> = {
     active: "bg-green-600",
@@ -60,7 +68,7 @@ export default function ProfileAccountCard({
     const data = await res.json();
     if (!data.success) throw new Error();
 
-   onUserUpdate?.(data.user);
+    onUserUpdate?.(data.user);
   };
 
   return (

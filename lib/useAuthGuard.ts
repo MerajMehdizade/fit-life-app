@@ -23,12 +23,18 @@ export function useAuthGuard(redirectIfAuthenticated = true) {
             const role = (user.role || "student").toLowerCase();
 
             if (redirectIfAuthenticated) {
+              if (!user.profileCompleted) {
+                router.replace("/dashboard/complete-profile");
+                return;
+              }
+
               router.replace(`/dashboard/${role}`);
               return;
             }
 
             setLoading(false);
-          } else {
+          }
+          else {
             if (!redirectIfAuthenticated) router.replace("/login");
             else setLoading(false);
           }

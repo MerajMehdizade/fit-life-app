@@ -6,10 +6,25 @@ import { getLabel } from "@/lib/labels";
 import { useUser } from "@/app/context/UserContext";
 import { Select } from "@/app/Components/Form/Select";
 import { Input } from "@/app/Components/Form/Input";
+import FormInput from "@/app/dashboard/complete-profile/components/FormInput";
 
 interface Props {
   profile: any;
 }
+const NUMBER_LIMITS: Partial<
+  Record<keyof FormState, { min: number; max: number }>
+> = {
+  age: { min: 10, max: 100 },
+  height: { min: 50, max: 250 },
+  currentWeight: { min: 20, max: 300 },
+  targetWeight: { min: 20, max: 300 },
+  bodyFatPercentage: { min: 3, max: 70 },
+
+  waist: { min: 30, max: 200 },
+  chest: { min: 30, max: 200 },
+  arm: { min: 15, max: 100 },
+  hip: { min: 30, max: 200 },
+};
 
 /* ================== FORM TYPE ================== */
 
@@ -54,10 +69,26 @@ export default function BodyOverview({ profile }: Props) {
 
   const handleChange = (
     key: keyof FormState,
-    value: string | number
+    rawValue: string
   ) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    const limits = NUMBER_LIMITS[key];
+
+    if (limits) {
+      if (rawValue === "") {
+        setForm((prev) => ({ ...prev, [key]: "" }));
+        return;
+      }
+
+      let num = Number(rawValue);
+      if (isNaN(num)) return;
+
+      setForm((prev) => ({ ...prev, [key]: num }));
+    } else {
+      setForm((prev) => ({ ...prev, [key]: rawValue }));
+    }
   };
+
+
 
   const handleSave = async () => {
     const res = await fetch("/api/user/profile", {
@@ -81,20 +112,20 @@ export default function BodyOverview({ profile }: Props) {
     type: "number" | "select" | "date";
     unit?: string;
   }[] = [
-    { key: "gender", label: "جنسیت", type: "select" },
-    { key: "age", label: "سن", type: "number" },
-    { key: "height", label: "قد", type: "number", unit: "cm" },
-    { key: "currentWeight", label: "وزن فعلی", type: "number", unit: "kg" },
-    { key: "targetWeight", label: "وزن هدف", type: "number", unit: "kg" },
-    { key: "bodyFatPercentage", label: "درصد چربی", type: "number", unit: "%" },
-    { key: "waist", label: "دور کمر", type: "number", unit: "cm" },
-    { key: "chest", label: "دور سینه", type: "number", unit: "cm" },
-    { key: "arm", label: "دور بازو", type: "number", unit: "cm" },
-    { key: "hip", label: "دور باسن", type: "number", unit: "cm" },
-    { key: "mainObjective", label: "هدف اصلی", type: "select" },
-    { key: "userPriority", label: "اولویت", type: "select" },
-    { key: "goalDeadline", label: "ددلاین", type: "date" },
-  ];
+      { key: "gender", label: "جنسیت", type: "select" },
+      { key: "age", label: "سن", type: "number" },
+      { key: "height", label: "قد", type: "number", unit: "cm" },
+      { key: "currentWeight", label: "وزن فعلی", type: "number", unit: "kg" },
+      { key: "targetWeight", label: "وزن هدف", type: "number", unit: "kg" },
+      { key: "bodyFatPercentage", label: "درصد چربی", type: "number", unit: "%" },
+      { key: "waist", label: "دور کمر", type: "number", unit: "cm" },
+      { key: "chest", label: "دور سینه", type: "number", unit: "cm" },
+      { key: "arm", label: "دور بازو", type: "number", unit: "cm" },
+      { key: "hip", label: "دور باسن", type: "number", unit: "cm" },
+      { key: "mainObjective", label: "هدف اصلی", type: "select" },
+      { key: "userPriority", label: "اولویت", type: "select" },
+      { key: "goalDeadline", label: "ددلاین", type: "date" },
+    ];
 
   /* ================== RENDER INPUT ================== */
 
@@ -119,7 +150,7 @@ export default function BodyOverview({ profile }: Props) {
     if (field.type === "select") {
       return (
         <Select
-         value={String(value ?? "")}
+          value={String(value ?? "")}
           onChange={(e) => handleChange(field.key, e.target.value)}
         >
           <option value="">انتخاب کنید</option>
@@ -134,7 +165,7 @@ export default function BodyOverview({ profile }: Props) {
           {field.key === "mainObjective" && (
             <>
               <option value="fat_loss">چربی‌سوزی</option>
-              <option value="muscle_gain">افزایش عضله</option>
+              <option value="muscle_gain">حجم و عضله سازی</option>
               <option value="strength">افزایش قدرت</option>
               <option value="cut">کات</option>
               <option value="health">سلامتی</option>
@@ -152,22 +183,48 @@ export default function BodyOverview({ profile }: Props) {
         </Select>
       );
     }
+    if (field.type === "number") {
+      const limits = NUMBER_LIMITS[field.key];
+      const numericValue = form[field.key];
 
-    return (
-      <Input
-       className="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 placeholder-gray-400 focus:ring-2 text-white"
-        type={field.type}
-        value={value ?? ""}
-        onChange={(e) =>
-          handleChange(
-            field.key,
-            field.type === "number"
-              ? Number(e.target.value)
-              : e.target.value
-          )
-        }
-      />
-    );
+      const hasError =
+        limits &&
+        numericValue !== "" &&
+        numericValue !== undefined &&
+        (Number(numericValue) < limits.min ||
+          Number(numericValue) > limits.max);
+
+      return (
+        <FormInput
+          label={""}
+          type="number"
+          inputMode="numeric"
+          min={limits?.min}
+          max={limits?.max}
+          value={numericValue ?? ""}
+          onChange={(e) =>
+            handleChange(field.key, e.target.value)
+          }
+          onBlur={() => {
+            if (!limits) return;
+            const val = form[field.key];
+            if (val === "" || val === undefined) return;
+
+            let num = Number(val);
+            if (isNaN(num)) return;
+
+            num = Math.min(limits.max, Math.max(limits.min, num));
+            setForm((prev) => ({ ...prev, [field.key]: num }));
+          }}
+          className={
+            hasError
+              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+              : ""
+          }
+        />
+      );
+    }
+
   };
 
   return (
