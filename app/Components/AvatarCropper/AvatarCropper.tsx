@@ -22,7 +22,7 @@ export default function AvatarCropper({ file, onConfirm, onCancel }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
-      <div className="bg-gray-900 rounded-xl p-4 w-96">
+      <div className="bg-gray-950 rounded-xl p-4 w-96">
         <h2 className="text-white mb-2 text-lg">ویرایش آواتار</h2>
 
         <div className="relative h-72 rounded overflow-hidden">

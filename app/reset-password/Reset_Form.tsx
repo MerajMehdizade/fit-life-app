@@ -73,7 +73,7 @@ export default function Reset_Form() {
   };
 
   return (
-    <section className="bg-white dark:bg-gray-900">
+    <section className="bg-white dark:bg-gray-950">
       <div className="container flex items-center justify-center px-6 mx-auto">
         <Form onSubmit={handleSubmit} className="w-full max-w-md">
           <div className="flex flex-col items-center justify-center gap-3 mb-6">

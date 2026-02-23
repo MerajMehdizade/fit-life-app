@@ -15,7 +15,7 @@ export default function BottomNav({
     shiftUp?: boolean;
 }) {
     return (
-       <nav className={`fixed select-none bottom-4 inset-x-4 bg-gray-900/90 rounded-3xl z-50 transition-transform duration-300
+       <nav className={`fixed select-none bottom-4 inset-x-4 bg-gray-950/90 rounded-3xl z-50 transition-transform duration-300
   ${shiftUp ? "translate-y-[-60px]" : "translate-y-0"}`}>
 
   {/* محتوا نوار */}

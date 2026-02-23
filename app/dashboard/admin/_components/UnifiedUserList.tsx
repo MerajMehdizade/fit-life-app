@@ -152,7 +152,7 @@ export default function UnifiedUserList({ role }: Props) {
     });
 
     return (
-        <div className="space-y-6 p-3 pb-20 bg-gray-900 text-gray-100 w-full" dir="rtl">
+        <div className="space-y-6 p-3 pb-20 bg-gray-950 text-gray-100 w-full" dir="rtl">
             <h1 className="text-xl md:text-2xl font-bold mb-4">
                 {role === "student" ? "لیست دانشجوها" : role === "coach" ? "لیست مربیان" : "لیست ادمین‌ها"}
             </h1>
@@ -242,7 +242,7 @@ export default function UnifiedUserList({ role }: Props) {
                                         <a
                                             href={`/dashboard/admin/students/create`}
                                             onClick={() => setLoadingLinks((prev) => ({ ...prev, studentCreateMobile: true }))}
-                                            className=" px-4 py-3 text-sm hover:bg-gray-900 transition-colors flex items-center gap-2"
+                                            className=" px-4 py-3 text-sm hover:bg-gray-950 transition-colors flex items-center gap-2"
                                         >
                                             {loadingLinks.studentCreateMobile && (
                                                 <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -253,7 +253,7 @@ export default function UnifiedUserList({ role }: Props) {
                                         <a
                                             href="/dashboard/admin/students/assign"
                                             onClick={() => setLoadingLinks((prev) => ({ ...prev, studentAssignMobile: true }))}
-                                            className=" px-4 py-3 text-sm hover:bg-gray-900 transition-colors flex items-center gap-2"
+                                            className=" px-4 py-3 text-sm hover:bg-gray-950 transition-colors flex items-center gap-2"
                                         >
                                             {loadingLinks.studentAssignMobile && (
                                                 <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -329,7 +329,7 @@ export default function UnifiedUserList({ role }: Props) {
                             </thead>
                             <tbody>
                                 {filteredData.map((u) => (
-                                    <tr key={u._id} className="odd:bg-gray-900 even:bg-gray-800 border-b border-gray-700">
+                                    <tr key={u._id} className="odd:bg-gray-950 even:bg-gray-800 border-b border-gray-700">
                                         {role !== "admin" && (
                                             <td className="px-6 py-4 flex items-center gap-3">
                                                 <img src={u.avatar} alt={u.name} className="w-10 h-10 rounded-full object-cover" />
@@ -417,7 +417,7 @@ export default function UnifiedUserList({ role }: Props) {
                         {filteredData.map((u) => {
                             const open = mobileOpenId === u._id;
                             return (
-                                <div key={u._id} className={`rounded-xl border border-gray-700 overflow-hidden transition-colors ${open ? "bg-gray-800" : "bg-gray-900"}`}>
+                                <div key={u._id} className={`rounded-xl border border-gray-700 overflow-hidden transition-colors ${open ? "bg-gray-800" : "bg-gray-950"}`}>
                                     <button onClick={() => setMobileOpenId(open ? null : u._id)} className="w-full p-4 flex justify-between items-center">
                                         {role !== "admin" && <div className="flex items-center gap-3">
                                             <img src={u.avatar} alt={u.name} className="w-10 h-10 rounded-full object-cover" />

@@ -127,7 +127,7 @@ export default function SendNotificationPage() {
   };
 
   return (
-    <section className="bg-white dark:bg-gray-900 w-full p-4 pb-20 sm:p-10 text-gray-100 flex justify-center items-center h-screen md:h-full">
+    <section className="bg-white dark:bg-gray-950 w-full p-4 pb-20 sm:p-10 text-gray-100 flex justify-center items-center h-screen md:h-full">
       <div className="container flex items-center justify-center px-6 mx-auto">
         <Form onSubmit={sendNotification} className="w-full max-w-md space-y-4">
           <h1 className="text-white text-2xl text-center mb-10">ارسال اعلان به کاربر</h1>

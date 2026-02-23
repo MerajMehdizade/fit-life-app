@@ -63,6 +63,10 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
+    const existingUser = await User.findById(user.userId);
+    if (!existingUser) {
+      return NextResponse.json({ success: false }, { status: 404 });
+    }
     const updates: Record<string, any> = {};
     if (body.nutritionPlan) {
       if (body.nutritionPlan.calorieTarget !== undefined) {
@@ -220,16 +224,34 @@ export async function PATCH(req: Request) {
       };
     }
 
-    /* ================= UPDATE ================= */
+    // ================= WEIGHT RESET & HISTORY =================
+// ================= WEIGHT RESET =================
+if (body.resetToInitial) {
+  const initialWeight = existingUser.profile?.progressHistory?.[0]?.weight;
+  if (initialWeight !== undefined) {
+    await User.findByIdAndUpdate(user.userId, {
+      $set: { 
+        "profile.currentWeight": initialWeight,
+        "profile.progressHistory": [ { date: new Date(), weight: initialWeight } ] // فقط یک نقطه باقی می‌مونه
+      }
+    });
+  }
+} else if (updates["profile.currentWeight"] !== undefined) {
+  const newWeight = Number(updates["profile.currentWeight"]);
+  const oldWeight = existingUser.profile?.currentWeight;
 
+  if (oldWeight && newWeight && newWeight !== oldWeight) {
+    await User.findByIdAndUpdate(user.userId, {
+      $push: { "profile.progressHistory": { date: new Date(), weight: newWeight } },
+    });
+  }
+}
+
+    // در ادامه $set اصلی فقط برای بقیه فیلدها اعمال می‌کنیم:
+    const { currentWeight, progressHistory, ...otherUpdates } = updates; // currentWeight و progressHistory را جدا می‌کنیم
     const updatedUser = await User.findByIdAndUpdate(
       user.userId,
-      {
-        $set: {
-          ...updates,
-          profileCompleted: true,
-        },
-      },
+      { $set: { ...otherUpdates, profileCompleted: true } },
       { new: true, runValidators: true }
     );
 

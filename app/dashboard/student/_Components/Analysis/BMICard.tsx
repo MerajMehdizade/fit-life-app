@@ -18,12 +18,15 @@ export default function BMICard({
 
   const heightM = height / 100;
   const bmi = +(weight / (heightM * heightM)).toFixed(1);
+  const position = Math.min(
+    Math.max(((bmi - 15) / (35 - 15)) * 100, 0),
+    100
+  );
 
   let status = "نرمال";
   let message = "وضعیت بدنت خوبه، با همین روند ادامه بده 💪";
   let indicatorColor = "bg-green-400";
   let badgeColor = "text-green-400 bg-green-400/15";
-  let position = 50;
   let showWarning = false;
 
   if (bmi < 18.5) {
@@ -31,20 +34,17 @@ export default function BMICard({
     message = "کمی پایین‌تر از نرمالی، بهتره تغذیه‌ت رو تقویت کنی 🍽";
     indicatorColor = "bg-blue-400";
     badgeColor = "text-blue-400 bg-blue-400/15";
-    position = 15;
     showWarning = true;
   } else if (bmi >= 25 && bmi < 30) {
     status = "اضافه وزن";
     message = "یه مقدار بالاتر از نرمالی، قابل اصلاحه 👌";
     indicatorColor = "bg-yellow-400";
     badgeColor = "text-yellow-400 bg-yellow-400/15";
-    position = 72;
   } else if (bmi >= 30) {
     status = "چاقی";
     message = "بهتره جدی‌تر به سلامتی‌ت توجه کنی، ما کنارتیم ❤️";
     indicatorColor = "bg-red-400";
     badgeColor = "text-red-400 bg-red-400/15";
-    position = 90;
     showWarning = true;
   }
 

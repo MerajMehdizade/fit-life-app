@@ -69,7 +69,7 @@ export default function CoachDashboard() {
     !user.avatar.includes("default.png");
 
   return (
-    <div className="bg-gray-900 min-h-screen">
+    <div className="bg-gray-950 min-h-screen">
       <div className="mt-10 text-center space-y-6 text-white">
         <h1 className="text-3xl font-bold">{user.name}</h1>
 

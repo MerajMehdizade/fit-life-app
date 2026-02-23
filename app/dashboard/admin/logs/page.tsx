@@ -96,7 +96,7 @@ export default function LogsPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 w-full" dir="rtl">
+    <div className="p-4 md:p-6 space-y-4 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 w-full" dir="rtl">
 
       {/* هدر و Export */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">

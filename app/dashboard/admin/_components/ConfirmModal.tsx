@@ -31,7 +31,7 @@ export default function ConfirmModal({ open, onClose, onConfirm }: Props) {
       }`}
     >
       <div
-        className={`bg-gray-900 rounded-xl p-6 w-full max-w-sm border border-gray-700 transform transition-all duration-200 ${
+        className={`bg-gray-950 rounded-xl p-6 w-full max-w-sm border border-gray-700 transform transition-all duration-200 ${
           open ? "scale-100 translate-y-0" : "scale-95 translate-y-2"
         }`}
       >

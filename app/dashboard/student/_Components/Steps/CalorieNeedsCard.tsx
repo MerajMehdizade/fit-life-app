@@ -1,18 +1,17 @@
 "use client";
-
 interface CalorieNeedsCardProps {
   gender?: "male" | "female";
   age?: number;
   height?: number;
   weight?: number;
+  dailyActivityLevel?: string;
   workOutDays?: number;
-  primaryGoal?: 
-    | "fat_loss"
-    | "muscle_gain"
-    | "cut"
-    | "health"
-    | "strength"
-    | "recomposition";
+  primaryGoal?:
+  | "fat_loss"
+  | "muscle_gain"
+  | "health"
+  | "strength"
+  | "recomposition";
   calorieTarget?: number;
 }
 
@@ -21,6 +20,7 @@ export default function CalorieNeedsCard({
   age,
   height,
   weight,
+  dailyActivityLevel,
   workOutDays = 0,
   primaryGoal = "health",
   calorieTarget,
@@ -32,16 +32,30 @@ export default function CalorieNeedsCard({
       ? 10 * weight + 6.25 * height - 5 * age + 5
       : 10 * weight + 6.25 * height - 5 * age - 161;
 
-  let activityMultiplier = 1.3;
-  if (workOutDays >= 3) activityMultiplier = 1.45;
-  if (workOutDays >= 5) activityMultiplier = 1.6;
+  const activityMap: Record<string, number> = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
+  };
 
-  let calories = bmr * activityMultiplier;
+  let multiplier =
+    dailyActivityLevel && activityMap[dailyActivityLevel]
+      ? activityMap[dailyActivityLevel]
+      : workOutDays >= 5
+        ? 1.6
+        : workOutDays >= 3
+          ? 1.45
+          : 1.3;
 
-  if (primaryGoal === "fat_loss" || primaryGoal === "cut") calories *= 0.85;
+  let calories = bmr * multiplier;
+
+  if (primaryGoal === "fat_loss") calories *= 0.85;
   if (primaryGoal === "muscle_gain") calories *= 1.1;
 
   calories = Math.round(calories);
+
 
   const minCalories = Math.round(calories * 0.9);
   const maxCalories = Math.round(calories * 1.1);
@@ -57,10 +71,10 @@ export default function CalorieNeedsCard({
     calorieTarget == null
       ? "این مقدار کالری بر اساس شرایط بدن شما محاسبه شده است"
       : calorieTarget < minCalories
-      ? "کالری انتخابی شما کمی پایین‌تر از مقدار پیشنهادی است"
-      : calorieTarget > maxCalories
-      ? "کالری انتخابی شما بالاتر از محدوده پیشنهادی است"
-      : "هدف کالری شما مناسب است ✅";
+        ? "کالری انتخابی شما کمی پایین‌تر از مقدار پیشنهادی است"
+        : calorieTarget > maxCalories
+          ? "کالری انتخابی شما بالاتر از محدوده پیشنهادی است"
+          : "هدف کالری شما مناسب است ✅";
 
   const goalLabelMap: Record<string, string> = {
     fat_loss: "چربی‌سوزی",

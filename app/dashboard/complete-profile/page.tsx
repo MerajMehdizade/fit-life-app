@@ -109,7 +109,7 @@ export default function CompleteProfilePage() {
       <Toast {...toast} onClose={() => setToast({ ...toast, show: false })} />
       <ConfettiLayer confetti={confetti} />
 
-      <div ref={containerRef} className="w-full max-w-md bg-gray-900/95 p-6 rounded-3xl border border-gray-700 shadow-2xl">
+      <div ref={containerRef} className="w-full max-w-md bg-gray-950/95 p-6 rounded-3xl border border-gray-700 shadow-2xl">
         <ProgressDots step={step} total={steps.length} />
         <StepRenderer
           step={step}

@@ -30,6 +30,9 @@ const userSchema = new Schema(
       default: "student",
       required: true,
     },
+    
+    /* ================= Reg ================= */
+    // city: { type: String, required: true },
 
     /* ================= RELATIONS ================= */
     assignedCoach: {
@@ -101,10 +104,10 @@ const userSchema = new Schema(
 
       /* -------- وزن و بدن -------- */
       currentWeight: Number, // kg
-      targetWeight: Number,  // kg
-// اختیاری
-      bodyFatPercentage: Number,
+      targetWeight: Number,  // kg 
+      
       // اختیاری
+      bodyFatPercentage: Number,
       measurements: {
         waist: Number,
         chest: Number,

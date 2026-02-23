@@ -32,7 +32,7 @@ export default async function LockedStudentLayout({
 
       {isSuspended && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
-          <div className="bg-gray-900 text-white px-10 py-12 rounded-2xl shadow-2xl text-center max-w-md border border-yellow-500">
+          <div className="bg-gray-950 text-white px-10 py-12 rounded-2xl shadow-2xl text-center max-w-md border border-yellow-500">
             <h1 className="text-2xl mb-4 text-yellow-400 font-bold">
               حساب شما غیرفعال شده است
             </h1>

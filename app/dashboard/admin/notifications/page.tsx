@@ -112,7 +112,7 @@ export default function NotificationsPage() {
         }}
       />
 
-      <div className="min-h-screen bg-gray-900 text-gray-100 p-4 space-y-5">
+      <div className="min-h-screen bg-gray-950 text-gray-100 p-4 space-y-5">
 
         {/* header */}
         <div className="space-y-2">

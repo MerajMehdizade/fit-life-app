@@ -102,7 +102,7 @@ export default function UserNotifications() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-4 space-y-5">
+    <div className="min-h-screen bg-gray-950 text-gray-100 p-4 space-y-5">
       {user?.id ? (
         <RealtimeListener
           userId={user.id}

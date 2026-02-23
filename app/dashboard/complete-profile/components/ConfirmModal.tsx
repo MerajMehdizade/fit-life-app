@@ -7,7 +7,7 @@ export default function ConfirmModal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-      <div className="bg-gray-900 rounded-2xl p-6 max-w-sm w-full text-center border border-gray-700 shadow-2xl">
+      <div className="bg-gray-950 rounded-2xl p-6 max-w-sm w-full text-center border border-gray-700 shadow-2xl">
         <h2 className="text-md font-bold mb-4 text-white">آیا مطمئن هستید؟</h2>
         <p className="text-gray-300 mb-6">با تایید، اطلاعات پروفایل شما ثبت می‌شود.</p>
         <div className="flex justify-between gap-4">

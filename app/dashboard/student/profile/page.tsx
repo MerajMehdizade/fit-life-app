@@ -114,7 +114,7 @@ export default function ProfilePage() {
   return (
     <div className=" text-gray-100 py-10 px-6">
 
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-8 mt-10">
 
         <ProfileHeader
           user={user}

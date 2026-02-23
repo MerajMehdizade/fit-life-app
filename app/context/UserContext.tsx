@@ -33,6 +33,33 @@ export type UserProfile = {
     medications?: string[];
     doctorRestrictions?: string;
   };
+    sleep?: {
+    averageHours?: number;
+    quality?: "poor" | "average" | "good";
+  };
+  progressHistory?: {
+    date: string | Date;
+    weight?: number;
+    bodyFat?: number;
+    notes?: string;
+  }[];
+
+  mainObjective?:
+  | "fat_loss"
+  | "muscle_gain"
+  | "strength"
+  | "health"
+  | "recomposition";
+
+  dailyActivityLevel?:
+  | "sedentary"
+  | "light"
+  | "moderate"
+  | "active"
+  | "very_active";
+
+  goalDeadline?: string | Date;
+
 };
 type BodyVisualKey = "body_1" | "body_2" | "body_3" | "body_4";
 
@@ -51,8 +78,8 @@ export type ProfileType = {
   avatar: string;
   role: "student" | "coach" | "admin";
   status?: "active" | "suspended";
-  assignedCoach?: any; 
-  students?: any[];  
+  assignedCoach?: any;
+  students?: any[];
   profile?: UserProfile;
   uiPreferences?: UiPreferences;
 };

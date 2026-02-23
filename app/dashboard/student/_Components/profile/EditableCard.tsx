@@ -48,7 +48,7 @@ export default function EditableCard({
 
   return (
     <div
-      className={`bg-gray-900 border rounded-2xl p-6 shadow-sm transition ${
+      className={`bg-gray-950 border rounded-2xl p-6 shadow-sm transition ${
         isEditing ? "border-blue-600" : "border-gray-800"
       }`}
     >

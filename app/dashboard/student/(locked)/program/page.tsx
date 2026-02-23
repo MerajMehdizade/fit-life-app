@@ -45,7 +45,7 @@ export default function StudentProgram() {
         )}
 
         {training && (
-          <pre className="bg-gray-900 p-4 rounded text-sm whitespace-pre-wrap">
+          <pre className="bg-gray-950 p-4 rounded text-sm whitespace-pre-wrap">
             {typeof training === "string"
               ? training
               : JSON.stringify(training, null, 2)}
@@ -59,7 +59,7 @@ export default function StudentProgram() {
         )}
 
         {diet && (
-          <pre className="bg-gray-900 p-4 rounded text-sm whitespace-pre-wrap">
+          <pre className="bg-gray-950 p-4 rounded text-sm whitespace-pre-wrap">
             {typeof diet === "string"
               ? diet
               : JSON.stringify(diet, null, 2)}

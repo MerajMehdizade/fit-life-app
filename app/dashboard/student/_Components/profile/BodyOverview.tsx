@@ -5,7 +5,6 @@ import EditableCard from "./EditableCard";
 import { getLabel } from "@/lib/labels";
 import { useUser } from "@/app/context/UserContext";
 import { Select } from "@/app/Components/Form/Select";
-import { Input } from "@/app/Components/Form/Input";
 import FormInput from "@/app/dashboard/complete-profile/components/FormInput";
 
 interface Props {

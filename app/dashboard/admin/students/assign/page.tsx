@@ -76,7 +76,7 @@ export default function AssignPage() {
   return (
     <>
 
-      <section className="bg-white dark:bg-gray-900 w-full p-4 pb-20 sm:p-10 text-gray-100 flex justify-center items-center h-screen md:h-full">
+      <section className="bg-white dark:bg-gray-950 w-full p-4 pb-20 sm:p-10 text-gray-100 flex justify-center items-center h-screen md:h-full">
         <div className="container flex items-center justify-center px-6 mx-auto">
           <Form onSubmit={(e) => { e.preventDefault(); assignNow(); }}>
 

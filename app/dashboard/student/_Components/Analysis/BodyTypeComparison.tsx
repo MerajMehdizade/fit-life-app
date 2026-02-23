@@ -104,7 +104,7 @@ export default function BodyTypeComparison({
       )}
       <div className="relative w-full max-w-4xl 
                 p-6 rounded-3xl border border-gray-700 
-                bg-gray-800/25 shadow-lg">
+                bg-gray-800/25 shadow-lg mt-6">
           <div className="flex justify-center mb-5">
             <button
               onClick={() => setOpen(true)}
@@ -258,7 +258,7 @@ function BodyEditModal({
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center">
 
       <div
-        className="w-full md:max-w-lg bg-gray-900 
+        className="w-full md:max-w-lg bg-gray-950 
                    rounded-t-3xl md:rounded-3xl 
                    p-6 md:p-8 border border-gray-700 
                    transform transition-all duration-300 

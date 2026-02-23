@@ -41,7 +41,7 @@ export default function StudentProfilePage() {
       </h1>
 
       {/* اطلاعات پایه */}
-      <div className="bg-gray-900 p-5 rounded">
+      <div className="bg-gray-950 p-5 rounded">
         <p>📧 {student.email}</p>
         <p>📱 {student.phone || "شماره ثبت نشده"}</p>
         <p>🎯 هدف اصلی: {student.profile?.primaryGoal || "-"}</p>

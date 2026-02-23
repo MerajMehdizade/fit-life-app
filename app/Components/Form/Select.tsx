@@ -45,7 +45,7 @@ export function Select({
         } pr-10 bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg appearance-none
         focus:ring-blue-500 focus:border-blue-500
         shadow-sm
-        dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+        dark:bg-gray-950 dark:text-gray-300 dark:border-gray-700
         dark:focus:ring-blue-400 dark:focus:border-blue-400
         ${className}`}
       >
