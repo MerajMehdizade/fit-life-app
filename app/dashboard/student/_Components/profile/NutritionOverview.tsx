@@ -5,7 +5,6 @@ import EditableCard from "./EditableCard";
 import { getLabel } from "@/lib/labels";
 import { useUser } from "@/app/context/UserContext";
 import { Select } from "@/app/Components/Form/Select";
-import { Input } from "@/app/Components/Form/Input";
 import FormInput from "@/app/dashboard/complete-profile/components/FormInput";
 
 interface Props {
@@ -25,6 +24,13 @@ const NUMBER_LIMITS: Partial<
 
 type NutritionForm = {
   dietPlanPreference: string;
+  appetiteLevel: string;
+  avg_breakfast_grams: string;
+  avg_lunch_grams: string;
+  avg_dinner_grams: string;
+  diet_history: string;
+  smoking_status: string;
+  alcohol_status: string;
   calorieTarget: number | string;
   protein: number | string;
   carbs: number | string;
@@ -33,12 +39,41 @@ type NutritionForm = {
   dietaryRestrictions: string;
 };
 
+const DIET_OPTIONS = [
+  { value: "balanced", label: "متعادل" },
+  { value: "keto", label: "کتو" },
+  { value: "vegan", label: "وگان" },
+];
 
+const APPETITE_OPTIONS = [
+  { value: "low", label: "کم" },
+  { value: "normal", label: "معمولی" },
+  { value: "high", label: "زیاد" },
+];
+const diet_history_OPTIONS = [
+  { value: "yes", label: "بله" },
+  { value: "no", label: "خیر" },
+];
+const smoking_status_OPTIONS = [
+  { value: "yes", label: "بله" },
+  { value: "no", label: "خیر" },
+];
+const alcohol_status_OPTIONS = [
+  { value: "yes", label: "بله" },
+  { value: "no", label: "خیر" },
+];
 export default function NutritionOverview({ profile }: Props) {
   const { refreshUser } = useUser();
 
   const [form, setForm] = useState<NutritionForm>({
     dietPlanPreference: "",
+    appetiteLevel: profile?.appetiteLevel ?? "normal",
+    avg_breakfast_grams: "",
+    avg_lunch_grams: "",
+    avg_dinner_grams: "",
+    diet_history: profile?.diet_history,
+    smoking_status: profile?.smoking_status,
+    alcohol_status: profile?.alcohol_status,
     calorieTarget: "",
     foodAllergies: "",
     dietaryRestrictions: "",
@@ -48,8 +83,16 @@ export default function NutritionOverview({ profile }: Props) {
   });
 
   useEffect(() => {
+
     setForm({
       dietPlanPreference: profile?.dietPlanPreference || "",
+      appetiteLevel: profile?.appetiteLevel ?? "normal",
+      avg_breakfast_grams: profile?.avg_breakfast_grams || "",
+      avg_lunch_grams: profile?.avg_lunch_grams || "",
+      avg_dinner_grams: profile?.avg_dinner_grams || "",
+      diet_history: profile?.diet_history || "",
+      smoking_status: profile?.smoking_status || "",
+      alcohol_status: profile?.alcohol_status || "",
       calorieTarget: profile?.nutritionPlan?.calorieTarget || "",
       protein: profile?.nutritionPlan?.macros?.protein || "",
       carbs: profile?.nutritionPlan?.macros?.carbs || "",
@@ -85,7 +128,13 @@ export default function NutritionOverview({ profile }: Props) {
   const handleSave = async () => {
     const payload = {
       dietPlanPreference: form.dietPlanPreference,
-
+      appetiteLevel: form.appetiteLevel,
+      avg_breakfast_grams: form.avg_breakfast_grams,
+      avg_lunch_grams: form.avg_lunch_grams,
+      avg_dinner_grams: form.avg_dinner_grams,
+      diet_history: form.diet_history,
+      smoking_status: form.smoking_status,
+      alcohol_status: form.alcohol_status,
       nutritionPlan: {
         calorieTarget: Number(form.calorieTarget),
         macros: {
@@ -113,8 +162,10 @@ export default function NutritionOverview({ profile }: Props) {
     });
 
     const data = await res.json();
-    if (!data.success) throw new Error();
 
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || "خطا در ذخیره اطلاعات");
+    }
     await refreshUser();
   };
 
@@ -127,6 +178,13 @@ export default function NutritionOverview({ profile }: Props) {
     type: "number" | "select" | "text";
   }[] = [
       { key: "dietPlanPreference", label: "نوع رژیم", type: "select" },
+      { key: "appetiteLevel", label: "وضعیت اشتها", type: "select" },
+      { key: "diet_history", label: "سابقه رژیم", type: "select" },
+      { key: "smoking_status", label: "مصرف دخانیات", type: "select" },
+      { key: "alcohol_status", label: "مصرف الکل", type: "select" },
+      { key: "avg_breakfast_grams", label: "میانگین غذای مصرفی در صبحانه", type: "text" },
+      { key: "avg_lunch_grams", label: "میانگین غذای مصرفی در ناهار", type: "text" },
+      { key: "avg_dinner_grams", label: "میانگین غذای مصرفی در شام", type: "text" },
       { key: "calorieTarget", label: "کالری هدف", type: "number" },
       { key: "protein", label: "پروتئین (گرم)", type: "number" },
       { key: "carbs", label: "کربوهیدرات (گرم)", type: "number" },
@@ -147,19 +205,42 @@ export default function NutritionOverview({ profile }: Props) {
       if (field.key === "dietPlanPreference")
         return getLabel(String(value));
 
+      if (field.key === "appetiteLevel")
+        return getLabel(String(value));
+      if (field.key === "diet_history")
+        return getLabel(String(value));
+      if (field.key === "smoking_status")
+        return getLabel(String(value));
+      if (field.key === "alcohol_status")
+        return getLabel(String(value));
+
       return value;
     }
 
     if (field.type === "select") {
+      const options =
+        field.key === "dietPlanPreference"
+          ? DIET_OPTIONS
+          : field.key === "appetiteLevel"
+            ? APPETITE_OPTIONS
+            : field.key === "diet_history"
+              ? diet_history_OPTIONS
+              : field.key === "smoking_status"
+                ? smoking_status_OPTIONS
+                : field.key === "alcohol_status"
+                  ? alcohol_status_OPTIONS : [];
+
       return (
         <Select
           value={String(value ?? "")}
           onChange={(e) => handleChange(field.key, e.target.value)}
         >
           <option value="">انتخاب کنید</option>
-          <option value="balanced">متعادل</option>
-          <option value="keto">کتو</option>
-          <option value="vegan">وگان</option>
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </Select>
       );
     }

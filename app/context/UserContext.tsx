@@ -19,8 +19,9 @@ export type UserProfile = {
   bodyFatPercentage?: number;
 
   trainingLevel?: string;
+  supplement_usage_status?: string;
+  doping_status?: string;
   workoutDaysPerWeek?: number;
-
   nutritionPlan?: {
     calorieTarget?: number;
     calculatedAt?: string;
@@ -33,7 +34,7 @@ export type UserProfile = {
     medications?: string[];
     doctorRestrictions?: string;
   };
-    sleep?: {
+  sleep?: {
     averageHours?: number;
     quality?: "poor" | "average" | "good";
   };

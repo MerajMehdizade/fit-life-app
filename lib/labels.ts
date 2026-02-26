@@ -38,8 +38,13 @@ export const LABELS: Record<string, string> = {
 
   appearance: "ظاهر",
   performance: "عملکرد",
+  low: "کم",
+  normal: "معمولی",
+  high: "زیاد",
+  suspended: "تعلیق شده",
 
-  suspended:"تعلیق شده"
+  yes:"بله",
+  no:"خیر",
 };
 export const getLabel = (value?: string | null) => {
   if (!value) return null;

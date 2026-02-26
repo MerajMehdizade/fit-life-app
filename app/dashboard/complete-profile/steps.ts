@@ -58,7 +58,7 @@ export const steps: StepConfig[] = [
 
   {
     title: "برنامه تمرین",
-    required: ["trainingLevel", "workoutDaysPerWeek"],
+    required: ["trainingLevel", "workoutDaysPerWeek", "trainingLocation", "supplement_usage_status", "doping_status", "trainingExperienceYears", "maxWorkoutDuration"],
     fields: [
       {
         name: "trainingLevel",
@@ -73,6 +73,18 @@ export const steps: StepConfig[] = [
         options: ["home", "outdoor", "gym"],
       },
       {
+        name: "supplement_usage_status",
+        type: "select",
+        placeholder: "سابقه مصرف مکمل",
+        options: ["no", "yes"],
+      },
+      {
+        name: "doping_status",
+        type: "select",
+        placeholder: "سابقه دوپینگ",
+        options: ["no", "yes"],
+      },
+      {
         name: "workoutDaysPerWeek",
         placeholder: "تعداد روز تمرین در هفته",
         type: "number",
@@ -85,7 +97,7 @@ export const steps: StepConfig[] = [
   },
   {
     title: "تغذیه",
-    required: ["dietPlanPreference"],
+    required: ["dietPlanPreference", "appetiteLevel", "diet_history", "smoking_status", "alcohol_status"],
     fields: [
       {
         name: "dietPlanPreference",
@@ -93,6 +105,33 @@ export const steps: StepConfig[] = [
         placeholder: "نوع رژیم",
         options: ["balanced", "keto", "vegan"],
       },
+      {
+        name: "appetiteLevel",
+        type: "select",
+        placeholder: "وضعیت اشتها",
+        options: ["low", "normal", "high"],
+      },
+      {
+        name: "diet_history",
+        type: "select",
+        placeholder: "سابقه رژیم",
+        options: ["no", "yes"],
+      },
+      {
+        name: "smoking_status",
+        type: "select",
+        placeholder: "مصرف دخانیات",
+        options: ["no", "yes"],
+      },
+      {
+        name: "alcohol_status",
+        type: "select",
+        placeholder: "مصرف الکل",
+        options: ["no", "yes"],
+      },
+      { name: "avg_breakfast_grams", placeholder: "میانگین غذای مصرفی در صبحانه", type: "text" },
+      { name: "avg_lunch_grams", placeholder: "میانگین غذای مصرفی در ناهار", type: "text" },
+      { name: "avg_dinner_grams", placeholder: "میانگین غذای مصرفی در شام", type: "text" },
       { name: "foodAllergies", placeholder: "آلرژی غذایی (اختیاری)", type: "text" },
       { name: "dietaryRestrictions", placeholder: "محدودیت غذایی (اختیاری)", type: "text" },
     ],

@@ -294,18 +294,21 @@ export default function StepRenderer({
 
     if (field.type === "date") {
       return (
-        <DatePicker
-          key={key}
-          calendar={persian}
-          locale={persian_fa}
-          value={form[key] || ""}
-          onChange={(date) => {
-            update(key, date?.toDate?.() || date);
-          }}
-          inputClass="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500"
-          placeholder={field.placeholder}
-          calendarPosition="bottom-center"
-        />
+        <div className="w-full flex flex-col">
+          <DatePicker
+            key={key}
+            calendar={persian}
+            locale={persian_fa}
+            value={form[key] || ""}
+            onChange={(date) => {
+              update(key, date?.toDate?.() || date);
+            }}
+            inputClass="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500"
+            className="w-full"
+            placeholder={field.placeholder}
+            calendarPosition="bottom-center"
+          />
+        </div>
       );
     }
 
@@ -325,18 +328,33 @@ export default function StepRenderer({
   };
 
   const invalid = validateStep();
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState<Record<number, boolean>>({});
 
+  // Step 1: measurement fields که تو advanced هستن
   const measurementFields = ["waist", "chest", "arm", "hip"];
-  const optionalFields = [
-    "bodyFatPercentage",
-    "waist",
-    "chest",
-    "arm",
-    "hip",
+
+  // Step 1: optional fields
+  const optionalFields = ["bodyFatPercentage"];
+
+  // Step 4: select هایی که کنار هم هستن
+  const step4SelectFields = [
+    "dietPlanPreference",
+    "appetiteLevel",
+    "diet_history",
+    "smoking_status",
+    "alcohol_status",
   ];
 
-
+  // Step 4: input های اختیاری که کنار هم باشن
+  const step4OptionalFields = [
+    "avg_breakfast_grams",
+    "avg_lunch_grams",
+    "avg_dinner_grams",
+    "foodAllergies",
+    "dietaryRestrictions",
+  ];
+  const step4TwoColumnFields = ["foodAllergies", "dietaryRestrictions"]; // دو تا کنار هم
+  const step4SingleFields = ["avg_breakfast_grams", "avg_lunch_grams", "avg_dinner_grams"]; // سه تا کامل
   return (
     <>
       <AnimatePresence mode="wait">
@@ -370,7 +388,7 @@ export default function StepRenderer({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {steps[step].fields
                     .filter((f) =>
-                      ["trainingLevel", "trainingLocation"].includes(f.name)
+                      ["trainingLevel", "trainingLocation", "supplement_usage_status", "doping_status"].includes(f.name)
                     )
                     .map((field) => (
                       <div key={field.name}>
@@ -379,45 +397,43 @@ export default function StepRenderer({
                     ))}
                 </div>
               )}
-
+              {step === 4 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {steps[step].fields
+                    .filter((f) => step4SelectFields.includes(f.name))
+                    .map((field) => (
+                      <div key={field.name}>
+                        {renderField(field)}
+                      </div>
+                    ))}
+                </div>
+              )}
 
               {steps[step].fields
                 .filter((field) => {
+                  if (step === 4) {
+                    // حذف تمام فیلدهایی که قبلاً داخل grid رندر شدن
+                    if (step4SelectFields.includes(field.name)) return false;
+                    if (step4OptionalFields.includes(field.name)) return false;
+                  }
 
-                  if (
-                    step === 3 &&
-                    ["trainingLevel", "trainingLocation"].includes(field.name)
-                  ) {
+                  // شرطهای Step 1 و Step 3
+                  if (step === 3 && ["trainingLevel", "trainingLocation", "supplement_usage_status", "doping_status"].includes(field.name)) {
                     return false;
                   }
-
-                  if (step === 1 && optionalFields.includes(field.name)) {
-                    return showAdvanced;
-                  }
+                  if (step === 1 && measurementFields.includes(field.name)) return false;
+                  if (step === 1 && optionalFields.includes(field.name)) return !!showAdvanced[1];
+                  if (step === 4 && step4OptionalFields.includes(field.name)) return !!showAdvanced[4];
 
                   return true;
                 })
-                .map((field) => {
-                  if (step === 1 && measurementFields.includes(field.name)) {
-                    return null;
-                  }
+                .map((field) => (
+                  <div key={field.name}>
+                    {renderField(field)}
+                  </div>
+                ))}
 
-                  if (field.type === "triple-image") {
-                    return (
-                      <div key={field.name} className="w-full flex justify-center">
-                        {renderField(field)}
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div key={field.name}>
-                      {renderField(field)}
-                    </div>
-                  );
-                })}
-
-              {step === 1 && showAdvanced && (
+              {step === 1 && showAdvanced[1] && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {steps[step].fields
                     .filter((field) => measurementFields.includes(field.name))
@@ -428,18 +444,45 @@ export default function StepRenderer({
                     ))}
                 </div>
               )}
-              {step === 1 && (
+              {step === 4 && showAdvanced[4] && (
+                <div className="flex flex-col gap-4">
+                  {/* دو تا فیلد کنار هم تو موبایل و دسکتاپ */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {steps[step].fields
+                      .filter((f) => step4TwoColumnFields.includes(f.name))
+                      .map((field) => (
+                        <div key={field.name}>
+                          {renderField(field)}
+                        </div>
+                      ))}
+                  </div>
+
+                  {/* سه تا فیلد تک‌ستونه */}
+                  {steps[step].fields
+                    .filter((f) => step4SingleFields.includes(f.name))
+                    .map((field) => (
+                      <div key={field.name}>
+                        {renderField(field)}
+                      </div>
+                    ))}
+                </div>
+              )}
+              {(step === 1 || step === 4) && (
                 <button
                   type="button"
-                  onClick={() => setShowAdvanced((prev) => !prev)}
+                  onClick={() =>
+                    setShowAdvanced((prev) => ({
+                      ...prev,
+                      [step]: !prev[step],
+                    }))
+                  }
                   className="text-sm text-green-400 hover:text-green-300 transition cursor-pointer mt-2"
                 >
-                  {showAdvanced
+                  {showAdvanced[step]
                     ? "بستن اطلاعات پیشرفته"
                     : "افزودن اطلاعات بیشتر (اختیاری)"}
                 </button>
               )}
-
             </div>
 
             <div className="flex justify-between mt-6">

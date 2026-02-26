@@ -22,9 +22,18 @@ const ALLOWED_FIELDS = [
   "currentWeight",
   "targetWeight",
   "trainingLevel",
+  "supplement_usage_status",
+  "doping_status",
   "workoutDaysPerWeek",
   "calorieTarget",
   "dietPlanPreference",
+  "appetiteLevel",
+  "avg_breakfast_grams",
+  "avg_lunch_grams",
+  "avg_dinner_grams",
+  "diet_history",
+  "smoking_status",
+  "alcohol_status",
   "foodAllergies",
   "dietaryRestrictions",
 
@@ -48,7 +57,15 @@ const ALLOWED_FIELDS = [
   "confidenceLevel",
   "mainObjective",
 ];
-
+const REQUIRED_FIELDS = [
+  "age", "height", "currentWeight", "targetWeight",
+  "mainObjective",
+  "trainingLevel", "workoutDaysPerWeek", "trainingLocation", "supplement_usage_status", "doping_status", "trainingExperienceYears", "maxWorkoutDuration",
+  "dietPlanPreference", "appetiteLevel", "diet_history", "smoking_status", "alcohol_status",
+  "dailyActivityLevel",
+  "sleepQuality",
+  "sleepHours",
+];
 export async function PATCH(req: Request) {
   try {
     await connectDB();
@@ -63,11 +80,43 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
+    for (const key of Object.keys(body)) {
+      if (
+        REQUIRED_FIELDS.includes(key) &&
+        (body[key] === "" || body[key] === null)
+      ) {
+        return NextResponse.json(
+          { success: false, message: `فیلد ${key} اجباری است` },
+          { status: 400 }
+        );
+      }
+    }
     const existingUser = await User.findById(user.userId);
     if (!existingUser) {
       return NextResponse.json({ success: false }, { status: 404 });
     }
     const updates: Record<string, any> = {};
+    if (body.appetiteLevel !== undefined) {
+      updates["profile.appetiteLevel"] = body.appetiteLevel;
+    }
+    if (body.avg_breakfast_grams !== undefined) {
+      updates["profile.avg_breakfast_grams"] = body.avg_breakfast_grams;
+    }
+    if (body.avg_lunch_grams !== undefined) {
+      updates["profile.avg_lunch_grams"] = body.avg_lunch_grams;
+    }
+    if (body.avg_dinner_grams !== undefined) {
+      updates["profile.avg_dinner_grams"] = body.avg_dinner_grams;
+    }
+    if (body.diet_history !== undefined) {
+      updates["profile.diet_history"] = body.diet_history;
+    }
+    if (body.smoking_status !== undefined) {
+      updates["profile.smoking_status"] = body.smoking_status;
+    }
+    if (body.alcohol_status !== undefined) {
+      updates["profile.alcohol_status"] = body.alcohol_status;
+    }
     if (body.nutritionPlan) {
       if (body.nutritionPlan.calorieTarget !== undefined) {
         updates["profile.nutritionPlan.calorieTarget"] =
@@ -224,28 +273,27 @@ export async function PATCH(req: Request) {
       };
     }
 
-    // ================= WEIGHT RESET & HISTORY =================
-// ================= WEIGHT RESET =================
-if (body.resetToInitial) {
-  const initialWeight = existingUser.profile?.progressHistory?.[0]?.weight;
-  if (initialWeight !== undefined) {
-    await User.findByIdAndUpdate(user.userId, {
-      $set: { 
-        "profile.currentWeight": initialWeight,
-        "profile.progressHistory": [ { date: new Date(), weight: initialWeight } ] // فقط یک نقطه باقی می‌مونه
+    // ================= WEIGHT RESET =================
+    if (body.resetToInitial) {
+      const initialWeight = existingUser.profile?.progressHistory?.[0]?.weight;
+      if (initialWeight !== undefined) {
+        await User.findByIdAndUpdate(user.userId, {
+          $set: {
+            "profile.currentWeight": initialWeight,
+            "profile.progressHistory": [{ date: new Date(), weight: initialWeight }] // فقط یک نقطه باقی می‌مونه
+          }
+        });
       }
-    });
-  }
-} else if (updates["profile.currentWeight"] !== undefined) {
-  const newWeight = Number(updates["profile.currentWeight"]);
-  const oldWeight = existingUser.profile?.currentWeight;
+    } else if (updates["profile.currentWeight"] !== undefined) {
+      const newWeight = Number(updates["profile.currentWeight"]);
+      const oldWeight = existingUser.profile?.currentWeight;
 
-  if (oldWeight && newWeight && newWeight !== oldWeight) {
-    await User.findByIdAndUpdate(user.userId, {
-      $push: { "profile.progressHistory": { date: new Date(), weight: newWeight } },
-    });
-  }
-}
+      if (oldWeight && newWeight && newWeight !== oldWeight) {
+        await User.findByIdAndUpdate(user.userId, {
+          $push: { "profile.progressHistory": { date: new Date(), weight: newWeight } },
+        });
+      }
+    }
 
     // در ادامه $set اصلی فقط برای بقیه فیلدها اعمال می‌کنیم:
     const { currentWeight, progressHistory, ...otherUpdates } = updates; // currentWeight و progressHistory را جدا می‌کنیم
@@ -264,7 +312,16 @@ if (body.resetToInitial) {
         role: updatedUser?.role,
         status: updatedUser?.status,
         avatar: updatedUser?.avatar,
-        profile: updatedUser?.profile,
+        profile: {
+          ...updatedUser?.profile.toObject(),
+          appetiteLevel: updatedUser?.profile?.appetiteLevel ?? null,
+          avg_breakfast_grams: updatedUser?.profile?.avg_breakfast_grams ?? null,
+          avg_lunch_grams: updatedUser?.profile?.avg_lunch_grams ?? null,
+          avg_dinner_grams: updatedUser?.profile?.avg_dinner_grams ?? null,
+          diet_history: updatedUser?.profile?.diet_history ?? null,
+          smoking_status: updatedUser?.profile?.smoking_status ?? null,
+          alcohol_status: updatedUser?.profile?.alcohol_status ?? null,
+        },
         students: updatedUser?.students,
         assignedCoach: updatedUser?.assignedCoach,
         uiPreferences: updatedUser?.uiPreferences,

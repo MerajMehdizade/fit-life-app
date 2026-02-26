@@ -30,7 +30,7 @@ const userSchema = new Schema(
       default: "student",
       required: true,
     },
-    
+
     /* ================= Reg ================= */
     // city: { type: String, required: true },
 
@@ -105,7 +105,7 @@ const userSchema = new Schema(
       /* -------- وزن و بدن -------- */
       currentWeight: Number, // kg
       targetWeight: Number,  // kg 
-      
+
       // اختیاری
       bodyFatPercentage: Number,
       measurements: {
@@ -150,6 +150,14 @@ const userSchema = new Schema(
       },
 
       /* -------- تمرین -------- */
+      supplement_usage_status: {
+        type: String,
+        enum: ["yes", "no"],
+      },
+      doping_status: {
+        type: String,
+        enum: ["yes", "no"],
+      },
       trainingLevel: {
         type: String,
         enum: ["beginner", "intermediate", "advanced"],
@@ -175,10 +183,33 @@ const userSchema = new Schema(
       /* -------- تغذیه (INPUT USER) -------- */
       foodAllergies: [String],
       dietaryRestrictions: [String],
-
+      avg_breakfast_grams: String,
+      avg_lunch_grams: String,
+      avg_dinner_grams: String,
       dietPlanPreference: {
         type: String,
-        enum: ["balanced", "keto", "low_carb", "vegan"],
+        enum: ["balanced", "keto", "vegan"],
+      },
+
+      appetiteLevel: {
+        type: String,
+        enum: ["low", "normal", "high"],
+        default: null,
+      },
+      diet_history: {
+        type: String,
+        enum: ["yes", "no"],
+        default: null,
+      },
+      smoking_status: {
+        type: String,
+        enum: ["yes", "no"],
+        default: null,
+      },
+      alcohol_status: {
+        type: String,
+        enum: ["yes", "no"],
+        default: null,
       },
 
       /* -------- تغذیه (CALCULATED) -------- */

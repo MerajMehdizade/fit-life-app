@@ -18,6 +18,8 @@ export type ProfileForm = {
   targetWeight?: number;
   bodyFatPercentage?: number;
   trainingLevel?: "beginner" | "intermediate" | "advanced";
+  supplement_usage_status?:"no" | "yes";
+  doping_status?: "no" | "yes";
   workoutDaysPerWeek?: number;
   waist?: number;
   chest?: number;
@@ -27,10 +29,15 @@ export type ProfileForm = {
   goalDeadline?: Date;
   calorieTarget?: number;
   dietPlanPreference?: "balanced" | "keto" | "vegan";
-
+  appetiteLevel?: "low" | "normal" | "high";
   foodAllergies?: string;
   dietaryRestrictions?: string;
-
+  avg_breakfast_grams?: string;
+  avg_lunch_grams?: string;
+  avg_dinner_grams?: string;
+  diet_history?: "no" | "yes";
+  smoking_status?: "no" | "yes";
+  alcohol_status?: "no" | "yes";
   injuries?: string;
   chronicDiseases?: string;
   medications?: string;

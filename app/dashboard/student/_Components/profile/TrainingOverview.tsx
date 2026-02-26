@@ -5,7 +5,6 @@ import EditableCard from "./EditableCard";
 import { getLabel } from "@/lib/labels";
 import { useUser } from "@/app/context/UserContext";
 import { Select } from "@/app/Components/Form/Select";
-import { Input } from "@/app/Components/Form/Input";
 import FormInput from "@/app/dashboard/complete-profile/components/FormInput";
 
 interface Props {
@@ -24,6 +23,9 @@ const NUMBER_LIMITS: Partial<
 
 type TrainingForm = {
   trainingLevel: string;
+  availableEquipment: string;
+  supplement_usage_status: string;
+  doping_status: string;
   trainingExperienceYears: number | string;
   workoutDaysPerWeek: number | string;
   maxWorkoutDuration: number | string;
@@ -42,6 +44,9 @@ export default function TrainingOverview({ profile }: Props) {
 
   const [form, setForm] = useState<TrainingForm>({
     trainingLevel: "",
+    availableEquipment: "",
+    supplement_usage_status: "",
+    doping_status: "",
     trainingExperienceYears: "",
     workoutDaysPerWeek: "",
     maxWorkoutDuration: "",
@@ -58,6 +63,9 @@ export default function TrainingOverview({ profile }: Props) {
   useEffect(() => {
     setForm({
       trainingLevel: profile?.trainingLevel || "",
+      availableEquipment: profile?.availableEquipment || "",
+      supplement_usage_status: profile?.supplement_usage_status || "",
+      doping_status: profile?.doping_status || "",
       trainingExperienceYears: profile?.trainingExperienceYears || "",
       workoutDaysPerWeek: profile?.workoutDaysPerWeek || "",
       maxWorkoutDuration: profile?.maxWorkoutDuration || "",
@@ -111,8 +119,11 @@ export default function TrainingOverview({ profile }: Props) {
       body: JSON.stringify(payload),
     });
 
-    const data = await res.json();
-    if (!data.success) throw new Error();
+   const data = await res.json();
+
+if (!res.ok || !data.success) {
+  throw new Error(data.message || "خطا در ذخیره اطلاعات");
+}
 
     await refreshUser();
   };
@@ -125,10 +136,13 @@ export default function TrainingOverview({ profile }: Props) {
     type: "number" | "select" | "text";
   }[] = [
       { key: "trainingLevel", label: "سطح تمرین", type: "select" },
-      { key: "trainingExperienceYears", label: "سال تجربه", type: "number" },
+      { key: "supplement_usage_status", label: "سابقه مصرف مکمل", type: "select" },
+      { key: "doping_status", label: "سابقه دوپینگ", type: "select" },
+      { key: "trainingExperienceYears", label: "سابقه تمرین (سال)", type: "number" },
       { key: "workoutDaysPerWeek", label: "روز تمرین در هفته", type: "number" },
       { key: "maxWorkoutDuration", label: "مدت تمرین (دقیقه)", type: "number" },
       { key: "trainingLocation", label: "محل تمرین", type: "select" },
+      { key: "availableEquipment", label: "تجهیزات", type: "text" },
       { key: "dailyActivityLevel", label: "فعالیت روزانه", type: "select" },
       { key: "sleepHours", label: "ساعت خواب", type: "number" },
       { key: "sleepQuality", label: "کیفیت خواب", type: "select" },
@@ -138,7 +152,38 @@ export default function TrainingOverview({ profile }: Props) {
       { key: "doctorRestrictions", label: "محدودیت پزشک", type: "text" },
 
     ];
-
+  const SELECT_OPTIONS: Record<string, { value: string; label: string }[]> = {
+    trainingLevel: [
+      { value: "beginner", label: "مبتدی" },
+      { value: "intermediate", label: "متوسط" },
+      { value: "advanced", label: "پیشرفته" },
+    ],
+    supplement_usage_status: [
+      { value: "no", label: "خیر" },
+      { value: "yes", label: "بله" },
+    ],
+    doping_status: [
+      { value: "no", label: "خیر" },
+      { value: "yes", label: "بله" },
+    ],
+    trainingLocation: [
+      { value: "gym", label: "باشگاه" },
+      { value: "home", label: "خانه" },
+      { value: "outdoor", label: "فضای باز" },
+    ],
+    dailyActivityLevel: [
+      { value: "sedentary", label: "بی‌تحرک" },
+      { value: "light", label: "کم‌تحرک" },
+      { value: "moderate", label: "متوسط" },
+      { value: "active", label: "فعال" },
+      { value: "very_active", label: "بسیار فعال" },
+    ],
+    sleepQuality: [
+      { value: "poor", label: "ضعیف" },
+      { value: "average", label: "متوسط" },
+      { value: "good", label: "خوب" },
+    ],
+  };
   const renderField = (
     field: (typeof fields)[number],
     isEditing: boolean
@@ -161,39 +206,11 @@ export default function TrainingOverview({ profile }: Props) {
         >
           <option value="">انتخاب کنید</option>
 
-          {field.key === "trainingLevel" && (
-            <>
-              <option value="beginner">مبتدی</option>
-              <option value="intermediate">متوسط</option>
-              <option value="advanced">پیشرفته</option>
-            </>
-          )}
-
-          {field.key === "trainingLocation" && (
-            <>
-              <option value="gym">باشگاه</option>
-              <option value="home">خانه</option>
-              <option value="outdoor">فضای باز</option>
-            </>
-          )}
-
-          {field.key === "dailyActivityLevel" && (
-            <>
-              <option value="sedentary">بی‌تحرک</option>
-              <option value="light"> کم‌تحرک</option>
-              <option value="moderate"> متوسط</option>
-              <option value="active"> فعال</option>
-              <option value="very_active"> بسیار فعال</option>
-            </>
-          )}
-
-          {field.key === "sleepQuality" && (
-            <>
-              <option value="poor">ضعیف</option>
-              <option value="average">متوسط</option>
-              <option value="good">خوب</option>
-            </>
-          )}
+          {SELECT_OPTIONS[field.key]?.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </Select>
       );
     }
